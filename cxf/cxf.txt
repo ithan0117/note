@@ -1,0 +1,68 @@
+建立步驟
+1. 匯入jar檔
+	1.1 cxf 138個檔 + xmlschema-core-x.y.z.jar
+
+2. 修改web.xml
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			classpath:applicationContext-cxf.xml
+		</param-value>
+	</context-param>
+	
+3. 建立及撰寫applicationContext-cxf.xml
+	<?xml version="1.0" encoding="UTF-8"?>
+	<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:beans="http://cxf.apache.org/configuration/beans"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:p="http://www.springframework.org/schema/p"
+		xmlns:mvc="http://www.springframework.org/schema/mvc"
+		xmlns:core="http://cxf.apache.org/core"
+		xmlns:jaxws="http://cxf.apache.org/jaxws"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://cxf.apache.org/configuration/beans http://cxf.apache.org/schemas/configuration/cxf-beans.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+			http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+		<description>cxf</description>
+			
+	</beans>
+
+4. 撰寫WebService介面
+	*註 : package : model.webservice.server
+	
+	@WebService//宣告此interface為WebService介面
+	public interface MyWebService {
+		//定義WebService方法. @WebParam為請求參數
+		public String test1(@WebParam(name = "str") String str);
+	}
+	
+5. 撰寫WebService實作類別
+	*註 : package : model.webservice.server.impl
+	
+	public class MyWebServiceImpl implements MyWebService {
+
+		@Override
+		public String test1(String str) {
+			System.out.println("MyWebService start");
+			return "MyWebService" + str;//return值即為回應物件
+		}
+	}
+	
+6. 註冊接口 : 在applicationContext-cxf.xml的<beans>內加入
+	<jaxws:endpoint id="server"
+        implementor="model.webservice.server.impl.MyWebServiceImpl"	<!-- 指定WebService實作類別 -->
+        address="http://localhost:9000/CXF/HelloWorld" />			<!-- 指定URL -->
+
+    <jaxws:client id="client"
+        serviceClass="model.webservice.server.MyWebService"			<!-- 指定WebService介面 -->
+        address="http://localhost:9000/CXF/HelloWorld" />			<!-- 指定URL -->
+	
+	
+	
+	
+	
+	
+	

@@ -1,0 +1,110 @@
+*開console output
+	SET SERVEROUTPUT ON;
+
+建立語法
+	CREATE [OR REPLACE ] PROCEDURE 預儲程序名稱[(參數名1 參數種類1 參數型態1[, 參數名2 參數種類2 參數型態2, ...])]
+	IS || AS
+	BEGIN
+		//...
+	END [預儲程序名稱];
+	
+	ex.
+		CREATE OR REPLACE PROCEDURE PROC1(name in varchar2, age in number, result out varchar2)
+		IS
+		BEGIN
+			result := 'name : ' || name || ', age : ' || age;
+			DBMS_OUTPUT.PUT_LINE(result);
+		END;
+		
+	*註
+		1. 若無參數可不寫括號
+		2. 參數型態不指定長度
+	
+呼叫語法
+	方式1 - 無回傳值
+		EXEC[UTE] 預儲程序名稱;
+		
+		ex.
+			EXEC PROC1('William', 30);
+
+	方式2 - 有回傳值	
+		DECLARE 變數名 型態;
+		BEGIN
+			預儲程序名稱(參數名1[, 參數名2, ...], 剛剛宣告的變數名);	<--變數名對應OUT參數
+		END;
+		
+		ex.
+			DECLARE result varchar2(100);
+			BEGIN
+				PROC1('William', 30, result);
+				DBMS_OUTPUT.PUT_LINE(result);
+			END;
+			
+		*註 : 呼叫時不寫EXEC[UTE]
+	
+參數種類
+	IN、OUT、IN OUT
+	
+	ex.
+		CREATE PROCEDURE PROC1(param1 in varchar2, param2 out date, param2 in out number)
+		
+	*註 : IN OUT中間有空白
+	
+IF
+	IF 條件1 THEN
+		//敘述1..
+	ELSIF 條件2 THEN	<--注意是ELSIF
+		//敘述2..
+	ELSE				<--注意沒有THEN
+		//敘述3..
+	END IF;
+	
+CURSOR
+	宣告
+		*註 : 寫在IS和BEGIN之間, 步驟順序可換
+		
+		step1. 宣告TEMP TABLE (非必要)
+			暫存表格名稱 表格名稱%ROWTYPE;	<--將TEMP TABLE建成跟某實際TABLE格式一樣
+		
+		step2. 宣告CURSOR
+			CURSOR 名稱 IS SELECT敘述;	<--SELECT敘述可含有預儲程序的參數
+			
+	使用
+		*註 : 寫在BEGIN和END之間
+		
+		OPEN CURSOR名稱;
+		LOOP
+			FETCH CURSOR名稱 INTO 暫存表格名稱;	<--透過CURSOR取資料, 然後插入TEMP TABLE
+			EXIT WHEN CURSOR名稱%NOTFOUND;	<--指定迴圈停止條件為找不到資料
+		END LOOP;
+		CLOSE CURSOR名稱;
+		
+	ex.
+		CREATE PROCEDURE PROC1(start in date, end in date)
+		IS
+			TEMP1 MEMBER%ROWTYPE;
+			CURSOR CS1 IS SELECT * FROM MEMBER WHERE CREATE_DATE BETWEEN start AND end;
+		BEGIN
+			OPEN CS1;
+			LOOP
+				FETCH CS1 INTO TEMP1;
+				EXIT WHEN CS1%NOTFOUND;
+				DBMS_OUTPUT.PUT_LINE(TEMP1.NICKNAME);
+			END LOOP;
+			CLOSE CS1;
+		END;
+	
+補充
+	1. 指定運算子為 :=
+	2. 自串串接運算子為 ||
+	3. 取得當下系統時間 : SYSDATE
+	4. LEFT / RIGHT JOIN 簡易寫法 : (+)
+	
+	
+	
+	
+	
+	
+	
+	
+	

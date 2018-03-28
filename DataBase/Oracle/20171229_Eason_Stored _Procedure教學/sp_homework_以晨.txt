@@ -1,0 +1,220 @@
+set serveroutput on;
+
+1.Hello World
+CREATE OR REPLACE PROCEDURE proc01_PrintHelloWorld
+IS
+BEGIN
+  
+  DBMS_OUTPUT.PUT_LINE('Hello World!');
+
+END;
+
+exec proc01_PrintHelloWorld;
+
+
+2. Hello World + IN Parameter
+
+CREATE OR REPLACE PROCEDURE proc02_OneINParameter(param1 IN VARCHAR2)
+IS
+BEGIN
+  
+  DBMS_OUTPUT.PUT_LINE('Hello World IN parameter ' || param1);
+
+END;
+/
+
+
+exec proc02_OneINParameter('mkyong');
+
+
+2.1
+CREATE OR REPLACE PROCEDURE proc02_OneINParameter02
+(
+param1 in date,
+param2 in VARCHAR2,
+param3 in number
+)
+IS
+BEGIN
+  
+  DBMS_OUTPUT.PUT_LINE('param1 : ' || param1);
+  DBMS_OUTPUT.PUT_LINE('param2 : '  || param2);
+  DBMS_OUTPUT.PUT_LINE('param3 : ' || param3);
+  
+END;
+
+exec proc02_OneINParameter02(sysdate,'hello world',321);
+
+3.HELLO WORLD + IF ELSE
+CREATE OR REPLACE PROCEDURE proc03_OneINELSE
+(
+param1 in date,
+param2 in VARCHAR2,
+param3 in number,
+AS_style in VARCHAR2
+)
+IS
+BEGIN
+  
+  IF AS_style = 'A' THEN
+  DBMS_OUTPUT.PUT_LINE('param1 : ' || param1);
+  ELSIF AS_style = 'B' THEN
+  DBMS_OUTPUT.PUT_LINE('param2 : '  || param2);
+  ELSE
+  DBMS_OUTPUT.PUT_LINE('param3 : ' || param3);
+  END IF;
+
+  
+END;
+
+exec proc03_OneINELSE(sysdate,'hello world',321,'C');
+
+
+3. Hello World + OUT Parameter
+CREATE OR REPLACE PROCEDURE proc03_OneOUTParameter(outParam1 OUT VARCHAR2)
+IS
+BEGIN
+  
+  outParam1 := 'Hello World OUT parameter';
+
+END;
+/
+
+DECLARE
+  outParam1 VARCHAR2(100);
+BEGIN
+  proc03_OneOUTParameter(outParam1);
+  DBMS_OUTPUT.PUT_LINE(outParam1);
+END;
+
+4. Hello World + INOUT Parameter
+CREATE OR REPLACE PROCEDURE proc04_OneINOUTParameter(genericParam IN OUT VARCHAR2)
+IS
+BEGIN
+  
+  genericParam := 'Hello World INOUT parameter ' || genericParam;
+
+END;
+/
+
+DECLARE
+  genericParam VARCHAR2(100) := 'mkyong';
+BEGIN
+  proc04_OneINOUTParameter(genericParam);
+  DBMS_OUTPUT.PUT_LINE(genericParam);
+END;
+/
+
+5. Hello World + Cursor
+
+CREATE OR REPLACE PROCEDURE proc05_CursorExample(
+ cid IN VARCHAR2)
+is
+  
+  sc_record  sc%ROWTYPE;
+
+    CURSOR sc_cursor IS 
+       select * from sc where sno=cid;  
+
+BEGIN
+
+   open sc_cursor;
+   LOOP
+        --透過 cursor 取得一筆資料並存入暫存變數
+        FETCH sc_cursor INTO sc_record;
+        
+        --若 cursor 已將資料取完，則跳出迴圈
+        EXIT WHEN sc_cursor%NOTFOUND;
+        
+          DBMS_OUTPUT.PUT_LINE('sno :' || sc_record.cno );
+          
+    END LOOP;
+    
+    --關閉 cursor
+    CLOSE sc_cursor;
+
+END proc05_CursorExample;
+/
+
+
+exec proc05_CursorExample('a01');
+
+6.新建一個sp名稱 JNF001 。   把所有資料 COPY  到 TABLE TT_JNF001
+CREATE OR REPLACE PROCEDURE JNF001(
+ jstyle IN VARCHAR2,
+ jdate IN DATE)
+is
+    CURSOR C1 IS 
+    select c.CNO,c.CNAME,c.TNO,SC.SCORE,st.SAGE,st.SNAME,st.SSEX,t.TNAME,st.SNO from COURSE c, SC,STUDENT st,TEACHER t
+    where c.TNO=t.TNO
+    and SC.CNO=c.CNO
+    and st.SNO=SC.SNO;
+    
+    C1_TEMP C1%ROWTYPE;
+   
+BEGIN
+
+   open C1;
+   LOOP
+      
+        FETCH C1 INTO C1_TEMP;
+        EXIT WHEN C1%NOTFOUND;
+        
+         INSERT INTO TT_JNF001 (sno,sname,ssex,tno,tname ,cno, cname, score, jstyle,jdate)
+         VALUES(C1_TEMP.SNO,C1_TEMP.SNAME,C1_TEMP.SSEX,C1_TEMP.TNO,C1_TEMP.TNAME,C1_TEMP.CNO,C1_TEMP.CNAME,C1_TEMP.SCORE,jstyle,jdate);
+        
+          
+    END LOOP;
+  
+    CLOSE C1;
+
+END JNF001;
+/
+exec JNF001('A',sysdate);
+/ 
+
+
+
+
+7.同上一題。一開始將TT_JNF001刪除，SC這table裡的成績分級…100-90為A 89-80為B 59(含)以下為N 寫入jstype裡
+
+
+
+8.先CURSOR 出有上課的學生 和 均，再寫一個out sp抓出學生名子
+  再寫入
+
+CREATE OR REPLACE PROCEDURE proc08_OneOUTParameter(sid in VARCHAR2,outParam1 OUT VARCHAR2)
+IS
+BEGIN
+  
+   select sname into outParam1 from student where sno=sid ;
+
+END;
+
+CREATE OR REPLACE PROCEDURE proc_OneOutParameterSelectInto
+IS
+
+outParam1 VARCHAR2(100);
+
+CURSOR C1 IS 
+   select sno,avg(score) savg from sc group by sno;
+    
+    C1_TEMP C1%ROWTYPE;
+
+BEGIN
+
+  open C1;
+   LOOP
+      
+        FETCH C1 INTO C1_TEMP;
+        EXIT WHEN C1%NOTFOUND;
+        
+        proc08_OneOUTParameter(C1_TEMP.sno,outParam1);
+        DBMS_OUTPUT.PUT_LINE('name:' ||outParam1 ||'avg ' || C1_TEMP.savg);
+          
+    END LOOP;
+  
+    CLOSE C1;
+ 
+
+END;

@@ -1,0 +1,408 @@
+¹ê§@¨BÆJ
+	0. Dynamic Web Project¡Bmybatis¡Bspring°ò¥»³]©w
+
+	1. ¥[¤JjarÀÉ
+		¤â°Ê : mybatis-spring-x.y.z.jar
+		
+		Maven
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis-spring</artifactId>
+				<version>x.y.z</version>
+			</dependency>
+			
+	2. «ü©w¸ü¤JMyBatis-Spring²ÕºAÀÉ : ¶}±ÒWEB-INF/web.xml „³ ¦b<param-value>¤º¥[¤J
+		<context-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>
+				classpath:applicationContext-core.xml, 	<--³r¸¹ª`·N
+				classpath:applicationContext-mybatis.xml
+			</param-value>
+		</context-param>
+
+	3. «Ø¥ßMyBatis-Spring²ÕºAÀÉ : ¦bresource¸ê®Æ¤U, ·s¼WapplicationContext-mybatis.xml
+		*µù : ²ÕºAÀÉºÞ²zªº¨}¦n²ßºD : §Q¥ÎSource Folder
+	
+	4. ¼¶¼gMyBatis-Spring²ÕºAÀÉ
+		4.1 ¤Þ¥Îxsd
+			<?xml version="1.0" encoding="UTF-8"?>
+			<beans xmlns="http://www.springframework.org/schema/beans"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xsi:schemaLocation="http://www.springframework.org/schema/beans
+					http://www.springframework.org/schema/beans/spring-beans-3.0.xsd ">
+
+				<description>MyBatis-Spring</description>
+			</beans>
+
+		4.2 «Å§iSqlSessionFactoryBean
+			*µù : ¤@¯ë²ßºD<settings>¸ò<typeAliases>©ñ¦bmybatis²ÕºAÀÉ¸Ì, ¨ä¾l¥þ·h¦Üspring²ÕºAÀÉ¸Ì
+		
+			¤è¦¡1 : ª½±µ¤Þ¥Îmybatis-config.xml¤ÎxxxMapper.xml
+				<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+					<property name="dataSource" ref="dataSource" />
+					<property name="configLocation" value="classpath:mybatis-config.xml" />		<--«ü©wMyBatis²ÕºAÀÉ(mybatis-config.xml). xxxMapper.java¸òxxxMapper.xml¤£¦P¦ì¸m®É¤~»Ý«ü©w
+					<property name="mapperLocations">											<--«ü©w¬M®gÀÉ¦ì¸m(xxxMapper.xml)
+						<array>
+							<value>classpath:xxx/mapper/*.xml</value>
+							<value>...</value>
+						</array>
+					</property>
+				</bean>
+
+	
+			¤è¦¡2 : ±N­ìmybatis-config.xml³]©w¼g¨ìapplicationContext-mybatis.xml¸Ì
+				<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+					<property name="dataSource" ref="dataSource" />
+					<property name="configuration">
+						<bean class="org.apache.ibatis.session.Configuration">
+							<property name="mapUnderscoreToCamelCase" value="true"/>
+							<property name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
+						</bean>
+					</property>
+					<property name="typeAliases" value="java.sql.Timestamp" />
+					<property name="typeAliasesPackage" value="sys1.model.pojo;sys2.model.pojo" />	<--¤£¥i¥Î¸U¥Î¦r¤¸
+					<property name="mapperLocations" value="classpath:mapper/*Mapper.xml" />
+				</bean>
+
+		4.3 Mapper¹ê¨Ò¤Æ
+			¤è¦¡1 : ¤@¤@«Å§i
+				<bean id="memberMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">		<--¦¹³BÃþ§O¤£¬O¥Î¦Û­qªºxxxMapper
+					<property name="mapperInterface" value="model.mapper.MemberMapper" />			<--¦Û­qªºxxxMappery¦b¦¹³B«ü©w
+					<property name="sqlSessionFactory" ref="sqlSessionFactory" />					<--¹ïÀ³¨ì¨BÆJ4.2©Ò«Å§iªºSqlSessionFactory¦WºÙ
+				</bean>
+			
+				<bean ....>
+	
+			¤è¦¡2 : ¨Ï¥ÎMapperScannerConfigurer±½´y
+				<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">				
+					<property name="basePackage" value="*.model.mapper " />							<--«ü©wMapper.javaªº®M¥ó
+					<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+				</bean>
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+µ§°O
+	Â²¤¶
+		1. «D©x¤èAPI, ¥ÑMyBatis Community¶}µo
+		2. ª©¥»»Ý¨D
+			JDK : 5+
+			
+			mybatis-spring		MyBatis			Spring
+			-------------------------------------------
+			1.0.0 / 1.0.1		3.0.1~3.0.5		3.0.0+
+			1.0.2				3.0.6			3.0.0+
+			1.1.0				3.1.0+			3.0.0+
+			
+			µù : ¥Ø«eÃ­©wª© : 1.2.2, ³Ì·sª© : 1.3.2
+
+	SqlSessionFactoryBean
+		»¡©ú : ¦bMyBatis¸Ì¨Ï¥ÎSqlSessionFactoryBuilder²£¥ÍSession, ¦Ó¦bMyBatis-Spring¸Ì«h¨Ï¥ÎSqlSessionFactoryBean, 	
+			«Å§i¤@­ÓSqlSessionFactoryBean¹ê»Ú°Ê§@¦p¤U¡K
+				SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
+				SqlSessionFactory sessionFactory = factoryBean.getObject();
+				
+		©Ê½è
+			§Ç	¦WºÙ						»¡©ú							³Æµù
+			----------------------------------------------------------------------------------------------------------------------
+			 1	dataSource					«ü©w¸ê®Æ·½ª«¥ó					¬°¥²­n³]©w
+			 2	configLocation				«ü©wmybatis²ÕºAÀÉ¦ì¸m
+			 3	mapperLocations				«ü©wmapper¬M®gÀÉ¦ì¸m
+			 4	transactionFactory			«ü©w¥æ©ö¤u¼t					¹w³]¬°SpringManagedTransactionFactory
+			 5	configurationProperties		
+			 6	sqlSessionFactoryBuilder	«ü©wSqlSession¤u¼tªº«Ø¥ßªÌ		¤@¯ë¤£«ü©w¦¹©Ê½è
+			 7	environment					
+			 8	failFast					
+			 9	plugins						«ü©wÄdºI¾¹(Interceptor)			«ü©wTypeHandler
+			10	typeHandlers				«ü©wTypeHandler					¥Î¨Ó³B²z¤£¤ä´©©Î«D¼Ð·Çªº¸ê®Æ«¬ºA
+			11	typeHandlersPackage
+			12	typeAliases					«ü©w§O¦W
+			13	typeAliasesPackage			
+			14	typeAliasesSuperType
+			15	databaseIdProvider			«ü©w¸ê®Æ®wID´£¨ÑªÌ
+			16	objectFactory				«ü©wª«¥ó²£¥Í¤u¼t				¤@¯ë¤£«ü©w¦¹©Ê½è (mybatis¥Î¦¹ª«¥ó«Ø¥ß·sªºª«¥ó¹ê¨Ò)
+			17	objectWrapperFactory		
+			18	configuration				«ü©w²ÕºAÃþ§O					°Ñ¼Æ¬°MyBatisªºConfiguration, ²Ó¸`³]©w¦bMyBatisµ§°O
+			19	cache
+	
+	²ÕºAÀÉ
+		1. ¼g¦bmybatis-config.xml¸Ìªº<environments>·|³Q"©¿²¤", spring¥u¥Î¦Û¤vªº¦Û¤vªºÀô¹Ò¬ÛÃö³]©w
+
+
+	¥æ©ö±±¨î
+		Spring Standard : ¨Ï¥ÎSpringªº¥æ©öºÞ²zªÌ
+			<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+				<property name="dataSource" ref="dataSource" />
+			</bean>
+		
+		CMT(Container Managed Transactions) : ¨Ï¥Î®e¾¹ªº¥æ©öºÞ²z
+			Step
+				1. <tx:jta-transaction-manager />
+				2.
+					<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+  						<property name="dataSource" ref="dataSource" />
+  						<property name="transactionFactory">	<--³]©w¥æ©öºÞ²z¤è¦¡
+    							<bean class="org.apache.ibatis.transaction.managed.ManagedTransactionFactory" />	<--«ü©w¬°MyBatis°ò¥»¥æ©öºÞ²z
+  						</property>  
+					</bean>
+
+		Programmatic Managed Transactions : ¦Û­q¥æ©ö±±¨î (°Ñ¾\Spring 10.6)
+			½d¨Ò
+				DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+				def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+
+				TransactionStatus status = txManager.getTransaction(def);
+				try {
+					userMapper.insertUser(user);
+				} catch (MyException ex) {
+  					txManager.rollback(status);
+  					throw ex;
+				}
+				txManager.commit(status);
+
+		*ª`·N : ·í¥æ©ö±±¨î¥æµ¹Spring«á, ¤£¥icall SqlSession.commit()¡BSqlSession.rollback()¡BSqlSession.close()µ¥¤èªk, §_«h©ß¥XUnsupportedOperationException
+
+
+	SqlSessionTemplate
+		»¡©ú : MyBatis-Springªº®Ö¤ß, ¹ê§@SqlSession¤¶­±, ¥i³Q¦@¨É¨Ï¥Î, ¥\¥Î¦p¤U
+			1. ­t³dºÞ²zSqlSession
+			2. ©I¥sSQL¤èªk
+			3. Â½Ä¶Exception
+			²Ó­z : ½T«O±q¬M®g¾¹getMapper()¶Ç¦^¤§SQL¤èªk, »P·í«eSpring¬°¬ÛÃö; ¥t¥~ºÞ²zSessionªº¥Í©R¶g´Á, ¦pcommit()¡Brollback()¡Bclose()
+			¤@¯ë¥Î³~ : ¨ú¥NMyBatis¹w³]ªºSqlSession
+
+		¥Îªk
+			<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+				<constructor-arg index="0" ref="sqlSessionFactory"/>	<--«ü©wª`¤JSqlSessionFactory
+				<constructor-arg index="1" value="BATCH"/>	<-- ¤ä«ù§å¶q¾Þ§@
+			</bean>
+
+		¸É¥R : DAOÃþ§O¯S®í¼gªk, ¨BÆJ
+			1. ¦bSpring¤¤«Å§iSqlSessionTemplate (¦p¤W)
+			2. «Ø¥ßDAO¹ê§@Ãþ§O, ex..
+				public class TestDAO {
+					private SqlSession sqlSession;
+	
+					public void setSqlSession(SqlSession sqlSession) {
+						this.sqlSession = sqlSession;
+					}
+	
+					@Override
+					public Member getMember(Integer id) {
+						return (Member) sqlSession.selectOne("model.mapper.MemberMapper.selectByKey", id);	<--«ü©w©I¥sªºSQL¤èªk¤Î°Ñ¼Æ
+					}
+	
+				}
+			3. µÑ¨ú¥XIDAO
+			4. ¦bSpring¤¤«Å§iDAOª«¥ó
+
+	¬M®g¾¹(Mapper)
+		µù
+			1. ¦pªG¬M®g¾¹(XxxMapper.java)¸ò¬M®gÀÉ(XxxMapper.xml)¦b¦P¸ô®|¤U, «hMapperFactoryBean·|¦Û°Ê¸ÑªR
+
+		µù¥U³æ­Ó¬M®g¾¹ - MapperFactoryBean
+			<bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+				<property name="mapperInterface" value="®M¥ó.XxxMapper" />
+				<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+			</bean>
+		
+			µ¥¦Pin Java..
+			@Bean
+			public SqlSessionFactory sqlSessionFactory() throws Exception {
+				SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
+				sqlSessionFactory.setDataSource(dataSource());
+				return (SqlSessionFactory) sqlSessionFactory.getObject();
+			}
+
+			@Bean
+			public UserMapper userMapper() throws Exception {
+				SqlSessionTemplate sessionTemplate = new SqlSessionTemplate(sqlSessionFactory());//¥²¶·¥ÎSqlSessionTemplate, ¤£¥i¥ÎSqlSession
+				return sessionTemplate.getMapper(UserMapper.class);
+			}
+
+		±½´y¦h­Ó¬M®g¾¹
+			¨Ï¥Î
+				¤è¦¡1 : ¨Ï¥Î¬M®g¾¹±½´y°t¸mªÌ - MapperScannerConfigurer, ¦bSpring XML¤¤«Å§i..
+					<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+						<property name="basePackage" value="¬M®g¾¹©Ò¦b®M¥ó" />	<-¥i³]¦h­Ó¸ô®|(¥Î¤À¸¹©Î³r¸¹¹j¶})
+						<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />	<-­Y­n«ü©wSqlSessionFactory®É¤~»Ý³]©w¦¹ÄÝ©Ê
+					</bean>
+
+				¤è¦¡2 : ¨Ï¥ÎMyBatis-Spring¼ÐÅÒ, ¦bSpring XML¤¤..
+					<beans ...
+						xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+						xsi:schemaLocation="...
+							http://mybatis.org/schema/mybatis-spring
+							http://mybatis.org/schema/mybatis-spring.xsd">
+
+						<mybatis:scan base-package="¬M®g¾¹©Ò¦b®M¥ó" /> <-¥i³]¦h­Ó®M¥ó(¥Î¤À¸¹©Î³r¸¹¹j¶})
+					*µù :
+						1. Multi-DataSource®É, »Ý«ü©wSqlSessionFactory©ÎSqlSessionTemplate, ex..
+							<mybatis:scan base-package="¬M®g¾¹©Ò¦b®M¥ó" factory-ref="sqlSessionFactory" />
+							©Î
+							<mybatis:scan base-package="¬M®g¾¹©Ò¦b®M¥ó" template-ref="sqlSessionTemplate" />
+
+						2. Filtering property
+							annotation : specifies an annotation to search for
+							marker-interface : specifies a parent interface to search for
+
+				¤è¦¡3 : ¨Ï¥Î@MapperScanµùÄÀ, ­YSpring³]©w¬O¥ÎJava¼¶¼g, «h¥i¦bJava¤¤¥[¤W..
+					@Configuration
+					@MapperScan("¬M®g¾¹©Ò¦b®M¥ó")
+					public class AppConfig {
+
+  						@Bean
+						public DataSource dataSource() {
+							return new EmbeddedDatabaseBuilder().addScript("schema.sql").build()
+						}
+
+						@Bean
+						public SqlSessionFactory sqlSessionFactory() throws Exception {
+							SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
+							sessionFactory.setDataSource(dataSource());
+							return sessionFactory.getObject();
+						}
+					}
+
+			¬M®g¾¹¦bSpring¸Ìªº©R¦W
+				¹w³] : ¨Ï¥ÎSpring bean¹w³]ªº¤è¦¡©R¦W, ©Ò¥H­Y¦³¤£¦P®M¥ó, ¦ý¦P¤¶­±¦Wªº¬M®g¾¹, ·|µo¥Í½Ä¬ðBeanDefinitionStoreException
+					*µù : ¹w³]ªº©R¦W¤è¦¡ex.. MemberMapper -> memberMapper
+
+				¦Û¦æ©R¦W
+					¨BÆJ1 : ¦b¬M®g¾¹¥[¤W@Component, ¨Ã¦Û­q¦WºÙ(©Î@Named, ¤]¥i¦Û­qµùÄÀ)
+						*µù
+							1. @Named : JSR¤UªºµùÄÀ
+							2. ¦Û­qµùÄÀªº½d¨Ò
+								@Retention(RetentionPolicy.RUNTIME)
+								@Target(ElementType.TYPE)
+								public @interface Mapper {
+									String value() default "";
+								}
+
+					¨BÆJ2 : Spring¤å¥ó¤¤¥[¤W..
+						<mybatis:scan base-package="¬M®g¾¹©Ò¦b®M¥ó"
+							annotation="org.springframework.stereotype.Component" />	<--«ü©w±½´yªºµùÄÀ, ­Y¨Ï¥Î@Named«h§ï¬°javax.inject.Named
+															   ­Y¨Ï¥Î¦Û­qµùÄÀ, «h§ï¬°¦Û­qµùÄÀªº¥þ¦W
+
+	Batch
+		»¡©ú : MyBatis-Spring-1.1.0«á´£¨Ñ¤T­ÓÃþ§O, ¥Î¥H«Ø¥ßSpring Batch
+		
+		¤T­ÓÃþ§O
+			1. MyBatisPagingItemReader : ¤À­¶Åª¨ú¾¹
+			2. MyBatisCursorItemReader : ´å¼ÐÅª¨ú¾¹ (´å¼Ð : Cursor)
+			3. MyBatisBatchItemWriter : 
+
+		MyBatisPagingItemReader
+			¥\¯à : ¦bSELECT¤j¶q¸ê®Æ®É°µ¤À­¶³B²z. §Q¥ÎpageSize³]©w, ¨C¦¸¥uSELECT»Ý­nªº¸ê®Æ. ­Y¦³¤wSELECT¥X, ¦ý¥¼±qReader¤¤¨ú¥Xªº¸ê®Æ, «h·|¤@ª½©ñ¦bReader(°O¾ÐÅé)¸Ì, µ¥«Ý¤U¦¸¨ú¥X
+			
+			«Ø¥ß¨BÆJ
+				1. ¼¶¼g¹ïÀ³ªºSELECT¤èªk
+					1.1 xxxMapper.xml
+						<select id="selectByReader1" resultMap="MemberMap">
+							SELECT * FROM MEMBER ORDER BY ID
+							LIMIT #{_skiprows}, #{_pagesize}		<--¥þ¤p¼gª`·N
+						</select>
+						
+					1.2 xxxMapper.java
+						List<Member> selectByReader1();//°Ñ¼Æ¤£¥Î¥[¤W_skiprows¤Î_pagesize
+	
+				2. «Å§i¤À­¶Åª¨ú¾¹
+					<bean id="reader1" class="org.mybatis.spring.batch.MyBatisPagingItemReader">
+						<property name="sqlSessionFactory" ref="sqlSessionFactory" />	<--ª`¤JSqlSessionFactory
+						<property name="queryId" value="selectByReader1" />				<--«ü©w¨BÆJ1©w¸qªºSELECT¤èªk¦WºÙ
+						<property name="pageSize" value="10" />							<--³]©w¤À­¶¤j¤p
+<!-- 					<property name="parameterValues"> -->							<--­Y¦³¨ä¥L°Ñ¼Æ(ex. WHERE±ø¥ó), «h¥t¥Î¦¹©Ê­È³]©w
+<!-- 						<map> -->													<--«¬ºA¬°Map
+<!-- 							<entry key="k1" value="v1" /> -->
+<!-- 							<entry key="k2" value="v2" /> -->
+<!-- 						</map> -->
+<!-- 					</property> -->
+					</bean>
+					
+				3. ¨Ï¥Î¤À­¶Åª¨ú¾¹
+					@Autowired
+					private MyBatisPagingItemReader<Member> reader1;		<--ª`¤J¤À­¶Åª¨ú¾¹
+				
+					@RequestMapping("readerTest1")
+					public String readerTest1(Model model) throws Exception {
+						List<Member> memberList = new ArrayList<>();
+						Member member;
+						for (int i = 0; i < reader.getPageSize(); i++) {	<--¨ú±o¤À­¶¤j¤p
+							if ((member = reader.read()) == null) {
+								reader.close();								<--¦pªG¤w¸gÅª¨ì©³¤F´N­«¸m
+								i = -1;
+							} else {
+								memberList.add(member);
+							}
+						}
+						model.addAttribute("members", memberList);
+						return "result";
+					}
+
+		MyBatisCursorItemReader
+			¥\¯à : 
+			
+			«Ø¥ß¨BÆJ
+				1. ¼¶¼g¹ïÀ³ªºSELECT¤èªk
+					1.1 xxxMapper.xml
+						<select id="selectByReader2" resultMap="MemberMap">
+							SELECT * FROM MEMBER ORDER BY ID
+							ORDER BY ID
+						</select>
+						
+					1.2 xxxMapper.java
+						List<Member> selectByReader2();
+				
+				2. «Å§i´å¼ÐÅª¨ú¾¹
+					*µù : MyBatisCursorItemReader»Ý­n¥ý°õ¦æopen¤èªk(ªì©l¤Æ)¤~¯à¨Ï¥Î
+					<bean id="reader2" class="org.mybatis.spring.batch.MyBatisCursorItemReader">	<--«Å§i´å¼ÐÅª¨ú¾¹
+						<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+						<property name="queryId" value="model.mapper.MemberMapper.selectByReader2" />
+					</bean>
+					
+					<bean id="executionContext" class="org.springframework.batch.item.ExecutionContext" />	<--«Å§iExecutionContext
+	
+					<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">	<--§Q¥ÎMethodInvokingFactoryBean, °õ¦æMyBatisCursorItemReader.open(executionContext)
+						<property name="targetObject" ref="reader2" />
+						<property name="targetMethod" value="open" />
+						<property name="arguments" ref="executionContext" />
+					</bean>
+					
+				3. ¨Ï¥Î´å¼ÐÅª¨ú¾¹
+					@Autowired
+					private MyBatisCursorItemReader<Member> reader2;
+					@Autowired
+					private ExecutionContext executionContext;
+					
+					@RequestMapping("readerTest2")
+					public String readerTest2(Model model) throws Exception {
+						List<Member> memberList = new ArrayList<>();
+						Member member;
+						if ((member = reader2.read()) == null) {
+							reader2.close();
+							reader2.open(executionContext);
+						} else {
+							memberList.add(member);
+						}
+						model.addAttribute("members", memberList);
+						return "result";
+					}
+					
+		MyBatisBatchItemWriter
+			***
+				1. SqlSessionFactory needs to be configured with a BATCH executor.
+				2. MyBatis 3.2
+				3. CompositeItemWriter 
+				*****»Ý¥ý¬ÝÀ´Spring-Batch¤~¯à¹ê§@*****
+				
+			«Å§i§å¦¸¼g¥X¾¹
+				<bean id="writer" class="org.mybatis.spring.batch.MyBatisBatchItemWriter">
+					<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+					<property name="statementId" value="updateEmployee" />
+				</bean>
+		
+		
+		
+		
+		
+		
+		
+		

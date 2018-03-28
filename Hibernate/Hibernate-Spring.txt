@@ -1,0 +1,43 @@
+使用Hibernate Framework必要設定
+	1. 組態設定
+	2. 映射設定
+
+三種設定方式
+	1. Hibernate XML寫法 (hibernate.cfg.xml、xxxBean.hbm.xml)
+	2. Spring XML寫法
+	3. Annotation
+
+建議用法
+	組態設定 : Spring XML寫法(寫在applicationContext.xml)
+	映射設定 : Hibernate XML寫法(寫在xxxBean.hbm.xml)
+
+DataSource
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="username" value="root" />
+		<property name="password" value="password" />
+		<property name="url" value="xxx" />
+	</bean>
+
+SessionFactory
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hbm2ddl.auto">update</prop>
+				<prop key="show_sql">true</prop>
+				<prop key="format_sql">true</prop>
+			</props>
+		</property>
+		<!-- 指定映射設定來源 -->
+		<property name="packagesToScan" value="model" />	<-- 方式1 : 指定pojo類別套件 (映射設定用Annotation寫法時指定)
+		<property name="mappingResources">			<-- 方式2 : 指定映射檔路徑 (映射設定用Hibernate XML寫法時指定)
+			<list>
+				<value>xxxBean.hbm.xml</value>	<-- 映射檔來源1
+				<value>yyyBean.hbm.xml</value>	<-- 映射檔來源2
+			</list>
+		</property>
+	</bean>
+
+Tan

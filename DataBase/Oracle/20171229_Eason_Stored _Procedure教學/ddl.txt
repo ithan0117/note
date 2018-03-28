@@ -1,0 +1,35 @@
+create table student( 
+sno varchar2(10) primary key, 
+sname varchar2(20), 
+sage number(2), 
+ssex varchar2(5) 
+); 
+create table teacher( 
+tno varchar2(10) primary key, 
+tname varchar2(20) 
+); 
+create table course( 
+cno varchar2(10), 
+cname varchar2(20), 
+tno varchar2(20), 
+constraint pk_course primary key (cno,tno) 
+); 
+create table sc( 
+sno varchar2(10), 
+cno varchar2(10), 
+score number(4,2), 
+constraint pk_sc primary key (sno,cno) 
+); 
+create table TT_JNF001
+(
+sno varchar2(10),
+sname varchar2(20),
+ssex varchar2(5),
+tno varchar2(10),
+tname varchar2(20),
+cno varchar2(10), 
+cname varchar2(20), 
+score number(4,2), 
+jstyle varchar2(5),
+jdate date
+);

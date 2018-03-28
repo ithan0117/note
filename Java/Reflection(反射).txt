@@ -1,0 +1,196 @@
+概念
+	Java 在真正需要使用到某個類別時才會將類別載入，並在 JVM 中以一個 java.lang.Class 的實例存在
+	，從 Class 實例開始，您可以獲得類別的許多訊息執行時期動態載入類別、檢視類別資訊、生成物件或操作生成的物件
+		*註 : "真正需要"的定義為生成該類別的物件; 透過new、Class.forName()、ClassLoader.loadClass()生成都算
+
+	流程
+		編譯 : 類別.java --> 類別.class(將Class加入至.class)
+		執行 : 使用到某類別時 --> JVM檢查對應的Class物件是否已載入 --Y--> 使用該Class物件
+									   --N--> 尋找對應的.class檔並載入 --> 使用該Class物件
+		*註 : 每個類別在JVM中只會有一個Class物件
+ 
+
+應用實例
+	IDE裡的方法提示、類別檢視器
+
+Class類別
+	說明
+		一個 java.lang.Class 物件代表了 Java 應用程式在運行時所載入的類別或介面實例，也用來表達
+			1. class
+			2. interface
+			3. enum
+			4. annotation
+			5. array
+			6. 原生型態（Primitive type）
+			7. void
+		Class 類別沒有公開的（public）建構方法，Class 物件是由 JVM 自動產生，每當一個類別被載入時，JVM 就自動為其生成一個 Class 物件。
+
+	取得方式
+		1. 物件.getClass()
+		2. 類別.class
+		*3. 基本型態的對應Class : 基本型態.int或包裝類別.TYPE ex..int.class或Integer.TYPE
+	方法
+		取得
+			取得類別全名 : String getName()
+			取得類別簡名 : String getSimpleName()
+			取得父類別 : Class<?> getSuperclass()
+			取得套件 : Package getPackage()
+			取得修飾字 : int getModifiers() : 回傳值為整數代碼, 用Modifier.toString(mod)解讀
+			取得public類別屬性 : Field[] getField()
+			取得全部類別屬性 : Field[] getDeclaredFields()
+			取得public建構子 : Constructor[] getConstructors()
+			取得全部建構子 : Constructor[] getDeclaredConstructors()
+			取得public方法 : Method[] getMethods()
+			取得全部方法 : Method[] getDeclaredMethods()
+			取得陣列元素的型態 : Class<?> getComponentType()
+		
+		判斷
+			為介面否 : boolean isInterface()
+			為基本型態否 : boolean isPrimitive()
+			為陣列否 : boolean isArray()
+			 
+	
+		其他
+			載入類別
+				Class<?> getName(String classFullName)
+				Class<?> getName(String classFullName, boolean initialize, ClassLoader loader) : initialize可用來指定載入類別時, 是否同時載入static區塊
+
+Package類別
+	取得套件名稱 : String getName()
+
+Modifier類別(靜態)
+	為抽象否 : boolean isAbstract(int mod)
+	為不可改否 : boolean isFinal(int mod)
+	為靜態否 : boolean isStatic(int mod)
+	為私有否 : boolean isPrivate(int mod)
+	為保護否 : boolean isProtected(int mod)
+	為公有否 : boolean isPublic(int mod)
+	為介面否 : boolean isInterface(int mod)
+
+Field類別
+	取得此Field在何類別/介面裡 : Class<?> getDeclaringClass()
+	取得修飾字 : int getModifiers() : 回傳值為整數代碼, 用Modifier.toString(mod)解讀
+	取得屬性的型態(Class<?>) : Class<?> getType()
+	取得屬性的型態(Type) : Type getGenericType()
+	取得屬性名 : String getName()
+	取得屬性值 : Object get(Objec obj)
+	取得Field的完整描述 : String toGenericString()
+	
+	
+
+Constructor類別
+	取得此Field在何類別/介面裡 : Class<?> getDeclaringClass()
+	取得修飾字 : int getModifiers() : 回傳值為整數代碼, 用Modifier.toString(mod)解讀
+	取得建構子名稱 : String getName()
+	取得建構子參數型態(Type[]) : Type[] getGenericParameterTypes()
+	取得建構子參數型態(Class[]) : Class[] getParameterTypes()
+
+	
+
+Method類別
+	取得Method物件
+		Method[] clazz.getMethods()
+		Method[] clazz.getDeclaredMethods()
+		Method clazz.getMethod(String methodName, Class... paramTypes) : 只能取得public方法
+		Method clazz.getDeclaredMethod(String methodName, Class... paramTypes) : 取得全部方法
+		*註 : private方法需呼叫method.setAccessible(true), 才能存取
+
+	取得此Field在何類別/介面裡 : Class<?> getDeclaringClass()
+	取得修飾字 : int getModifiers() : 回傳值為整數代碼, 用Modifier.toString(mod)解讀
+	取得返回型態 : Class<?> getReturnType()
+	取得方法名稱 : String getName()
+	取得參數型態 : Class<?>[] getParameterTypes()
+
+	呼叫對應的方法 : Object invoke(Object instance, Object... args) : 回傳值為對應的方法之回傳值
+	設定可存取否 : void method.setAccessible(true)
+
+
+Array類別(靜態)
+	取得
+		取得值 : Object get(Object array, int index)
+		取得基本型態之值 : xxx getXxx(Object array, int index)
+		取得陣列長度 : int getLength(Object array)
+		
+	設定
+		設定值 : void set(Object array, int index, Object value)
+		設定基本型態之值 : void setXxx(Object array, int index, xxx value)
+
+	建立物件
+		建立物件(指定長度) : Object newInstance(Class<?> componentType, int length)
+		建立物件(指定維度) : Object newInstance(Class<?> componentType, int... dimensions)
+	
+
+類別載入器
+	說明 : Java 在需要使用類別的時候，才會將類別載入，Java 的類別載入是由類別載入器（Class loader）來達到的。
+	Java啟動流程 : (cmd) java xxx --> [jre目錄]\bin\client\jvm.dll --> 啟動JVM並初始化 --> 產生Bootstrap Loader
+			--> Bootstrap Loader載入Extended Loader, 並設定Extended Loader的parent為Bootstrap Loader
+			--> Bootstrap Loader載入System Loader, 並設定Extended Loader的parent為Extended Loader
+			--> 載入xxx.class
+	Loader載入流程
+		Bootstrap Loader→Extended Loader→System Loader
+		*註 : 三個Loader指定的目錄下若有相同的類別, 則依上順序尋找載入
+
+	三個Loader
+		1. Bootstrap Loader : 由C撰寫而成; 載入系統參數(System.getProperty("sun.boot.class.path"))指定位置下的類別, 預設是JRE classes下的.class、lib下的.jar
+			*註 : 因為Bootstrap Loader是由C撰寫, 所以在Java裡取不到對應的Loader物件, 只會回傳null
+		2. Extended Loader : 由Java撰寫而成, 對應sun.misc.Launcher$ExtClassLoader; 載入系統參數(System.getProperty("java.ext.dirs"))指定位置下的類別, 預設是[JRE目錄]\lib\ext\classes的.class、lib\ext下的.jar
+		3. System Loader : 由Java撰寫而成, 對應sun.misc. Launcher$AppClassLoader; 載入系統參數(System.getProperty("java.class.path"))指定位置下的類別, 即[專案目錄]\bin下的.class; cmd下可用 -cp覆蓋原來的classpath
+		*註 : 在JVM啟動後, 無法改變三個Loader掃描的路徑
+
+ClassLoader類別
+	*註 : 用載入器載入類別時, 不會執行靜態區塊
+	取得載入器
+		取得某類別的載入器 : 類別名.class.getClassLoader()
+		取得當前載入器 : Thread.currentThread().getContextClassLoader()
+
+	子類別
+		URLClassLoader
+		ExtClassLoader : Extended Loader在Java裡的對應類別, 為URLClassLoader的子類別
+		AppClassLoader : System Loader在Java裡的對應類別, 為URLClassLoader的子類別
+
+	自訂載入器(用URLClassLoader)
+		URLClassLoader loader = new URLClassLoader(new URL[]{new URL("file:/檔案路徑")})
+		*註
+			1. 預設Parent Loader為AppClassLoader
+			2. 若多個自訂的Loader掃描不同的路徑, 而這些路徑下都有某個相同的類別, 且Parent Loader指定的路徑下無此類別, 則此類別會經由不同Loader載入多次
+
+
+Proxy類別(靜態)
+	實作代理步驟
+		1. 自訂一類別(被代理的類別)
+		2. 從步驟1類別萃取出介面
+		3. 自訂Handler類別, 實作InvocationHandler介面
+			3.1 宣告一屬性 : 被代理物件
+			3.2 建立一bind方法, 指定被代理物件, 並回傳代理物件
+			3.3 實作invoke()方法
+			ex..
+				class LogHandler implements InvocationHandler {
+					private Object target;//3.1
+
+					public Object bind(Object target) {//3.2
+						this.target = target;
+						Class clazz = target.getClass();
+						return Proxy.newProxyInstance(clazz.getClassLoader(), clazz.getInterfaces(), this);
+					}
+	
+					@Override
+					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {//3.3
+						System.out.println(method.getName() + " start!!");
+						Object result = method.invoke(target, args);
+						System.out.println(method.getName() + " end!!");
+						return result;
+					}
+				}
+		4. 使用代理者執行方法, ex..
+			public static void main(String[] args) {
+				LogHandler handler = new LogHandler();
+				Target target = new Target();
+				ITarget iTarget = (ITarget) handler.bind(target);
+				iTarget.show("hey!!");
+			}
+
+	方法
+		取得InvacationHandler : InvocationHandler getInvocationHandler(Object proxy)
+		取得代理物件的Class實例 : Class<?> getProxyClass(ClassLoader loader, Class<?>... interfaces)
+		是否為代理者物件 : boolean isProxyClass(Class<?> c1azz)
+		建立物件代理者物件 : Object newProxyInstance(ClassLoader loader, Class<?>[] interfaces, InvocationHandler handler)

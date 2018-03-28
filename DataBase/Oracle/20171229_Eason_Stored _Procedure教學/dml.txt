@@ -1,0 +1,41 @@
+
+insert into student values ('a01','張三',23,'男'); 
+insert into student values ('a02','李四',23,'男'); 
+insert into student values ('a03','吳鵬',25,'男'); 
+insert into student values ('a04','琴沁',20,'女'); 
+insert into student values ('a05','王麗',20,'女'); 
+insert into student values ('a06','李波',21,'男'); 
+insert into student values ('a07','劉玉',21,'男'); 
+insert into student values ('a08','蕭蓉',21,'女'); 
+insert into student values ('a09','陳小小',23,'女'); 
+insert into student values ('a10','陳美',22,'女'); 
+commit; 
+
+insert into teacher values ('t001', '劉明'); 
+insert into teacher values ('t002', '陳彥'); 
+insert into teacher values ('t003', '胡明星'); 
+commit; 
+
+
+insert into course values ('c001','J2SE','t002'); 
+insert into course values ('c002','Java Web','t002'); 
+insert into course values ('c003','SSH','t001'); 
+insert into course values ('c004','Oracle','t001'); 
+insert into course values ('c005','SQL SERVER 2005','t003'); 
+insert into course values ('c006','C#','t003'); 
+insert into course values ('c007','JavaScript','t002'); 
+insert into course values ('c008','DIV+CSS','t001'); 
+insert into course values ('c009','PHP','t003'); 
+insert into course values ('c010','EJB3.0','t002'); 
+commit; 
+
+
+insert into sc values ('a01','c001',78.9); 
+insert into sc values ('a02','c001',80.9); 
+insert into sc values ('a03','c001',81.9); 
+insert into sc values ('a04','c001',60.9); 
+insert into sc values ('a01','c002',82.9); 
+insert into sc values ('a02','c002',72.9); 
+insert into sc values ('a03','c002',81.9); 
+insert into sc values ('a01','c003','59'); 
+commit; 

@@ -1,0 +1,329 @@
+MS SQL Server資料庫檔案
+	*註 : 目錄 = C:\Program Files\Microsoft SQL Server\MSSQL13.SQLEXPRESS\MSSQL\DATA
+	
+	檔案			副檔名		數量/DB		說明															備註
+	---------------------------------------------------------------------------------------------------------------------
+	主要資料檔		.mdf		1			資料庫的起點, 並指到資料庫中的其他檔案, 記錄所有檔案的位置		master資料庫也存有相同的資料
+	次要資料檔		.ndf		0~n			由主要資料檔以外的所有資料檔所組成
+	記錄檔			.ldf		1~n			保存可用來復原資料庫的所有記錄資訊
+
+DDL
+	說明 : Data Definition Language, 資料定義語言
+	Create：建立資料庫的物件
+	Alter：變更資料庫的物件
+	Drop：刪除資料庫的物件
+	
+DML
+	說明 : Data Manipulation Language, 資料操作語言
+	Insert：新增資料到 Table 中
+	Update：更改 Table 中的資料
+	Delete：刪除 Table 中的資料
+
+DQL
+	說明 : Data Query Language, 資料查詢語言
+	Select：選取資料庫中的資料
+		執行順序
+			1. FROM
+			2. WHERE
+			3. GROUP BY
+			4. HAVING
+			5. SELECT
+			6. DISTINCT
+			7. UNION
+			8. ORDER BY
+			
+	MS. SQL Server
+		TOP : 限制筆數, 順序在ORDER BY後. 另可用SET @@ROWCOUNT 整數 來設定, 整數設為0則代表不限制
+		FOR : https://docs.microsoft.com/zh-tw/sql/t-sql/queries/select-for-clause-transact-sql
+		OVER (PARTITION BY 欄位名, ORDER BY 欄位名) : 資料分割和排序
+			ex.. 依督導區分割(PARENT_UNIT_CODE), 依UNIT_CODE排序, 編各分割區內編號
+				SELECT
+					PARENT_UNIT_CODE,
+					ROW_NUMBER()
+						OVER (PARTITION BY PARENT_UNIT_CODE ORDER BY UNIT_CODE),
+					UNIT_CODE,	
+					UNIT_NAME
+				FROM CHANNEL_ORG
+				WHERE STATUS = 1
+					AND OFFICE_LEVEL = 2
+					AND BUSINES_CODE = 'STD'
+		WITH
+			說明 : 指定稱為通用資料表運算式 (CTE) 的暫存具名結果集, 應用上同子查詢
+				*註 : CTE(Common Table Expression)通用資料表運算式, 即一段select敘述
+			語法
+				WITH CTE名稱1(欄位別名1, 欄位別名2, ...) AS (
+					SELECT 欄位名1, 欄位名2, ...
+					FROM ...
+					...
+				),
+				CTE名稱2(...) AS (
+					...
+				)
+				SELECT CTE名稱1.欄位別名1, CTE名稱1.欄位別名2, CTE名稱2.欄位別名1, CTE名稱2.欄位別名2
+				FROM CTE名稱1 LEFT JOIN CTE名稱2 ON ...
+				
+				*註
+					1. 可一次定義多個CTE, 用逗號分開
+					2. 欄位別名依順序對應AS區塊內SELECT的欄位名, 所以個數一定要一樣
+					
+			範例 : 算出人均保單筆數
+				WITH cts1(REGISTER_CODE, AMOUNT) AS (
+					SELECT AGENT_REGISTER, COUNT(*)
+					FROM POLAGENT
+					WHERE AGENT_REGISTER IS NOT NULL
+						AND AGENT_REGISTER != ''
+					GROUP BY AGENT_REGISTER)
+				SELECT * FROM cts1
+					
+DCL
+	說明 : Data Control Language, 資料控制語言. 處理權限及安全設定
+	Grant：賦予使用者使用物件的權限
+	Revoke：取消使用者使用物件的權限
+	Commit：Transaction 正常作業完成
+	Rollback：Transaction 作業異常, 異動的資料回復到 Transaction 開始的狀態
+	
+資料型態
+	字串
+		*註
+			var : 長度可變動, 所以會額外花2Byte儲存地址
+			n : 支援萬國編碼(UNICODE UCS-2), 一字元占2Byte
+		效能 : (nchar, char) > (nvarchar, varchar) (因為會先去讀地址)
+		儲存空間
+			DataType	Byte
+			----------------------
+			char(x)		x
+			varchar(x)	x + 2
+			nchar(x)	x * 2
+			nvarchar(x)	x * 2 + 2
+		選擇方式
+			var : 長度可變否?
+			n : 有無英數以外字元?
+		
+			var		n |	type	
+			----------|---------
+			0		0 |	char
+			0		1 |	nchar
+			1		0 |	varchar
+			1		1 |	nvarchar
+				
+	
+Function
+	*註 : T-SQL有自動轉型態機制
+
+	字串函數
+		語法					說明									備註
+		-----------------------------------------------------------------------------------------
+		len(字串)				傳回字串運算式的字元數目(非位元數)		空白放在後面不會被計算到
+		lower(字串)				將字母轉小寫後回傳
+		upper(字串)				將字母轉大寫後回傳
+		ltrim(字串)				去除字串運算式前面的連續空白
+		rtrim(字串)				去除字串運算式後面的連續空白
+		reverse(字串)			反轉排列字串運算式後回傳
+	
+	數學函數
+		語法					說明									備註
+		-----------------------------------------------------------------------------------------
+		abs(數字)				絕對值
+		ceiling(數字)			天花板
+		floor(數字)				地板
+		round(數字, 小數位數)	四捨五入
+		
+	日期時間函數
+		語法					說明									備註
+		-----------------------------------------------------------------------------------------
+		day(日期)				傳回指定日期的日數為何
+		month(日期)				傳回指定日期的月份為何
+		year(日期)				傳回指定日期的年份為何
+		getdate()				傳回目前的系統日期與時間
+		
+	聚合函數
+		語法					說明									備註
+		------------------------------------------------------------------------------------------------
+		count(欄位or表示式)		筆數									若參數為某欄位, 則不包含Null筆數
+																		select count(*) from t1 where c1 is null
+																		等同select count(c1) from t1
+		sum(欄位or表示式)		總和
+		avg(欄位or表示式)		平均
+		min(欄位or表示式)		最小值
+		max(欄位or表示式)		最大值
+		
+	系統資訊
+		1.	伺服器資訊
+			語法 : SERVERPROPERTY('屬性名稱')
+			說明 : 傳回有關伺服器執行個體的屬性資訊
+			參數 : https://docs.microsoft.com/zh-tw/sql/t-sql/functions/serverproperty-transact-sql
+		
+		2. 資料庫資訊
+			語法 : DATABASEPROPERTYEX('資料庫名稱', '屬性名稱')
+			說明 : 傳回指定之資料庫選項的目前設定，或指定之資料庫的屬性
+			參數 : https://technet.microsoft.com/zh-tw/library/ms186823(v=sql.105).aspx
+				
+		
+T-SQL
+	註解
+		1. --
+		2. /* */
+	
+	診斷
+		CREATE DIAGNOSTICS SESSION???
+		
+	指令接續
+		\
+		EX.
+			SELECT 'ABC'
+			等同
+			SELECT 'AB\
+			C'
+	
+	GO
+		1. 斷點 : 將兩段敘述分開
+		2. 重複 : GO n, n為正整數
+			EX.
+				SELECT * FROM MEMBER
+				GO 10
+				--SELECT敘述會被重複執行10次
+	
+	流程控制
+		BEGIN...END : 區塊
+		
+	游標(Cursor)
+		語法
+			DECLARE 游標名 CURSOR FOR SELECT敘述;
+			OPEN 游標名;
+			FETCH NEXT FROM 游標名;
+			WHILE @@FETCH_STATUS = 0 BEGIN	--FETCH狀態
+				//	some sql here..
+				
+				FETCH NEXT FROM 游標名;
+			END
+			CLOSE 游標名;		--關閉游標
+			DEALLOCATE 游標名;	--移除游標參考
+			
+		FETCH狀態
+
+			@@FETCH_STATUS		描述
+			-----------------------------------------------------
+				 0				FETCH敘述成功
+				-1				FETCH敘述失敗, 或已超出SELECT結果集
+				-2				遺漏提取的資料列
+				-9				資料取出問題
+			
+		範例1 : 每次fetch出之資料存入變數
+			DECLARE cs1 CURSOR FOR SELECT ODS_AGENT_ID FROM AGENT
+			DECLARE @temp int;	--此變數用來暫存SELECT出的資料
+			OPEN cs1;
+			FETCH NEXT FROM cs1 INTO @temp;
+			WHILE @@FETCH_STATUS = 0 BEGIN
+				PRINT @temp;
+				FETCH NEXT FROM cs1 INTO @temp;
+			END
+			CLOSE cs1;
+			DEALLOCATE cs1;
+			
+		範例2 : 每次fetch出之資料藉由變數, 再存至TABLE
+			DECLARE cs1 CURSOR FOR SELECT SEC_NUM, SALES_NAME FROM AGENT;
+			DECLARE @temp TABLE(REGISTER_CODE varchar(50), AGENT_NAME varchar(50));
+			DECLARE @registerCode varchar(50), @agentName varchar(50);
+			OPEN cs1;
+			FETCH NEXT FROM CS1 INTO @registerCode, @agentName;
+			WHILE @@FETCH_STATUS = 0 BEGIN
+				INSERT @temp VALUES(@registerCode, @agentName);
+				FETCH NEXT FROM CS1 INTO @registerCode, @agentName;
+			END
+			CLOSE cs1;
+			DEALLOCATE cs1;
+		
+交易控制
+	1. 設定交易隔離等級 : SET TRANSACTION ISOLATION LEVEL 隔離等級參數
+		隔離等級參數
+			1.1. READ UNCOMMITTED
+				限制程度 : 低
+				可能問題 : 中途讀取(Dirty Read)
+				說明 : 允許讀取其他交易已修改但未commit的資料
+				備註 : 效果等同select .. with NOLOCK
+			1.2. READ COMMITTED
+				限制程度 : ??
+				可能問題 : 不可重複的讀取(nonrepeatable reads)或虛設項目資料(Phantom Read)
+				說明 : 不允許讀取其他交易已修改但未commit的資料, 但目前交易內個別陳述式之間的其他交易可以變更資料
+				備註 : 此隔離等級會因READ_COMMITTED_SNAPSHOT設定而不同
+			1.3. REPEATABLE READ
+				限制程度 : 中
+				可能問題 : 虛設項目資料(Phantom Read)
+				說明 : 不允許讀取其他交易已修改而未commit的資料, 且在目前交易完成之前,任何其他交易都不能修改目前交易已讀取的資料
+			1.4. SNAPSHOT
+				限制程度 : 高
+				可能問題 : 
+				說明 : 只能辨識交易開始之"前"所認可的資料修改, 看不到其他交易在目前交易開始之後所進行的資料修改
+				備註 : 必須先設ALLOW_SNAPSHOT_ISOLATION為ON, 才能啟動使用 SNAPSHOT 隔離等級的交易
+			1.5. SERIALIZABLE
+				限制程度 : 極高
+				可能問題 : 
+				說明
+					1. 不允許讀取其他交易已修改而未commit的資料
+					2. 目前交易完成前, 其他交易不能修改目前交易已讀取的資料
+					3. 目前交易完成前, 其他交易所插入的資料之鍵值不能在目前交易所讀取的鍵值範圍中
+		
+	2. 交易
+		BEGIN TRAN[SACTION] [交易名稱];
+			...
+		COMMIT TRAN[SACTION] [交易名稱];
+		ROLLBACK TRAN[SACTION] [交易名稱 | 儲存點名稱];
+		
+	3. 設定儲存點 : SAVE TRAN[SACTION] 儲存點名稱;
+	
+	範例 : 連續插入兩筆資料, 若其中一INSERT有錯誤, 就ROLLBACK
+		SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+		BEGIN TRY
+			BEGIN TRAN tx1
+				SAVE TRAN p1;
+				INSERT _$POLMAIN(POLMAIN_ID) VALUES(88888888);
+				INSERT _$POLMAIN(POLMAIN_ID) VALUES(99999999);
+			COMMIT TRAN tx1
+		END TRY
+		BEGIN CATCH
+			PRINT(ERROR_MESSAGE());
+			--ROLLBACK TRAN tx1;
+			ROLLBACK TRAN p1;
+		END CATCH
+		--查看結果
+		SELECT * FROM _$POLMAIN WHERE POLMAIN_ID IN(88888888, 99999999
+		--將交易隔離等級設為預設(READ COMMITTED)
+		SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+-----------------------------------------------------------------------------
+雜
+	SET NOCOUNT ON : 不顯示"n rows affected"訊息, 增加效率, 預設為OFF
+	SQL_VARIANT_PROPERTY(變數or欄位, 'BaseType') : 取得資料型態
+	
+	SSMS查所有系統資料型態 : 某資料庫 -> 可程式性 -> 類型 -> 系統資料類型
+	
+	查DB是否存在 : select DB_ID('資料庫名稱'), 不存在會回傳null
+	
+	#temp vs @temp 
+	
+		#temp
+			簡述 : 區域性的暫存資料表(Local)
+			宣告語法 : 免宣告
+			存放位置 : 硬碟(系統資料庫 -> tempdb -> 暫存資料表 -> #temp)
+			權限 : 只有建立者可以使用, 其他使用者能"看到", 但無法存取
+			釋放時機 : 建立者的連線中斷時. 另可手動用DROP TABLE #temp釋放
+			備註
+				SELECT .. INTO #temp FROM .. : 會先CREATE TABLE再INSERT
+				INSERT #temp SELECT .. FROM .. : 必須再此行前先建#temp, 才能INSERT
+			
+		@temp
+			簡述 : 
+			宣告語法 : DECLARE @temp TABLE(欄位名1 型態1, 欄位名2 型態2, ...);
+			存放位置 : 記憶體
+			權限 : 只有建立者可以使用
+			釋放時機 : 函數/預存程序/一段sql script跑完結束後即釋放
+	
+	SSMS
+		交易逾時設定 : 工具 -> 選項 -> 設計師 -> 資料表和資料庫設計工具 -> 交易逾時設定值
+	
+-----------------------------------------------------------------------------
+未看懂
+	ROWS BETWEEN CURRENT ROW AND 1 FOLLOWING
+	OPTION
+	EXEC用法
+	CREATE DIAGNOSTICS SESSION???
+	

@@ -1,0 +1,247 @@
+註
+	1. Hibernate的關聯觀念即資料庫中的FK
+	2. Hibernate有auto-mapping機制, 規則為性質名稱與COLUMN名稱相同, 但不區分大小寫
+
+方向種類
+	單向 : 只有其中一方有儲存另一方的物件參考, 即只能由一方看到另一方
+	雙向 : 雙方都儲存有對方的物件參考
+
+關聯種類
+	一對一、一對多、多對一、多對多
+
+註釋
+	@Entity : 宣告此類別為entity類別
+	@Table(name = "表格名") : 指定此entity類別主要映射TABLE
+	@Column(name = "欄位名") : 指定此性質映射COLUMN (另有許多細節設定)
+	@Id : 指定此性質為Primary Key
+	@GeneratedValue(strategy = GenerationType.產生策略種類) : Primary Key 值的產生策略
+	@GenericGenerator(name = "???", strategy = "", parameters = {@Parameter(name = "property", value = "性質名")})
+	@OneToOne(mappedBy = "關聯類別內的性質", cascade = CascadeType.連動種類)
+	@JoinColumn(name = "關聯欄位名")
+	@PrimaryKeyJoinColumn
+
+前置作業
+	step1. 在類別前加上 : @Entiy、@Table
+		ex.
+			@Entity
+			@Table(name = "MEMBER")
+			pulic class MemberBean {
+
+	step2. 在Primary Key setter/getter前加上 : @Id、@GeneratedValue、@Column
+		ex.
+			@Id
+			@GeneratedValue(strategy = GenerationType.IDENTITY)
+			@Column(name = "ID")
+			public Integer getId() {
+				...
+			}
+			
+			public void setId(Integer id) {
+				..
+			}
+
+	step3. 在非Primary Key setter/getter前加上 : @Column
+		ex.
+			@Column(name = "ACCOUNT")
+			pulibc String getAccocunt() {
+				...
+			}
+
+			public void setAccount(String account) {
+				...
+			}
+
+一對一
+	單向
+		step1. 在A類別裡, 加上一關聯屬性和性質, 型態為B類別
+			ex.
+				...
+				public class ArticleBean {
+					...
+					private MemberBean memberBean;
+
+					...
+
+					public MemberBean getMemberBean() {
+						return memberBean;
+					}
+
+					public void setMemberBean(MemberBean memberBean) {
+						this.memberBean = memberBean;
+					}
+
+		step2. 在step1的類別, 關聯setter/getter前加上 : @OneToOne、@JoinColumn
+			ex.
+				@OneToOne
+				@JoinColumn(name = "M_ID", insertable = false, updatable = false)
+				public MemberBean getMemberBean() {
+					...
+				}
+
+				public void setMemberBean(MemberBean memberBean) {
+					...
+				}
+
+	雙向
+		step0. 完成一對一單向步驟
+		step1. 在B類別裡, 加上一關聯屬性和性質, 型態為A類別
+			ex.
+				...
+				public class MemberBean {
+					...
+					private ArticleBean articleBean;
+
+					...
+					public ArticleBean getAricleBean() {
+						return articleBean;
+					}
+
+					public void setArticleBean(ArticleBean articleBean) {
+						this.articleBean = articleBean;
+					}
+
+		step2. 在step1的類別, 關聯setter/getter前加上 : @OneToOne(mappedBy = "A類別裡面, 關聯性質名(B類別型態)")
+			ex.
+				@OneToOne(mappedBy = "memberBean")
+				public ArticleBean getArticleBean() {
+					...
+				}
+
+				public void setArticleBean(ArticleBean articleBean) {
+					...
+				}
+
+	註
+		1. 只要有一方有外鍵即可
+		2. @JoinColumn可換成@PrimaryKeyJoinColumn, 表示本類別對應之表格的PK同時也是FK, 此時本類別中的PK生成策略需改成..
+			@GeneratedValue(generator = "gen")
+			@GenericGenerator(name = "gen", strategy = "foreign",
+				parameters = {@Parameter(name = "property", value = "本類別內關聯性質名")}
+			)
+
+一對多
+	*註
+		A類別 : 多方(ArticleBean)
+		B類別 : 單方(MemberBean)
+	單向
+		step1. 在B類別裡, 加上一關聯屬性和性質, 型態為List/Set of A類別
+			ex.
+				...
+				public class MemberBean {
+					...
+					private List<AriticleBean> ariticleList;
+
+					...
+					public List<ArticleBean> getArticleList() {
+						return articleList;
+					}
+
+					public void set ArticleList(List<ArticleBean> articleList) {
+						this.articleList = articleList;
+					}
+
+		step2. 	在step1的類別, 關聯setter/getter前加上 : @OneToMany、@JoinColumn(name = "A表格之關聯欄位", referencedColumnName = "B表格之關聯欄位")
+			ex.
+				@OneToMany//如果希望INSERT、UPDATE時, 同時改變兩表格內容可加上@OneToMany(cascade = CascadeType.ALL)
+				@JoinColumn(name = "M_ID", referencedColumnName = "ID")//意義等同sql script的JOIN ... ON A.M_ID = B.ID
+				public List<ArticleBean> getArticleList() {
+					return articleList;
+				{
+
+				public void setArticleList(List<ArticleBean> articleList) {
+					this.articleList = articleList;
+				}
+
+	雙向
+		step0. 完成單向一對多步驟
+		step1. 在A類別裡, 加上一關聯屬性和性質, 型態為B類別
+			ex.
+				...
+				public class AricleBean {
+					...
+					private MemberBean memberBean;
+
+					...
+					public MemberBean getMemberBean() {
+						return memberBean;
+					}
+
+					public void setMemberBean(MemberBean memberBean) {
+						this.memberBean = memberBean;
+					}
+
+		step2. 在step1的類別, 關聯setter/getter前加上 : @ManyToOne、@JoinColumn(name = "本類別關聯欄位", insertable = false, updatable = false)
+			ex.
+				@ManyToOne
+				@JoinColumn(name = "M_ID", insertable = false, updatable = false)
+				public MemberBean getMemberBean() {
+					return memberBean;
+				}
+
+				public void setMemberBean(MemberBean memberBean) {
+					this.memberBean = memberBean;
+				}
+
+多對一
+	單向
+		step1. 在A類別裡, 加上一關聯屬性和性質, 型態為B類別
+			ex.
+				...
+				public class AricleBean {
+					...
+					private MemberBean memberBean;
+
+					...
+					public MemberBean getMemberBean() {
+						return memberBean;
+					}
+
+					public void setMemberBean(MemberBean memberBean) {
+						this.memberBean = memberBean;
+					}
+
+		step2. 在step1的類別, 關聯setter/getter前加上 : @ManyToOne、@JoinColumn(name = "本類別關聯欄位", insertable = false, updatable = false)
+			ex.
+				@ManyToOne//如果希望INSERT、UPDATE時, 同時改變兩表格內容可加上@ManyToOne(cascade = CascadeType.ALL)
+				@JoinColumn(name = "M_ID", insertable = false, updatable = false)
+				public MemberBean getMemberBean() {
+					return memberBean;
+				}
+
+				public void setMemberBean(MemberBean memberBean) {
+					this.memberBean = memberBean;
+				}
+
+	雙向
+		step0. 完成單向一對多步驟
+		step1. 在B類別裡, 加上一關聯屬性和性質, 型態為List/Set of A類別
+			ex.
+				...
+				public class MemberBean {
+					...
+					private List<AriticleBean> ariticleList;
+
+					...
+					public List<ArticleBean> getArticleList() {
+						return articleList;
+					}
+
+					public void set ArticleList(List<ArticleBean> articleList) {
+						this.articleList = articleList;
+					}
+
+		step2. 	在step1的類別, 關聯setter/getter前加上 : @OneToMany、@JoinColumn(name = "A表格之關聯欄位", referencedColumnName = "B表格之關聯欄位")
+			ex.
+				@OneToMany//如果希望INSERT、UPDATE時, 同時改變兩表格內容可加上@OneToMany(cascade = CascadeType.ALL)
+				@JoinColumn(name = "M_ID", referencedColumnName = "ID")//意義等同sql script的JOIN ... ON A.M_ID = B.ID
+				public List<ArticleBean> getArticleList() {
+					return articleList;
+				{
+
+				public void setArticleList(List<ArticleBean> articleList) {
+					this.articleList = articleList;
+				}
+
+
+
+

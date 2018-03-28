@@ -1,0 +1,962 @@
+一. 開始使用Quartz框架
+	SchedulerFactory
+		1. 可掛在JNDI上, 亦可直接new成物件使用
+		
+	Scheduler
+		2. new後即能啟動, 等待執行和關閉
+		3. 一旦執行了shutdown()方法(關閉)就不會再啟動
+		4. 觸發器再調度器未啟動或是終止狀態時, 都不會被觸發
+		5. 簡單範例
+			SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+			Scheduler scheduler = schedulerFactory.getScheduler();
+			//Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+			scheduler.start();
+			
+			JobDetail job = JobBuilder.newJob(MyJob.class)
+				.withIdentity("job1", "group1")
+				.build();
+				
+			Trigger trigger = TriggerBuilder.newTrigger()
+				.withIdentity("trigger1", "group1")
+				.startNow()
+				.withSchedule(SimpleScheduleBuilder.simpleSchedule()
+					.withIntervalInSeconds(1000)
+					.repeatForever())
+				.build();
+				
+			scheduler.scheduleJob(job, trigger);	
+
+
+二.	Quartz API, JobDetail, Trigger簡介
+				
+	Quartz API
+	
+		名稱				角色				用途							備註
+		---------------------------------------------------------------------------------------------------------------------------------------
+		Job					工作介面			所有工作類別皆需實作此介面		並將欲執行工作內容寫在execute()內
+		JobFactory			工作工廠			產生工作						定義工作實例化時, 初始化的過程
+		JobDetail			工作任務介面		宣告工作類別的實例				也"只能"將工作類別實例化
+		JobBuilder			工作任務建立器		建立及設定工作任務實例
+		Trigger				觸發器介面			觸發工作任務					可設定工作在調度器上的執行的細節
+		TriggerBuilder		觸發器建立器		建立及設定觸發器實例
+		ScheduleBuilder		調度表建立器		設定觸發器細節
+		Scheduler			調度器介面			調度工作任務及觸發器			可加入多個工作, 一旦被停止後, 除非重新實例化, 否則無法重新啟動
+		SchedulerFactory	調度器工廠			產生調度器						有時習慣掛在JNDI上	
+				
+	Scheduler的生命週期 : SchedulerFactory產生 -> 加入/刪除/查詢 Job或Trigger -> 其他Scheduler相關操作(ex. 中止) -> shutdown()
+		備註
+			1. start()前不會觸發任何一個觸發器去執行工作任務
+			2. 當加入Job物件時, 會在自訂的工作程式中建立JobDetail物件
+			
+	DateBuilder : 許多簡易的方法建立Date物件
+
+	Trigger
+		1. 當被觸發那一刻, Trigger的第一個Thread會呼叫Job的execute()
+		2. JobExecutionContext參數為執行當下環境細節, ex. 相關的Scheduler、Trigger、JobDetail及其他訊息
+		3. 用來觸發Job物件的執行
+		SimpleTrigger
+			1. 適用於一次性工作任務執行, 即在指定的時間區間內只執行一次工作任務; 或是指定時間多次觸發工作任務, 每次有固定的間隔時間
+		CronTrigger
+			1. 日曆時間表的觸發, ex. 每周五下午、每月10號 10:15
+		
+	JobDetail
+		1. 為Job物件提供許多細節設定屬性, 及JobDataMap
+		
+	JobDataMap
+		1. 儲存特定Job物件的狀態資料
+		2. 可當Trigger和Job傳遞資料的媒介
+
+	其他
+		1. 有些Batch框架並沒有區分Job和Trigger, 意義上像是將Job和Trigger結合
+		2. Job和Trigger分開的好處 : Job和Trigger成多對多關係, 通用性佳; 另可對Job動態更換Trigger(不需重新實例化Job)
+	
+	Identities
+		1. Job和Trigger被加入至Scheduler時的識別名稱
+		2. 可群組化管理(group)
+		3. name + group必須唯一
+		
+三. 關於更多Job和JobDetail
+	Job
+		1. 將Job指定給JobDetail, 再將JobDetail指定給Scheduler, Scheduler就會知道要執行的Job類別
+		2. 執行工作, 執行execute()前, 會先產生一個Job物件; 執行結束後該物件會被釋放, 然後帶GC機制回收
+		3. 因為第2點的過程, Job類別必須有預設建構子(使用預設的JobFactory(Builder??)時)	
+	
+	JobDetail
+		1. JobDetail物件由JobBuilder建立
+
+	JobDataMap
+		1. 可存任何可序列化的資料, 即存入的資料皆會被序列化; 所以存入第三方定義類別的資料時可能會有風險
+			*註 : 詳情請參考Java Developer Connection的Serialization In The Real World
+		2. 可選擇使用JDBC-JobStore和JobDataMap設計成只能存基本型態和String類別的資料, 以解決第1點問題
+		3. Job物件被執行時, Job會收到存有資料的JobDataMap
+		4. 實作JDK的Map介面; 另有方便存取基本型態的方法
+		5. 如果在Job類別中加入屬性, 且屬性名稱剛好與存入JobDataMap的key相同時, Quartz預設的JobFactory會在初始化Job物件時自動透過setter放入資料
+		6. 若JobDetail和Trigger使用JobDataMap時, 使用了相同的key, 則較後面設定的資料會覆蓋前面的資料
+		7. 簡單範例
+			存
+				JobDetail job = JobBuilder.newJob(MyJob.class)
+					.withIdentity("job1", "group1")
+					.usingJobData("stringData", "string")
+					.usingJobData("floatData", 123.456f)
+					.build();
+		
+			取(在自訂的Job類別)
+				class MyJob implements Job {
+					private String stringData;	<--初始化後資料會直接存進來
+					private float floatData;	<--初始化後資料會直接存進來
+			
+					public void execute(JobExecutionContext context) throws JobExecutionException {
+						JobDataMap dataMap = context.getJobDetail().getJobDataMap();
+						//JobDataMap dataMap = context.getMergedJobDataMap();	<--取Job和Trigger合併的JobDataMap
+						String stringData = dataMap.getString("stringData");
+						float floatData = dataMap.getFloat("floatData");		
+					}
+					
+					//stringData、floatData的setter/getter here
+					
+				}
+
+	JobFactory
+		1. 在Job初始化時, 預設的JobFactory只是在Job類別中呼叫newInstance(), 然後試著尋找適合的setter注入JobDataMap中的資料
+		2. 亦可自定義JobFactory, 決定Job初始化時的過程
+		3. 可結合IoC/DI機制來完成Job初始化
+		
+		
+	行為控制 (寫在Job類別上, 但作用針對JobDetail)
+		@DisallowConcurrentExecution : 不可並發相同的JobDetail; 但可並發相同的Job
+		@PersistJobDataAfterExecution : 保存執行完後的JobDataMap資料; 即下一個相同的JobDetail會拿到上一個相同的JobDetail結束的資料, 而並非初始值
+			*註 : 有例外時除外
+
+					
+	屬性 (由JobDetail傳給Job)
+		名稱				說明						備註
+		-----------------------------------------------------------------------------------------------------------------
+		durability			持久化否					非持久化的Job, 一旦沒有活著的Trigger關聯, 就會自動被Scheduler移除
+		requestsRecovery	Scheulder重啟自動重跑否		Scheduler因強制關閉(ex. Thread或Server當機)重啟
+					
+	JobExecutionException				
+		1. Job.execute()唯一允許拋出的例外類別
+		2. 應該在execute()裡用try-catch將例外做適當處理
+					
+					
+四.更多關於Trigger
+
+	共同屬性
+		*註 : 通過TriggerBuilder設定
+		
+		名稱				說明						TriggerBuilder對應方法							備註
+		-------------------------------------------------------------------------------------------------------------------------------------------------
+		key					Trigger識別					withIdentity(TriggerKey)						若無設定TriggerBuilder會隨機產生
+		jobKey				被觸發的工作任務識別		forJob(JobKey)
+		startTime			首次觸發時間				startAt(Date)									參數為Date型態, 預設為當下(立即觸發)
+		endTime				不再被觸發時間				endAt(Date)						
+		priority			(同一時間點)觸發的優先權	withPriority(int)								1.當Quartz無執行緒可用時會參考此設定
+																										2.參數為int型態(正負皆可)
+																										3.當工作任務的requestsRecovery為true時, 優先權設定會保留
+																										4.預設為5
+		misfireinstruction	觸發失敗指令				withSchedule(XxxScheduleBuilder.xxxSchedule()	1.失敗原因為調度器被關閉或Quartz無執行緒可用
+															.withmisfirehandlinginstructionXxx())		2.預設為Trigger.MISFIRE_INSTRUCTION_SMART_POLICY, 依當下狀況動態選擇其他策略 (詳情參閱SimpleTriggerImpl.updateAfterMisfire())
+		calendarName		日曆						modifiedByCalendar(String)						參數型態為org.quartz.Calendar(??)
+	
+	優先權
+		說明 : 當Quartz無執行緒可用, 會參考此優先權
+
+		
+	Scheduler
+		1. 當啟動時, 會檢查之內所有觸發失敗的觸發器, 根據"觸發失敗指令"設定來更新觸發器
+
+
+	Calendar介面 (org.quartz.Calendar)
+		說明
+			1. 可以與觸發器相關聯, 設定要觸發的時段或要排除的時段
+			2. 有許多實作類別可使用, 套件在org.quartz.impl.calendar
+	
+		範例
+			HolidayCalendar calendar = new HolidayCalendar();
+			calendar.addExcludedDate(new Date(...));//加入排除時段
+			scheduler.addCalendar("日曆識別名稱", calendar, false, true);//將calendar物件加入調度器中
+			Trigger trigger = TriggerBuilder.newTrigger()
+			     ...
+			     .modifiedByCalendar("日曆識別名稱")//此觸發器會參考剛剛加入的calendar物件
+
+
+五.SimpleTrigger
+	特性 : 在某時點上執行一次, 或固定的間隔時間執行多次
+	
+	屬性
+		名稱				說明			備註
+		-------------------------------------------------------------------------------------------------------------------------------------------------
+		startTime			開始時間		參數型態為Date, 可透過DateBuilder設定
+		endTime				結束時間		會影響repeatCount設定. 參數型態為Date, 可透過DateBuilder設定
+		repeatCount			重複次數		參數型態為int. 可以是0或正整數, SimpleTrigger.REPEAT_INDEFINITELY(-1)代表無限次
+		repeatInterval		間隔時間(毫秒)	參數型態為long. 可以是0(並發)或正整數
+
+		*註 : 通常endTime跟repeatCount會擇一使用, 或是設定endTime, 然後將repeatCount設為無限次(SimpleTrigger.REPEAT_INDEFINITELY)
+
+	建立 : 用TriggerBuilder和SimpleScheduleBuilder建立
+
+	範例
+		SimpleTrigger trigger = (SimpleTrigger) TriggerBuilder.newTrigger()
+				.withIdentity("trigger1", "group1")
+				.forJob("job1", "group1")
+				.startAt(new Date())
+				.endAt(new Date())
+				.withSchedule(SimpleScheduleBuilder.simpleSchedule()
+						.withRepeatCount(10)
+						.withIntervalInMilliseconds(1000)
+						.withMisfireHandlingInstructionNextWithExistingCount())
+				.build();
+
+	SimpleTrigger的觸發失敗指令(misfireinstruction)常數
+		*註 : 預設為Trigger.MISFIRE_INSTRUCTION_SMART_POLICY
+	
+		MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY
+		MISFIRE_INSTRUCTION_FIRE_NOW
+		MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT
+		MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT
+		MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT
+		MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT
+	
+	
+六.CronTrigger
+	特性 : 基於日曆的觸發器, 例如可設定每個星期五、下午、10:15時、每個月第十天等等
+	
+	*註 : 亦需要設定startTime和endTime
+	
+	Cron Expression
+		用途 :設定CronTrigger的日曆, 由7個字段組成, 以空格間隔, 字段可以是範圍或是列舉
+		
+		順序	字段		值						備註
+		----------------------------------------------------------------------------
+		1		秒			0~59
+		2		分			0~59
+		3		時			0~23
+		4		日			1~31					依每月不同
+		5		月			0~11或英文前三碼		JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC
+		6		週			1(週日)~7或英文前三碼	SUN, MON, TUE, WED, THU, FRI, SAT
+		7		年									可不設
+	
+		特殊符號
+		
+		符號		意義		適用字段	備註
+		---------------------------------------------------------------------------
+		逗號(,)		列舉		全部
+		減號(-)		範圍		全部
+		乘號(*)		任何		全部
+		斜線(/)		遞增量		全部		分字段"0/15", 表示0分開始, 每隔15分鐘, 等同"0,15,30,45"或"/15" 
+		問號(?)		不指定值	日、週		表示無具體的值
+		井號(#)		第N個		全部		週字段"6#3"或"FRI#3", 表示此月第三個週五
+		Weekday(W)	最近工作日	全部		日字段"15W", 表示離15日最近的工作日
+		Last(L)		最後		日、週		1.用在月字段即表示本後最後一天; 用在週字段即為週六, 等同"7"或"SAT"
+											2.前面多一值,ex. "6L"或"FRIL", 則表示最後一個週五
+											3.跟減號(-)一起使用, 表示最後N個, ex. 日字串"L-3", 表示最後三天
+											4.不可跟列舉一起使用
+	
+	建立 : 用TriggerBuilder和CronScheduleBuilder建立
+	
+	範例
+		CronTrigger trigger = (CronTrigger) TriggerBuilder.newTrigger()
+				.withIdentity("trigger1", "group1")
+				.forJob("job1", "group1")
+				.startAt(new Date())
+				.endAt(new Date())
+				.withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 30 12 ?"))
+				.build();
+	
+	CronTrigger的觸發失敗指令(misfireinstruction)常數
+		*註 : 預設為Trigger.MISFIRE_INSTRUCTION_SMART_POLICY
+		
+		MISFIRE_INSTRUCTION_IGNORE_MISFIRE_POLICY  
+		MISFIRE_INSTRUCTION_DO_NOTHING  
+		MISFIRE_INSTRUCTION_FIRE_NOW
+
+		
+七.觸發監聽器和工作任務監聽器
+
+	說明 : TriggerListener接收關於Trigger的事件; JobListener接收關於Job的事件
+		*註 : 監聽器在每次執行前都需重新註冊
+	
+	TriggerListener
+		事件
+			名稱			對應方法																					備註
+			--------------------------------------------------------------------------------------------------------------------------------------
+			觸發			triggerFired(Trigger trigger, JobExecutionContext)
+			否決工作執行	vetoJobExecution(Trigger trigger, JobExecutionContext context)								若回傳true, 則工作不執行
+			觸發失敗		triggerMisFired(Trigger)
+			觸發完成		triggerComplete(Trigger trigger, JobExecutionContext context, int triggerInstructionCode)	工作開始執行
+		
+	JobListener
+		事件
+			名稱				對應方法
+			-------------------------------------------------------------------------------------------------------
+			即將被執行			jobToBeExecuted(JobExecutionContext context)
+			工作執行被否決		jobExecutionVetoed(JobExecutionContext context)
+			執行完畢			jobWasExecuted(JobExecutionContext context,  JobExecutionException jobException)
+		
+	匹配器
+		功能 : 匹配監聽器監聽哪些對象(工作 | 觸發器). 提供多種方式匹配, ex. key匹配、group匹配、邏輯匹配、所有匹配..等等
+		
+		種類
+			名稱				說明					範例
+			--------------------------------------------------------------------------------------------------------------------------------------
+			NameMatcher			依name匹配				NameMatcher.nameEquals("name")
+			GroupMatcher		依group匹配				GroupMatcher.groupEquals("group")
+			KeyMatcher			依key匹配				KeyMatcher.keyEquals(TriggerKey.triggerKey("name", "group"))
+														KeyMatcher.keyEquals(JobKey.jobKey("name", "group"))
+			AndMatcher			同時被其他兩匹配器匹配	AndMatcher.and(NameMatcher.nameStartsWith("startToken"), NameMatcher.nameEndsWith("endToken"))
+			OrMatcher			被兩匹配器其一匹配		OrMatcher.or(NameMatcher.nameContains("token1"), NameMatcher.nameContains("token2"))
+			NotMatcher			排除匹配				NotMatcher.not(NameMatcher.nameContains("token"))
+			EverythingMatcher	匹配全部				EverythingMatcher.allTriggers()
+														EverythingMatcher.allJobs()
+	建立步驟
+		1. 建立及撰寫監聽器
+			1.1 實作TriggerListener / JobListener介面或繼承TriggerListenerSupport / JobListenerSupport類別
+			1.2 改寫事件方法
+				註 : 一定要實作getName(), 回傳非null之值. 因為監聽器需要呼叫getName()廣播自己的名稱
+			
+		2. 註冊
+			2.1 取得監聽器管理者 : ListenerManager listenerManager = scheduler.getListenerManager();
+			2.2 註冊
+				listenerManager.addTriggerListener(triggerListener, 匹配器名稱.方法())
+				listenerManager.addJobListener(jobListener, 匹配器名稱.方法())
+	
+			*補充 - 移除監聽器
+				listenerManager.removeTriggerListener("name")
+				listenerManager.removeJobListener("name")
+	
+八.調度監聽器
+
+	說明 : 監聽調度器. 與觸發監聽器、工作任務監聽器類似, 但調度監聽器在調度器內部接收通知, 而不需關聯任何具體的觸發器或工作任務
+	
+	SchedulerListener監聽事件
+		名稱								對應方法													備註
+		----------------------------------------------------------------------------------------------------------------------------------------------
+		工作任務加入						jobAdded(JobDetail jobDetail)
+		工作任務暫停						jobPaused(JobKey jobKey)
+		工作任務被取消暫停					jobResumed(JobKey jobKey)
+		一個群組的工作任務被暫停			jobsPaused(String jobGroup)
+		一個群組的工作任務被取消暫停		jobsResumed(String jobGroup)
+		工作任務刪除						jobDeleted(JobDetail jobDetail)
+		工作任務被調度						jobScheduled(Trigger trigger)
+		工作任務未在調度上					jobUnscheduled(String triggerName, String triggerGroup)
+		
+		觸發器被暫停						triggerPaused(TriggerKey triggerKey)
+		觸發器被取消暫停					triggerResumed(TriggerKey triggerKey)
+		一個群組的觸發器被暫停				triggersPaused(String triggerGroup)
+		一個群組的觸發器被取消暫停			triggersResumed(String triggerGroup)
+		觸發器達到不會再被觸發的條件		triggerFinalized(Trigger trigger)
+		
+		調度器啟動中						schedulerStarting()
+		調度器已被啟動						schedulerStarted()
+		調度器在待命模式					schedulerInStandbyMode()
+		調度器關閉中						schedulerShuttingdown()
+		調度器已關閉						schedulerShutdown()
+		調度器已清除所有物件				schedulingDataCleared()										物件包含Jobs、Triggers、Calendars
+		調度器發生嚴重錯誤					schedulerError(String msg, SchedulerException cause)		ex. JobStore重複的失敗、已觸發但無法實例化工作	
+		
+	實作步驟
+		1. 建立及撰寫監聽器
+			1.1 實作SchedulerListener介面或繼承SchedulerListenerSupport類別
+			1.2 改寫事件方法
+				註 : 一定要實作getName(), 回傳非null之值. 因為監聽器需要呼叫getName()廣播自己的名稱
+			
+		2. 註冊
+			2.1 取得監聽器管理者 : ListenerManager listenerManager = scheduler.getListenerManager();
+			2.2 註冊 : listenerManager.addSchedulerListener(schedulerListener)
+	
+			*補充 - 移除監聽器
+				listenerManager.removeSchedulerListener(schedulerListener)
+		
+		
+九.JobStores
+
+	用途 : 追蹤調度器中所有工作的資料, 包含作業任務、觸發器、日曆等. 提供給SchedulerFactory, 用來創建調度器實例
+		註 : 只需設定JobStores, 不要直接使用JobStores實例, JobStores是給Quartz背後使用
+
+	種類
+		RAMJobStore
+		JDBCJobStore
+		TerracottaJobStore
+
+	RAMJobStore
+		特性 : 將資料儲存在RAM中, 易使用, 效率最高. 但程式意外停止時, 調度訊息將會消失
+	
+		指定方式 : 在Quartz組態檔中加入
+			org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore
+	
+	JDBCJobStore
+		特性 : 透過JDBC, 將資料存在資料庫中, 設定較複雜, 效率較差, 可配合在資料庫中設定index提升效率
+			註 : 支援的DBMS : Oracle, PostgreSQL, MySQL, MS SQLServer, HSQLDB, DB2
+			
+		交易管理
+			JobStoreTx : 不把調度命令和其他交易綁定時使用(最常用)
+			JobStoreCMT : 關聯其他交易時使用
+		
+		DriverDelegate
+			用途 : ??完成任何JDBC的工作, 需和指定的DBMS對應
+			
+			套件 : org.quartz.impl.jdbcjobstore
+			
+			種類
+				名稱				DBMS
+				---------------------------------
+				OracleDelegate		Oracle
+				MSSQLDelegate		MSSQLServer
+				DB2vxDelegate		DB2 6-、7-、8-
+				HSQLDBDelegate		HSQLDB
+				PostgreSQLDelegate	PostgreSQL
+				WeblogicDelegate	Weblogic
+				SybaseDelegate		Sybase
+				StdJDBCDelegate		通用
+				
+			指定方式 : 在Quartz組態檔中加入
+				org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+			
+		使用步驟
+			1. 建立表格 : 在資料庫中建立一套TABLE
+				註
+					1. 在quartz-2.2.3-distribution.tar中docs/dbTables下, 有.sql檔, 依DBMS分
+					2. TABLE NAME預設都是以QRTZ_開頭(前置詞), 若自訂名稱則需再Quartz組態檔中指定
+						org.quartz.jobStore.tablePrefix = 自訂的前置詞
+					
+			2. 建立及撰寫Quartz組態檔
+				2.1 建立 : 在classpath下新建一檔案quartz.properties
+				
+				2.2 撰寫 : 在quartz.properties中加入
+					2.2.1 設定jobStore : 
+						2.2.1.1 設定交易管理
+							org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.類別名稱
+					
+						2.2.1.2 設定DriverDelegate
+							org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.類別名稱
+					
+						2.2.1.3 指定DataSource
+							org.quartz.jobStore.dataSource = 自訂DataSource名稱
+							註 : 自訂DataSource名稱為步驟2.2.3所設定
+				
+						2.2.1.4 設定Quartz TABLE前置詞
+							org.quartz.jobStore.tablePrefix = QRTZ_
+							或
+							org.quartz.jobStore.tablePrefix = 自訂的前置詞
+				
+						2.2.1.5 設定JobDataMap內型態為String(非必要)
+							org.quartz.jobStore.useProperties = true
+							
+							註 : 可避免一些問題, 且較安全
+					
+					2.2.2 設定Quartz執行緒
+						2.2.2.1 指定類別
+							org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
+							
+						2.2.2.2 設定數量
+							org.quartz.threadPool.threadCount = 5
+						
+					2.2.3 設定DataSource
+						方式1 - 自訂
+							MySQL
+								org.quartz.dataSource.自訂DataSource名稱.driver = com.mysql.jdbc.Driver
+								org.quartz.dataSource.自訂DataSource名稱.URL = jdbc:mysql://localhost:3306/QUARTZ_DEMO
+								org.quartz.dataSource.自訂DataSource名稱.user = root
+								org.quartz.dataSource.自訂DataSource名稱.password = 0000
+								org.quartz.dataSource.自訂DataSource名稱.maxConnections = 8
+						
+							MSSQL Server
+								org.quartz.dataSource.自訂DataSource名稱.driver = com.microsoft.sqlserver.jdbc.SQLServerDriver
+								org.quartz.dataSource.自訂DataSource名稱.URL = jdbc:sqlserver://10.67.67.56:1433;DatabaseName=mPOS_DEV
+								org.quartz.dataSource.自訂DataSource名稱.user = mPOS_DEV
+								org.quartz.dataSource.自訂DataSource名稱.password = mPOS_DEV123
+								org.quartz.dataSource.自訂DataSource名稱.maxConnections = 8
+								
+							註 : 建議maxConnections的值要比org.quartz.threadPool.threadCount的值多2(以上)
+								
+						方式2 - JNDI
+							Tomcat
+								org.quartz.dataSource.myDS.jndiURL = java:comp/env/quartz
+								
+							JBoss
+								org.quartz.dataSource.myDS.jndiURL = java:jboss/evn/mPOSDB
+				
+			quartz.properties範例
+				# Scheduler setting
+				#org.quartz.scheduler.skipUpdateCheck = true
+				org.quartz.scheduler.instanceName = DatabaseScheduler
+				org.quartz.scheduler.instanceId = NON_CLUSTERED
+				org.quartz.scheduler.jobFactory.class = org.quartz.simpl.SimpleJobFactory
+			
+				#JobStore setting
+				org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.JobStoreTx
+				org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+				org.quartz.jobStore.tablePrefix = QRTZ_
+				org.quartz.jobStore.dataSource = quartzDataSource
+				org.quartz.jobStore.useProperties = true
+				org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
+				org.quartz.threadPool.threadCount = 5
+
+				#DataSource setting
+				org.quartz.dataSource.quartzDataSource.driver = com.mysql.jdbc.Driver
+				org.quartz.dataSource.quartzDataSource.URL = jdbc:mysql://localhost:3306/QUARTZ_DEMO
+				org.quartz.dataSource.quartzDataSource.user = root
+				org.quartz.dataSource.quartzDataSource.password = 0000
+				org.quartz.dataSource.quartzDataSource.maxConnections = 8
+				
+	TerracottaJobStore
+		特性 : 將訊息儲存在Terracatta Server中, 效率優於JDBCJobStore, 但較RAMJobStore差
+		
+		使用方式
+			org.quartz.jobStore.class = org.terracotta.quartz.TerracottaJobStore  
+			org.quartz.jobStore.tcConfigUrl = localhost:9510	<--指定Terracotta Server
+
+十.Configuration, Resource Usage和SchedulerFactory
+
+	說明 : Quartz框架是模組化的, 運作前需先設定, 將各模組咬合在一起
+		
+	模組
+		ThreadPool
+		JobStore
+		DataSources(非必要)
+		The Scheduler itself
+
+	ThreadPool
+		說明
+			簡述 : 提供一組執行緒給Quartz執行工作任務時使用
+		
+			數量 : 池裡的執行緒越多, 可並發的工作任務數量就越多; 但數量太多可能導致系統當機. 數量的設定需考慮並發的工作任務數量和執行時間
+			
+			注意 : 若觸發器的觸發時間到了, 但沒有可用的執行緒, Quartz會讓觸發器暫停(block), 直到有可用的執行緒; 可能導致延遲或觸發失敗
+			
+		套件 : org.quartz.spi
+		
+		實作類別
+			SimpleThreadPool : 指定固定數量的執行緒, 設定後就不能改變. 通常使用此類別
+			ZeroSizeThreadPool
+
+	JobStore
+		說明
+			1. 如第九章所介紹
+			2. 所有的JobStore都實作org.quartz.spi.JobStore介面
+			3. 可自訂JobStore(只要實作org.quartz.spi.JobStore介面)
+
+	The Scheduler itself
+		1. 建立一調度器實例, 並設定名稱
+		2. 設定RMI(Remote Method Invocation)
+			2.1 允許遠端連線否(是否為RMI服務對象)
+				org.quartz.scheduler.rmi.proxy = true
+			2.2 主機名稱(2.1為true時)
+				org.quartz.scheduler.rmi.registryHost = localhost
+			2.3 埠號(2.1為true時)
+				org.quartz.scheduler.rmi.registryPort = 1099
+			*註 : StdSchedulerFactory也可以產生調度器實例, 實際上是代理在RMI下, 建立調度器實例
+		3. 指定JobStore
+		4. 指定ThreadPool
+
+	StdSchedulerFactory
+		說明
+			1. org.quartz.SchedulerFactory介面的實作類別
+			2. 用getScheduler()建立調度器
+			3. 用initialize(Properties props)初始化調度器
+				*註
+					1. 一般將參數值寫在.properties檔
+					2. 包括ThreadPool、JobStore、DataSource設定
+			*註 : 在quartz-2.2.3-distribution.tar中docs/config(???)下, 有範例
+
+	DirectSchedulerFactory
+		說明
+			1. org.quartz.SchedulerFactory介面的實作類別
+			2. 適用於在程式裡建立調度器
+			*註
+				1. 不建議使用
+				2. 需很了解內部運作
+				3. 不允許註釋和組態檔方式
+
+	Logging
+		1. Quartz預設使用SLF4J
+		2. 相關類別
+			LoggingJobHistoryPlugin : 工作任務執行紀錄
+			LoggingTriggerHistoryPlugin : 觸發器觸發紀錄
+
+
+十一.進階(企業版)特性
+	Clutering(叢集)
+		說明 : JDBCJobStore的JobStoreTx和JobStoreCMT或是TerracottaJobStore可以叢集並發執行
+		特性 : 負載平衡、工作任務切換(當JobDetail的requestsRecovery=true)
+		
+	JobStoreTx或JobStoreCMT叢集
+		1. 開啟叢集功能 : org.quartz.jobStore.isClustered = true
+		2. 同叢集的每個實例都應該使用相同的核心組態檔(quartz.properties), 除了以下兩個例外..
+			2.1 實例的id : org.quartz.scheduler.instanceId = 名稱 || AUTO
+				*註 : 每個實例id必需唯一, 可設成AUTO由Quartz自己產生
+			2.2 執行緒池大小 : org.quartz.threadPool.threadCount = 整數
+		3. 不要在網路環境隔離的主機上執行叢集, 除非使用時間同步服務(time-sync service), 誤差會在1秒內
+		4. 避免叢集跟非叢集的存取相同的資料或TABLE, 否則可能導致資料問題或不穩定問題
+		5. 每次觸發只會有一個實例執行, 且每次可能是不同實例. 選擇方式依負載平衡機制, 盡量選擇活著而空閒的實例
+		
+	TerracottaJobStore叢集
+		1. 設定方式如第九章所述
+		2. 所有調度器將全部設定叢集
+		3. 可考慮設定持久化(persistence)和HA
+		4. 企業版TerracottaJobStore更多進階功能, 詳情http://www.terracotta.org/quartz
+
+	JTA交易
+		1. Job使用JTA
+			設定
+				全局 : org.quartz.scheduler.wrapJobExecutionInUserTransaction = true
+				局部 : @ExecuteInJTATransaction
+			說明 : JTA交易的begin()會在job.execute()前被呼叫, commit()則會在job.execute()執行結束後被呼叫
+			
+		2. JobStoreCMT使用JTA
+			2.1 需注意調度器調用方法前啟動交易
+			2.2 可透過UserTransaction介面執行, 或是把自訂的程式放在有SessionBean的調度器中
+		
+		
+十二.Quartz其他特性
+	外掛(Plugin)
+		1. 介面 : org.quartz.spi.SchedulerPlugin
+		2. 供外掛功能開發
+		3. Quartz提供的外掛在org.quartz.plugin套件中, 功能ex.. 
+			3.1 調度器啟動時自動調用工作任務
+			3.2 紀錄工作任務和觸發器的事件
+			3.3 當JVM退出時, 確保調度器關閉
+			
+	JobFactory
+		1. 當觸發器被觸發時, 會透過調度器指定的JobFactory將關聯的工作類別實例化
+		2. 預設的JobFactory只是在Job類別中呼叫newInstance()
+		3. 可透過自訂JobFactory實作類別, 來達到Ioc/DI建立和初始化工作實例
+		4. 調度器指定JobFactory : void setJobFactory(JobFactory factory)
+		
+	Factory-Shipped Job
+		1. Quartz提供一些通用的工作任務
+		2. 套件 : org.quartz.jobs
+		3. 功能ex. 寄mail, 調用EJB
+		
+Spring-Quartz
+	jar檔 : spring-context-support-x.y.z.jar
+	套件 : org.springframework.scheduling.quartz
+	
+	基本用法建立步驟
+		0. 完成Quartz基本步驟
+		1. 加入jar檔 : spring-context-support-x.y.z.jar
+		2. 建立及撰寫自訂的工作類別
+			2.1 建立一類別 : XxxJob
+			2.2 撰寫執行內容 : 撰寫一公開的一般方法即可
+			2.ex
+				class FooJob {
+					public void execute() {
+						System.out.println("工作開始執行");
+						System.out.println("工作執行中");
+						System.out.println("工作結束");
+					}
+				}
+
+		3. 建立Spring-Quartz核心組態檔 : applicationContext-quartz.xml
+		4. 撰寫Spring-Quartz核心組態檔 : 在applicationContext-quartz.xml, <bean>中加入..
+			4.1 宣告工作
+				<bean id="fooJob" class="xxx.yyy.FooJob" />		<--指向步驟2.1的工作類別
+				
+			4.2 宣告工作任務
+				<bean id="fooJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+					<property name="targetObject" ref="fooJob" />		<--注入步驟4.1宣告的工作
+					<property name="targetMethod" value="execute" />	<--指定步驟2.2撰寫的方法名稱
+				</bean>
+				
+			4.3 宣告觸發器
+				SimpleTrigger
+					<bean id="fooSimpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+						<property name="jobDetail" ref="fooJobDetail" />	<--注入步驟4.2宣告的工作任務
+						<property name="repeatInterval" value="60000" />	<--設定間隔時間(毫秒)
+						<property name="startDelay" value="300000" />		<--設定開始延遲時間(毫秒)
+					</bean>
+
+				CronTrigger
+					<bean id="fooCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+						<property name="jobDetail" ref="fooJobDetail"/>				<--注入步驟4.2宣告的工作任務
+						<property name="cronExpression" value="0 55 * * * ?" />		<--設定CRON表示式
+					</bean>
+
+			4.4 宣告調度器
+				<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+					<property name="jobDetails">				<--注入工作任務
+						<list>
+							<ref bean="fooJobDetail" />			<--指向步驟4.2宣告的工作任務
+						</list>
+					</property>
+					<property name="triggers">					<--注入觸發器
+						<list>
+							<ref bean="fooSimpleTrigger" />		<--指向步驟4.3宣告的觸發器
+						</list>
+					</property>
+				</bean>
+
+	進階用法步驟
+		0. 完成Quartz基本步驟
+		1. 加入jar檔 : spring-context-support-x.y.z.jar
+		2. 建立及撰寫自訂的工作類別
+			2.1 建立一類別 : XxxJob, 實作org.quartz.Job或繼承org.springframework.scheduling.quartz.QuartzJobBean
+			2.2 撰寫執行內容 : 將欲執行的程式寫在execute()中
+			2.3 宣告成Spring bean : 在class上一行加上@Component
+			2.ex
+				public class FooJob extends QuartzJobBean {
+					@Autowired
+					private MemberMapper mapper;
+				
+					@Override
+					protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+						JobDataMap dataMap = context.getJobDetail().getJobDataMap();
+						mapper.selectByKey(dataMap.getInt("id"));
+					}
+				}
+	
+		3. 建立Spring-Quartz核心組態檔 : applicationContext-quartz.xml
+		4. 撰寫Spring-Quartz核心組態檔 : 在applicationContext-quartz.xml, 在<bean>中加入..
+			4.1 宣告工作任務
+				<bean id="fooJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">	<--使用Spring support的JobDetailFactoryBean
+					<property name="jobClass" value="xxx.yyy.FooJob" />		<--指向步驟2.1的工作類別
+					<property name="durability" value="true" />				<--設定持久化否
+<!--				<property name="jobDataAsMap"> -->						<--利用JobDataMap傳資料到工作任務裡
+<!--					<map> -->
+<!--						<entry key="鍵1" value="值1" /> -->
+<!--						<entry key="鍵2" value-ref="值2(物件)" /> -->
+<!--					</map> -->
+<!--				</property> -->
+				</bean>
+				
+			4.2 宣告觸發器
+				<bean id="fooTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">		<--使用Spring support的CronTriggerFactoryBean
+					<property name="jobDetail" ref="fooJob" />						<--注入步驟4.1宣告的工作任務
+					<property name="cronExpression" value="0 0 12 1/1 * ? *" />		<--設定CronExpression
+				</bean>
+				
+			4.3 宣告DataSource
+				<bean id="quartzDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+				   <property name="jndiName" value="java:comp/env/quartz" />
+				</bean>
+				
+			4.5 宣告調度器
+				<bean id="jdbcQuartzScheduler" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">	<--使用Spring support的SchedulerFactoryBean
+					<property name="configLocation" value="classpath:quartz.properties" />	<--指定Quartz組態檔
+					<property name="dataSource" ref="quartzDataSource" />					<--注入4.3宣告的DataSource
+<!--				<property name="jobFactory" ref="jobFactory" /> -->
+<!--         		<property name="globalJobListeners" ref="jobListener1" /> -->			<--指定工作監聽器(可設多個)
+<!--         		<property name="globalTriggerListeners" ref="triggerListener1" /> -->	<--指定觸發監聽器(可設多個)
+					<property name="overwriteExistingJobs" value="false" />					<--覆蓋已存在工作物件否 (組態檔裡的設定覆蓋資料庫裡的設定)
+					<property name="autoStartup" value="true" />							<--自動啟動否
+					<property name="triggers">												<--注入觸發器(可設多個)
+						<list>
+							<ref bean="fooTrigger" />										<--指向步驟4.2宣告的觸發器
+						</list>
+					</property>
+				</bean>
+			
+		5. 使用JobFactory解決不能@Autowired問題(非必要)
+			*註 : 即使使用Spring-Quartz, 自訂的工作類別中還是不能使用@Autowired. 自訂一JobFactory以解決此問題
+			
+			5.1 自訂JobFactory
+				public class SpringBeanJobFactory extends org.springframework.scheduling.quartz.SpringBeanJobFactory {
+					@Autowired
+					private AutowireCapableBeanFactory beanFactory;
+
+					/**
+					 * ?里我?覆?了super的createJobInstance方法，?其?建出?的?再?行autowire。
+					 * reference -> http://blog.csdn.net/u011257574/article/details/45583019
+					 */
+					@Override
+					protected Object createJobInstance(TriggerFiredBundle bundle) throws Exception {
+						Object jobInstance = super.createJobInstance(bundle);
+						beanFactory.autowireBean(jobInstance);
+						return jobInstance;
+					}
+				}
+			
+			5.2 修改Spring-Quartz核心組態檔 : 在applicationContext-quartz.xml, <bean>中加入..
+				5.2.1 宣告自訂的JobFactory 
+					<bean id="autowireJobFactory" class="xxx.yyy.SpringBeanJobFactory" />	<--指向步驟5.1的JobFactory類別
+				
+				5.2.2 將JobFactory加入至調度器
+					<bean ... class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+						...
+						<property name="jobFactory" ref="autowireJobFactory" />		<--注入步驟5.1.1宣告的JobFactory
+						...
+					</bean>
+			
+				
+quartz.properties範例
+	#ALL SETTING : http://www.quartz-scheduler.org/documentation/quartz-2.x/configuration/
+	
+	# Scheduler setting
+	#org.quartz.scheduler.skipUpdateCheck = true
+	org.quartz.scheduler.instanceName = DatabaseScheduler
+	org.quartz.scheduler.instanceId = AUTO
+	org.quartz.scheduler.jobFactory.class = org.quartz.simpl.SimpleJobFactory
+				
+	# JobStore setting
+	org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.JobStoreTx
+	org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+	org.quartz.jobStore.tablePrefix = QRTZ_
+	org.quartz.jobStore.dataSource = quartzDataSource
+	org.quartz.jobStore.useProperties = true
+	
+	# Thread setting
+	org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
+	org.quartz.threadPool.threadCount = 5
+
+	# DataSource setting
+	org.quartz.dataSource.quartzDataSource.driver = com.mysql.jdbc.Driver
+	org.quartz.dataSource.quartzDataSource.URL = jdbc:mysql://localhost:3306/QUARTZ_DEMO
+	org.quartz.dataSource.quartzDataSource.user = root
+	org.quartz.dataSource.quartzDataSource.password = 0000
+	org.quartz.dataSource.quartzDataSource.maxConnections = 8
+	#org.quartz.dataSource.quartzDataSource.jndiURL = java:comp/env/quartz
+
+企業版完整實作步驟
+
+	1. 加入jar檔
+		1.1 Spring
+		
+		1.2 Quartz
+			1.2.1. quartz-x.y.z.jar
+			1.2.2. quartz-jobs-x.y.z.jar
+			1.2.3. slf4j-api-x.y.zz.jar
+			1.2.4. c3p0-w.x.y.z.jar (store scheduling data in a database)
+			1.2.5. mchange-commons-java-x.y.zz.jar
+			
+		1.3 DB Driver
+		
+	2. 完成Spring基本設定(略)
+	
+	3. 指定Spring-Quart組態檔 : 在web.xml的<context-param><param-value>內加入..
+		<listener>
+			<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+		</listener>
+		<context-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:applicationContext-quartz.xml</param-value>	<!-- 指向applicationContext-quartz.xml
+		</context-param>
+	
+	4. 建立JDBCJobStore相關TABLE : 在資料庫中建立一套TABLE
+		註 : 在quartz-2.2.3-distribution.tar中docs/dbTables下, 有.sql檔, 依DBMS分
+		
+		QRTZ_JOB_DETAILS
+		QRTZ_TRIGGERS
+		QRTZ_CRON_TRIGGERS
+		QRTZ_SIMPLE_TRIGGERS
+		QRTZ_SIMPROP_TRIGGERS
+		QRTZ_BLOB_TRIGGERS
+		QRTZ_FIRED_TRIGGERS
+		QRTZ_CALENDARS
+		QRTZ_LOCKS
+		QRTZ_PAUSED_TRIGGER_GRPS
+		QRTZ_SCHEDULER_STATE
+		
+	5. 建立Quartz核心組態檔 : quartz.properties
+
+	6. 撰寫Quartz核心組態檔
+		# 6.1 Scheduler setting
+		#org.quartz.scheduler.skipUpdateCheck = true
+		org.quartz.scheduler.instanceName = DatabaseScheduler
+		org.quartz.scheduler.instanceId = AUTO
+		
+		# 6.2 JobStore setting
+		org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.JobStoreTx
+		org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+		org.quartz.jobStore.tablePrefix = QRTZ_
+		org.quartz.jobStore.dataSource = quartzDataSource
+		org.quartz.jobStore.useProperties = true
+		
+		# 6.3 Thread setting
+		org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
+		org.quartz.threadPool.threadCount = 5
+		
+		# 6.4 DataSource setting
+		org.quartz.dataSource.quartzDataSource.driver = com.mysql.jdbc.Driver
+		org.quartz.dataSource.quartzDataSource.URL = jdbc:mysql://localhost:3306/QUARTZ_DEMO
+		org.quartz.dataSource.quartzDataSource.user = root
+		org.quartz.dataSource.quartzDataSource.password = 0000
+		org.quartz.dataSource.quartzDataSource.maxConnections = 8
+		#org.quartz.dataSource.quartzDataSource.jndiURL = java:comp/env/quartz
+
+	7. 建立Spring-Quartz組態檔 : 依步驟3指定位置, 建立applicationContext-quartz.xml
+
+	8. 撰寫Spring-Quartz組態檔
+		<?xml version="1.0" encoding="UTF-8"?>
+		<beans xmlns="http://www.springframework.org/schema/beans"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xmlns:context="http://www.springframework.org/schema/context"
+			xsi:schemaLocation="http://www.springframework.org/schema/beans
+				http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+				http://www.springframework.org/schema/context
+				http://www.springframework.org/schema/context/spring-context-3.1.xsd ">
+
+			<description>Quartz</description>
+
+			<!-- 8.1 宣告DataSource -->
+			<bean id="quartzDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+				<property name="jndiName" value="java:comp/env/quartz" />
+			</bean>
+
+			<!-- 8.2 宣告Job -->
+			<bean id="testJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+				<property name="jobClass" value="job.TestJob" />
+				<property name="durability" value="true" />
+			</bean>
+
+			<!-- 8.3 宣告Trigger -->
+			<bean id="testTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+				<property name="jobDetail" ref="testJob" />
+				<property name="cronExpression" value="0/10 * * * * ? *" />
+			</bean>
+
+			<!-- 8.4 宣告自訂JobFactory(支援@Autowired) -->
+			<bean id="autowiredSupportedJobFactory" class="core.quartz.AutowiredSupportedJobFactory" />
+
+			<!-- 8.5 宣告Scheduler -->
+			<bean id="jdbcQuartzScheduler" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+				<property name="configLocation" value="classpath:quartz.properties" />	<!-- 8.5.1 指定Quartz核心組態檔 -->
+				<property name="dataSource" ref="quartzDataSource" />					<!-- 8.5.2 指定DataSource, 指向步驟8.1宣告的DataSource -->
+				<property name="jobFactory" ref="autowiredSupportedJobFactory" />		<!-- 8.5.3 指定JobFactory -->
+				<property name="overwriteExistingJobs" value="false" />					<!-- 8.5.4 設定不覆蓋資料庫已存在工作物件 -->
+				<property name="autoStartup" value="true" />							<!-- 8.5.5 設定自動啟動 -->
+				<property name="triggers">												<!-- 8.5.6 設定Trigger -->
+					<list>
+						<ref bean="testTrigger" />											<!-- 8.5.6.1 指向步驟6.3宣告的Trigger -->
+					</list>
+				</property>
+			</bean>
+
+		</beans>
+
+	9. 建立及撰寫Job類別
+		9.1 依步驟8.2建立Job類別
+		9.2 撰寫Job類別
+			public class TestJob extends QuartzJobBean {
+				private final static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+				
+				@Override
+				protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+					System.out.println(sdf.format(new Date()));
+				}
+			}
+			
+	10. 建立及撰寫AutowiredSupportedJobFactory(有問題!!!)
+		10.1 依步驟8.4建立JobFactory類別
+		10.2 撰寫JobFactory類別
+			public class AutowiredSupportedJobFactory extends SpringBeanJobFactory {
+				@Autowired
+				private AutowireCapableBeanFactory beanFactory;
+
+				@Override
+				protected Object createJobInstance(TriggerFiredBundle bundle) throws Exception {
+					Object jobInstance = super.createJobInstance(bundle);
+					beanFactory.autowireBean(jobInstance);
+					return jobInstance;
+				}
+			}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

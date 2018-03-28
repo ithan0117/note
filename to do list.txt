@@ -1,0 +1,33 @@
+1.Apache CXF設計
+@WebService(targetNamespace = "http://tempuri.org/", name = "Service")
+
+@WebMethod(operationName = "OrgADD", action = "http://tempuri.org/OrgADD")
+
+@WebResult(name = "OrgADDResult", targetNamespace = "http://tempuri.org/")
+
+@WebParam(name = "sInput", targetNamespace = "http://tempuri.org/") String address
+
+AbstractRoutingDataSource : DataSource切換
+http://stackoverflow.com/questions/13507522/dynamically-change-spring-data-source
+
+<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	<property name="basePackage" value="cn.com.n22.global.dataaccess.database.mapper;cn.com.n22.global.*.mapper;com.finsage.web.*.mapper;com.finsage.database.*.mapper" />
+	<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+</bean>
+
+2.
+CFServiceService.java
+CFService.java
+
+3.
+MicroServices with Spring
+
+4.Shiro
+
+5.OTOM (Message Transmission Optimization Mechanism)
+
+6.
+Quartz
+
+7.
+LINQ API(在Java裡Join)

@@ -1,0 +1,94 @@
+建立步驟
+1. 撰寫MultipleDataSource類別
+	public class MultipleDataSource extends AbstractRoutingDataSource {
+	
+		@Override
+		protected Object determineCurrentLookupKey() {
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+			
+			// See more: DataSourceInterceptor
+			String keyDS = (String) request.getAttribute("keyDS");
+		 
+			System.out.println("KeyDS=" + keyDS);
+		 
+			if (keyDS == null) {
+				keyDS = "mysql";
+			}
+			return keyDS;	
+		}	
+	}
+	
+2. 撰寫DataSourceInterceptor類別
+	註 : 依不同關鍵切換DataSource, 實作不同DataSourceInterceptor類別
+	
+	ex.. 依URL切換DataSource
+	public class DataSourceInterceptor extends HandlerInterceptorAdapter {
+
+		@Override
+		public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+			String contextPath = request.getContextPath();
+			String mysqlPath = contextPath + "/mysql";
+			String mssqlPath = contextPath + "/mssql";
+			String oraclePath = contextPath + "/oracle";
+			String uri = request.getRequestURI();
+			
+			System.out.println("url : " + uri);
+			
+			if (uri.startsWith(mysqlPath)) {
+				request.setAttribute("keyDS", "mysql");
+			} else if (uri.startsWith(mssqlPath)) {
+				request.setAttribute("keyDS", "mssql");
+			} else if (uri.startsWith(oraclePath)) {
+				request.setAttribute("keyDS", "oracle");
+			}
+			return true;
+		}
+	}
+	
+3. 宣告多個DataSource物件
+	<bean id="mysqlDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/mysql" />
+	</bean>
+
+	<bean id="mssqlDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/mssql" />
+	</bean>
+
+	<bean id="oracleDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/oracle" />
+	</bean>
+	
+4. 宣告MultipleDataSource物件
+	<bean id="dataSource" class="xxx.MultipleDataSource">
+		<property name="targetDataSources">
+			<map>
+				<entry key="mysql" value-ref="mysqlDataSource" />
+				<entry key="mssql" value-ref="mssqlDataSource" />
+				<entry key="oracle" value-ref="oracleDataSource" />
+			</map>
+		</property>
+		
+		<property name="defaultTargetDataSource" ref="mysqlDataSource" />
+	</bean>
+	
+5. 宣告DataSourceProxy物件
+	<bean id="dataSourceProxy" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+		<property name="targetDataSource" ref="dataSource" />
+	</bean>
+	
+6. 宣告TransactionManager物件
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+  		<property name="dataSource" ref="dataSourceProxy" />
+	</bean>
+	
+7. 宣告DataSourceInterceptor物件
+	<mvc:interceptors>
+		<bean class="xxx.DataSourceInterceptor" />
+	</mvc:interceptors>
+	
+8. 注入需要DataSource相關物件
+	ex.. MyBatis的SqlSessionFactoryBean物件
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSourceProxy" />
+		<property name="mapperLocations" value="classpath:mapper/*Mapper.xml" />
+	</bean>

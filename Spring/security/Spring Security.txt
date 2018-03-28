@@ -1,0 +1,456 @@
+簡介
+主要從兩個角度解決安全性問題
+	1. http request保護 : 使用servlet filter保護http request並限制各url的訪問. 主要通過保護url, 使得特定用戶才能訪問
+	2. method call保護：使用spring aop保護method的呼叫，確保具有適當權限的用戶採用訪問安全保護的method
+
+http request保護
+	DelegatingFilterProxy
+		1. 角色 : spring security的總filter
+		2. 說明 : 因為要解決各式各樣的安全性問題, 需要在web.xml裡宣告一系列的filter, 造成web.xml內容複雜, 所以spring security
+				  提供此總filter, 宣告此代理者即表示開啟spring security安全性相關功能監控
+		3. 功能 : 將工作委託給<bean id="springSecurityFilterChain".. >物件處理
+	
+	springSecurityFilterChain物件
+		1. 角色 : 即代表spring security的組態設定
+		2. 簡述 : 一個javax.servlet.Filter實作類別的物件, 此物件已受spring core控管, id為"springSecurityFilterChain"
+		3. 功能 : 用來鏈結任意多個其他的filter, 根據這些filter提供不同的安全特性
+		4. 詳述 : 即代表applicationContext-security.xml裡所有<http>(包含<http>內其他設定)的設定
+		
+標籤
+<http> : 宣告一個FilterChainProxy, 以及鏈結中所有的filter <bean>, 同時將此FilterChainProxy託管給web.xml裡的DelegatingFilterProxy
+	auto-config="true" : 自動生成一個登入介面, url : http://localhost:8080/專案名/spring_security_login (舊版??)
+		亦等同以下設定..
+			<http>
+				<form-login />
+			　 <!--HTTP 基本认证 -->
+				<http-basic/>
+			　　<!-- 可以通过logout-url属性设置用户退出的url-->
+				<logout />
+				<intercept pattern="/**" access="ROLE_DEMO" />
+			</http>
+			
+	use-expressions="true" : 使用SpEL, Spring Security 支持的所有SpE如下..
+		安全表達式　 					計算結果
+		---------------------------------------------------------------------------
+		authentication					用戶認證對象
+		denyAll							結果始終為false
+		hasAnyRole(list of roles)		如果用戶被授權指定的任意權限，結果為true
+		hasRole(role)					如果用戶被授予了指定的權限，結果 為true
+		hasIpAddress(IP Adress)			用戶地址
+		isAnonymous()					是否為匿名用戶
+		isAuthenticated()				不是匿名用戶
+		isFullyAuthenticated			不是匿名也不是remember-me認證
+		isRemberMe()					remember-me認證
+		permitAll						始終true
+		principal						用戶主要信息對象
+
+	補 : http://www.cnblogs.com/jaylon/p/4905769.html
+
+版本問題
+	說明 : Spring Security跟其他Spring版號不一致, 且有版本依賴關係, 隨意指定版本可能會造成錯誤
+	查詢方式 : google compatible version of spring-security
+	官方文件 : https://docs.spring.io/spring-security/site/docs/x.y.z.RELEASE/reference/htmlsingle/#maven-bom , Spring Framework Bom段落
+	建議版本
+		spring-security : 4.2.0.RELEASE
+		spring-other : 4.3.4.RELEASE
+	
+登入建立步驟
+
+1. 加入jar檔
+	1.1 spring-security-core
+	1.2 spring-security-web
+	1.3 spring-security-config
+	
+	Maven
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-core</artifactId>
+		    <version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+	
+2. 修改web.xml
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			classpath:applicationContext-core.xml,
+			classpath:applicationContext-security.xml	<!-- 2.1 指定spring-security組態檔 -->
+		</param-value>
+	</context-param>
+
+	<!-- Spring security -->
+	<filter>
+		<!-- 2.2 宣告spring-security過濾器 -->
+		<filter-name>springSecurityFilterChain</filter-name>	<!-- 此filter-name"必需"設為springSecurityFilterChain -->
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+3. 建立及撰寫spring-security組態檔 : applicationContext-security.xml
+
+	<beans:beans xmlns="http://www.springframework.org/schema/security"
+		xmlns:beans="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+			http://www.springframework.org/schema/security
+			http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+	
+		http相關設定	
+		不受spring security監控的URL
+		<!-- <http pattern="/xxx*/**" security="none" /> -->	
+			
+		<http auto-config="true" use-expressions="true">	<!-- use-expressions="true"表示可用表示式, ex. 下一行的"hasRole('ROLE_ADMIN')" -->
+			<intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')" />	指定進入/admin**需要擁有ROLE_ADMIN角色的帳號
+			
+			<form-login login-page="/login"
+				login-processing-url="/j_spring_security_check"		舊版驗證URL:j_spring_security_check
+				default-target-url="/homePage"									指定登入成功時, 跳轉的URL
+				authentication-failure-url="/login?errorMessage" 				指定登入失敗時, 跳轉的URL
+				username-parameter="username"									指定帳號參數名稱
+				password-parameter="password" />								指定密碼參數名稱
+				
+			<logout logout-success-url="/logout" delete-cookies="JSESSIONID" />	指定登出成功時, 跳轉的URL
+			
+			<csrf/>																開啟csrf保護
+			
+			<access-denied-handler error-page="/403" />							指定拒絕進入時, 跳轉的URL
+		</http>
+		
+		<authentication-manager>
+			<authentication-provider>
+				<jdbc-user-service data-source-ref="dataSource"	注入dataSource
+					users-by-username-query="select username,password, enabled from users where username = ?"	設定帳號查詢sql script
+					authorities-by-username-query="select username, role from user_roles where username = ?" />	設定角色查詢 sql script
+			</authentication-provider>
+		</authentication-manager>
+	
+	</beans:beans>
+	
+4. 撰寫SecurityController
+
+	@Controller
+	public class SecurityController {
+
+		@RequestMapping(value = "homePage", method = RequestMethod.GET)
+		public ModelAndView homePage() {
+			ModelAndView modelAndView = new ModelAndView();
+			modelAndView.addObject("username", getUsername());
+			modelAndView.setViewName("homePage");
+			return modelAndView;
+		}
+		
+		@RequestMapping("login")
+		public ModelAndView login(@RequestParam(value = "errorMessage", required = false) String errorMessage) {
+			ModelAndView modelAndView = new ModelAndView();
+			if (errorMessage != null) {
+				modelAndView.addObject("errorMessage", "Invalid username and password!");
+			}
+			modelAndView.setViewName("login");
+			return modelAndView;
+		}
+		
+		@RequestMapping("logout")
+		public ModelAndView logout() {
+			ModelAndView modelAndView = new ModelAndView();
+			modelAndView.addObject("message", "You've been logged out successfully.");
+			modelAndView.setViewName("homePage");
+			return modelAndView;
+		}
+		
+		@RequestMapping(value = "403", method = RequestMethod.GET)
+		public ModelAndView accesssDenied() {
+			ModelAndView modelAndView = new ModelAndView();
+			modelAndView.addObject("username", getUsername());
+			modelAndView.setViewName("403");
+			return modelAndView;
+		}
+		
+		private String getUsername() {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			if (!(auth instanceof AnonymousAuthenticationToken)) {
+				UserDetails userDetail = (UserDetails) auth.getPrincipal();
+				return userDetail.getUsername();
+			}
+			return null;
+		}
+	}
+
+5. 撰寫相關網頁
+
+	5.1 homePage.jsp
+	
+		<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+		<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+		<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+		<html>
+		<head>
+		<!-- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> -->
+		<title>Home Page</title>
+		</head>
+		<body>
+			<h1>homePage.jsp</h1>
+			<h2><a href="admin.jsp">Admin</a></h2>
+			<c:if test="${not empty username}">
+				<h2>Hi, ${username} !</h2>
+				
+				<!-- "logout"為spring-security預設登出的URL, 與我們撰寫的controller或網頁無關 -->
+				<!-- 配合applicationContext-security.xml裡<csrf/>使用, ${_csrf.parameterName}為參數名, ${_csrf.token}為參數值 -->
+				<form action="<c:url value='/logout' />" method="post">
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+					<input type="submit" value="logout">
+				</form>
+				
+			</c:if>
+			<c:if test="${empty username}">
+				<a href="<c:url value='login' />">Login</a>
+			</c:if>
+			<c:if test="${not empty message}">
+				<h2>${message}</h2>
+			</c:if>
+		</body>
+		</html>
+
+	5.2 login.jsp
+	
+		<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+		<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+		<html>
+		<head>
+		<!-- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> -->
+		<title>Login</title>
+		</head>
+		<body>
+			<h1>login.jsp</h1>
+			<h2><font color="red">${errorMessage}</font></h2>
+			<form action="login" method="post">	<!-- "login"為spring-security預設登入驗證的URL, 與我們撰寫的controller或網頁無關 -->
+				<table border="1">
+					<tr>
+						<td>Username : </td>
+						<td><input type="text" name="username"></td>
+					</tr>
+					<tr>
+						<td>Password : </td>
+						<td><input type="password" name="password"></td>
+					</tr>
+					<tr>
+						<td colspan="2"><input type="submit" value="Login"></td>
+					</tr>
+				</table>
+				<!-- 配合applicationContext-security.xml裡<csrf/>使用, ${_csrf.parameterName}為參數名, ${_csrf.token}為參數值 -->
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+			</form>
+		</body>
+		</html>
+
+	5.3 403.jsp
+	
+		<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+		<html>
+		<body>
+			<h1>HTTP Status 403 - Access is denied</h1>
+
+			<c:choose>
+				<c:when test="${empty username}">
+					<h2>You do not have permission to access this page!</h2>
+				</c:when>
+				<c:otherwise>
+					<h2>Username : ${username} <br/>You do not have permission to access this page!</h2>
+				</c:otherwise>
+			</c:choose>
+
+		</body>
+		</html>
+		
+	5.4 admin.jsp (需要驗證的網頁)
+	
+		<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+		<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+		<html>
+		<head>
+		<!-- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> -->
+		<title>Admin</title>
+		</head>
+		<body>
+			<h1>admin.jsp</h1>
+		</body>
+		</html>
+		
+	----------------------------------------------------------------------------------------------------------------
+	自訂UserDetailsService(含Encoder)
+		*註 : 因為有Encoder, 所以資料庫端Table裡的密碼也要改為加密過的字串
+	
+		步驟
+		0. 完成上述步驟
+		1. 撰寫Pojo類別 : User.java
+		
+			public class User implements UserDetails, Serializable {
+				private String username;
+				private String password;
+				private Boolean enabled;
+				private List<String> roleList;
+				
+				public void setEnabled(Boolean enabled) {
+					this.enabled = enabled;
+				}
+
+				public void setUsername(String username) {
+					this.username = username;
+				}
+
+				public void setPassword(String password) {
+					this.password = password;
+				}
+				
+				public List<String> getRoleList() {
+					return roleList;
+				}
+
+				public void setRoleList(List<String> roleList) {
+					this.roleList = roleList;
+				}
+
+				@Override
+				public Collection<? extends GrantedAuthority> getAuthorities() {
+					Collection<GrantedAuthority> authorities = new HashSet<>();
+					for (String role : roleList) {
+						authorities.add(new SimpleGrantedAuthority(role));
+					}
+					return authorities;
+				}
+
+				@Override
+				public String getPassword() {
+					return password;
+				}
+
+				@Override
+				public String getUsername() {
+					return username;
+				}
+
+				@Override
+				public boolean isAccountNonExpired() {
+					return true;
+				}
+
+				@Override
+				public boolean isAccountNonLocked() {
+					return true;
+				}
+
+				@Override
+				public boolean isCredentialsNonExpired() {
+					return true;
+				}
+
+				@Override
+				public boolean isEnabled() {
+					return enabled;
+				}
+			}
+
+		2. 撰寫DAO類別 : UserDaoImpl.java
+		
+			@Repository
+			public class UserDaoImpl {
+				@Autowired
+				private DataSource dataSource;
+
+				public User findByUsername(String username) {
+					User user = null;
+					try(
+						Connection conn = dataSource.getConnection();
+						PreparedStatement pstmt = conn.prepareStatement("SELECT USERNAME,PASSWORD, ENABLED FROM USERS WHERE USERNAME = ?")
+					){
+						pstmt.setString(1, username);
+						try(ResultSet rs = pstmt.executeQuery()){
+							if (rs.next()) {
+								user = new User();
+								user.setUsername(rs.getString(1));
+								user.setPassword(rs.getString(2));
+								user.setEnabled(rs.getBoolean(3));
+								user.setRoleList(findRoleByUsername(user.getUsername()));
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					return user;
+				}
+				
+				private List<String> findRoleByUsername(String username) {
+					List<String> roleList = null;
+					try(
+						Connection conn = dataSource.getConnection();
+						PreparedStatement pstmt = conn.prepareStatement("SELECT ROLE FROM USER_ROLES WHERE USERNAME = ?")	
+					){
+						pstmt.setString(1, username);
+						try(ResultSet rs = pstmt.executeQuery()){
+							if (rs.next()) {
+								roleList = new ArrayList<>();
+								roleList.add(rs.getString(1));
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					return roleList;
+				}
+			}
+
+		3. 撰寫"自訂"的UserDetailsService.java
+		
+			@Service
+			public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
+				@Autowired
+				private UserDaoImpl userDaoImpl;
+
+				@Override
+				public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+					User user = userDaoImpl.findByUsername(username);
+					if (user == null) {
+						throw new UsernameNotFoundException(username);
+					}
+					return user;
+				}
+			}
+
+		4. 修改applicationContext-security.xml
+			
+			<beans:beans xmlns="http://www.springframework.org/schema/security"
+				...
+				
+				<!-- 4.1 宣告Encoder -->
+				<beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+					<beans:constructor-arg name="strength" value="10" />
+				</beans:bean>
+				
+				<!-- 4.2 指定自訂的UserDetailsService及Encoder
+					<authentication-manager>
+				<!-- 		<authentication-provider> -->
+				<!-- 			<jdbc-user-service data-source-ref="dataSource" -->
+				<!-- 				users-by-username-query="select username,password, enabled from users where username = ?" -->
+				<!-- 				authorities-by-username-query="select username, role from user_roles where username = ?" /> -->
+				<!-- 		</authentication-provider> -->
+						<authentication-provider user-service-ref="userDetailsService">
+							<password-encoder ref="encoder" />
+						</authentication-provider>
+					</authentication-manager>
+				
+				...
+			</beans:bean>
+	

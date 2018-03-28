@@ -1,0 +1,206 @@
+jar檔 :log4j-x.y.zz.jar
+
+支援組態檔格式
+	1. .properties
+	2. .xml
+	
+Appender種類
+	*註 : 套件為org.apache.log4j.xxx
+	
+	控制台 : ConsoleAppender
+	檔案 : FileAppender、RollingFileAppender、DailyRollingFileAppender
+	e-mail : SMTPAppender
+	資料庫 : JDBCAppender
+	
+Layout種類
+	*註 : 套件為org.apache.log4j.xxx
+	
+	自行指定 : PatternLayout
+	簡易 : SimpleLayout(層級及message)
+	HTML : HTMLLayout
+	TTCC : TTCCLayout(時間、執行緒、類別)
+	
+層級
+	1. ALL
+	2. DEBUG
+	3. INFO
+	4. WARN
+	5. ERROR
+	6. FATAL
+	7. OFF
+	
+	*註
+		1. 若設為INFO則代表INFO~FATAL層級的訊息都會輸出
+		2. ALL代表全部層級, OFF為關閉輸出Log
+		
+Pattern格式
+	%c : class, 類別全名
+	%d : datetime, 日期時間, ex. %d{yyy-MM-dd HH:mm:ss, SSS}
+	%l : location, 位置, 即第幾行
+	%m : message, 輸出訊息
+	%n : newline, 換行
+	%p : priority, 優先層級(DEBUG、INFO...)
+	%r : 輸出訊息所花時間(ms)
+	%t : thread, 執行緒名稱
+	%f : 類別名
+	
+建立步驟
+	1. 加入jar檔 : log4j-x.y.zz.jar
+	
+	2. 建立組態檔
+		預設
+			1. classpath:log4j.properties
+			2. classpath:log4j.xml
+			
+		自訂 : 需用以下方式指定載入
+			方式1 : 指定檔案系統路徑
+				PropertyConfigurator.configure("檔案系統路徑 + 檔名");
+			
+			方式2 : 指定classpath
+				Properties props = new Properties();
+				props.load(當下類別.class.getResourceAsStream("classpath路徑 + 檔名"));
+				PropertyConfigurator.configure(props);
+
+	3. 撰寫組態檔
+		xml
+			1. 基本結構及引入dtd
+				<?xml version="1.0" encoding="UTF-8" ?>
+				<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+				</log4j:configuration>
+			
+			2. 宣告及設定Appender
+				2.1 宣告
+					<appender name="自訂Appender名稱" class="org.apache.log4j.XxxAppender">
+					</appender>
+			
+				2.2 設定
+					2.2.1 其他參數設定 : 在<appender>中加入
+						<param name="建構子參數名1" value="值1" />
+						<param name="建構子參數名2" value="值2" />
+						...(依使用Appender類別的建構子參數)
+						
+					2.2.2 Layout設定
+						<layout class="org.apache.log4j.PatternLayout">
+							<param name="ConversionPattern" value="Pattern格式" />
+						</layout>
+					
+			3. 宣告及設定Root Logger
+				3.1 宣告
+					<root>
+					</root>
+				
+				3.2 設定 : 在<root>中加入
+					3.2.1 層級設計
+						<level value="層級" />
+						
+					3.2.2 Appender指定
+						<appender-ref ref="自訂Appender名稱1" />	<--對應步驟2.1自訂Appender名稱
+						<appender-ref ref="自訂Appender名稱2" />	<--對應步驟2.1自訂Appender名稱
+						...
+						
+			範例
+				<?xml version="1.0" encoding="UTF-8" ?>
+				<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+				<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+				
+					<appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+						<param name="target" value="System.out" /><!-- System.out或System.err -->
+						<layout class="org.apache.log4j.PatternLayout">
+							<param name="ConversionPattern" value="[%d{yyyy/MM/dd HH:mm:ss}][%p][%C-%L] %m%n" />
+						</layout>
+					</appender>
+					
+					<appender name="fileAppender" class="org.apache.log4j.DailyRollingFileAppender">
+						<param name="file" value="${catalina.home}/logs/log4jTest.log" />
+						<param name="append" value="true" />
+						<layout class="org.apache.log4j.PatternLayout">
+							<param name="ConversionPattern" value="[%d{yyyy/MM/dd HH:mm:ss}][%p][%C-%L] %m%n" />		
+						</layout>
+					</appender>
+				
+					<root>
+						<level value="info" />
+						<appender-ref ref="consoleAppender" />
+						<appender-ref ref="fileAppender" />
+					</root>
+				
+				</log4j:configuration>
+				
+		properties
+			1. 宣告及設定Appender
+				1.1 宣告
+					log4j.appender.自訂Appender名稱=org.apache.log4j.XxxAppender
+
+				1.2 設定
+					1.2.1 Layout指定 : log4j.appender.自訂Appender名稱.layout=org.apache.log4j.PatternLayout
+					1.2.2 Pattern格式設定 : log4j.appender.自訂Appender名稱.layout.ConversionPattern=Pattern格式
+
+			2. 宣告及設定Root Logger
+				log4j.rootLogger=層級, 自訂Appender名稱1, 自訂Appender名稱2, ...
+			
+			範例
+				log4j.appender.consoleAppender=org.apache.log4j.ConsoleAppender
+				log4j.appender.consoleAppender.layout=org.apache.log4j.PatternLayout
+				log4j.appender.consoleAppender.layout.ConversionPattern=[%d{yyyy/MM/dd HH:mm:ss}][%p][%C-%L] %m%n
+
+				log4j.appender.fileAppender=org.apache.log4j.DailyRollingFileAppender
+				log4j.appender.fileAppender.layout=org.apache.log4j.PatternLayout
+				log4j.appender.fileAppender.layout.ConversionPattern=[%d{yyyy/MM/dd HH:mm:ss}][%p][%C-%L] %m%n
+				log4j.appender.fileAppender.File=./log/Log4j.log
+
+			
+	4. 輸出Log
+		4.1 宣告Logger : Logger logger = Logger.getLogger(當下類別名.class);
+		
+		4.2 使用Logger
+			logger.debug("message");
+			logger.info("message");
+			logger.warn("message");
+			logger.error("message");
+			logger.fatal("message");
+				
+其他
+	Tomcat Path : ${catalina.home}
+	
+	其他常見Log框架
+		1. JDK logging
+		2. Apache Commons Logging
+		3. SLF4J
+		4. Log4j 2
+		5. Logback			
+				
+	JDBCAppender範例
+		*註 : 需加入DB driver
+		
+		<appender name="jdbcAppender" class="org.apache.log4j.jdbc.JDBCAppender">
+			<param name="URL" value="jdbc:mysql://主機/資料庫名"/>
+			<param name="driver" value="com.mysql.jdbc.Driver"/>
+			<param name="user" value="帳號"/>
+			<param name="password" value="密碼"/>
+			<!-- <param name="sql" value="INSERT INTO 表格名 VALUES('%x','%d','%C','%p','%m')"/> 有bug-->
+			
+			<layout class="org.apache.log4j.PatternLayout">
+				<param name="ConversionPattern" value="INSERT 表格名 VALUES('%x','%d{yyyy-MM-dd HH:mm:ss}','%C','%p','%m')" />
+			</layout>
+		</appender>		
+				
+	SMTPAppender			
+		*註 : 需加入javax.mail.jar
+
+		<appender name="smtpAppender" class="org.apache.log4j.net.SMTPAppender">
+			<param name="SMTPHost" value="smtp.gmail.com" />			<-SMTP Server
+			<param name="SMTPUsername" value="ithan0117@gmail.com" />	<--寄信帳號
+			<param name="SMTPPassword" value="0000" />					<--密碼
+			<param name="From" value="ithan0117@gmail.com" />			<--mail上顯示的寄件者
+			<param name="To" value="j27641662@yahoo.com.tw" />			<--收件者
+			<param name="Subject" value="Log of messages" />			<--主旨
+			<param name="BufferSize" value="1" />
+			<param name="EvaluatorClass" value="TriggerLogEvent" />
+			<layout class="org.apache.log4j.PatternLayout">
+				<param name="ConversionPattern" value="%t %m%n" />
+			</layout>
+		</appender>
+				
+				
+					
+					
