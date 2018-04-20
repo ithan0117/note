@@ -1,0 +1,148 @@
+角色
+	drag source : 拖拉來源
+	drop target : 放置對象
+
+事件(順序)
+	0. draggable : 非事件, 將拖拉來源設為可拖拉
+	1. dragstart : 開始拖拉
+	2. dragenter : 進入放置對象
+	3. dragover : 開始放置
+	4-1. drop : 放置
+	4-2. dragleave : 脫離放置對象
+	5. dragend : 拖拉結束 (放開拖拉來源)
+	
+轉移動作
+	effectAllowed(允許轉移動作)
+		none : 不允許任何作業
+		copy : 只能複製
+		move : 只能移動
+		link : 只有連結
+		copyMove : 只能複製或移動
+		copyLink : 只能複製或連結
+		linkMove : 只能連結或移動
+		all : 皆可
+
+	dropEffect(轉移動作)
+		none、copy、move、link
+	
+角色 - 事件
+	拖拉來源(drag source)
+		draggable
+			設為可拖拉 : document.getElementById("拖拉來源id").draggable = true;
+	
+		dragstart
+			0. 取得資料轉移器 : var dt = event.dataTransfer;
+			1. 設定允許轉移動作 : dt.effectAllowed = action;
+			2. 設定轉移資料
+				一般資料 : dt.setData("mineType", data);
+				檔案 : dt.items.add(file);
+			3. 設定拖拉圖示 : dt.setDragImage(img, xOffset, yOffset);
+		
+		dragend : 取消放置對象視覺凸顯 (ex. border還原)
+		
+		
+	放置對象(drop target)
+		dragenter : 替放置對象加入視覺凸顯 (ex. border改變)
+		
+		dragover
+			0. 取得資料轉移器 : var dt = event.dataTransfer;
+			1. 取得轉移資料型態 : var types = dt.types;
+			2. 驗證轉移資料型態 : types.includes("mineType");
+			3. 驗證轉移動作 : dt.effectAllowed == "all" || dt.effectAllowed.match(/轉移動作/i)
+			4. 設定轉移動作 : dt.dropEffect = "轉移動作";
+			5. 回傳布林值
+				成功 return false;
+				失敗 return true;
+		
+		drop : 放置轉移資料
+			一般資料 : document.getElementById("放置對象id").innerText = event.dataTransfer.getData("mineType");
+			檔案 : ??
+			
+		ondragleave : 取消放置對象視覺凸顯 (ex. border還原)
+		
+範例
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Drag and Drop</title>
+		<style>
+			div {
+				width: 200px;
+				height: 100px;
+				margin: 5px;
+			}
+		</style>
+		<script>
+			window.onload = function () {
+				var source = document.getElementById("source");
+				var target = document.getElementById("target");
+				var highlightStyle = "border: solid red 3px";
+				var icon = new Image();
+				icon.src = "../image/dino.gif";
+
+				setInterval(function () {
+					var date = new Date();
+					var hour = fixData(date.getHours());
+					var minute = fixData(date.getMinutes());
+					var second = fixData(date.getSeconds());
+					source.innerText = hour + " : " + minute + " : " + second;
+					function fixData(data) {
+						if (data && typeof data != "string" || !(data instanceof String)) {
+							data = data.toString();
+						}
+						while (data.length < 2) {
+							data = "0" + data;
+						}
+						return data;
+					}
+				}, 1000);
+				var count = 0;
+				source.draggable = true;
+				source.ondragstart = function (event) {
+					console.log(++count + " : " + event.type);
+					var dt = event.dataTransfer;
+					dt.effectAllowed = "all";
+					// dt.items.add(file);
+					dt.setData("text/plain", source.innerText);
+					dt.setDragImage(icon, 0, 0);
+				};
+				source.ondragend = function () {
+					console.log(++count + " : " + event.type);
+					target.style = "border: solid blue 1px;";
+				};
+
+				//--------------------------------------------
+
+				target.ondragenter = function () {
+					console.log(++count + " : " + event.type);
+					target.style = highlightStyle;
+				};
+				target.ondragover = function (event) {
+					console.log(++count + " : " + event.type);
+					var dt = event.dataTransfer;
+					var types = dt.types;
+					if (types && types.includes("text/plain") &&
+						(dt.effectAllowed == "all" || dt.effectAllowed.match(/move/i))) {
+						dt.dropEffect = "move";
+						return false;
+					}
+					return true;
+				};
+				target.ondrop = function (event) {
+					console.log(++count + " : " + event.type);
+					target.innerText = event.dataTransfer.getData("text");
+				};
+				target.ondragleave = function () {
+					console.log(++count + " : " + event.type);
+					target.style = "border: solid blue 1px;";
+				};
+			};
+		</script>
+	</head>
+	<body>
+		<h1>DnDTest.html</h1>
+		<div id="source" style="border: solid green 1px;"></div>
+		<div id="target" style="border: solid blue 1px;"></div>
+	</body>
+	</html>

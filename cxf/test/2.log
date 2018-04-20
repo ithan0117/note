@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<SOAP-ENV:Header xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" />
+	<soap:Body>
+		<ns2:downloadFile
+			xmlns:ns2="http://online.webservice.crystalreport.project.transglobe.ebizprise.com/">
+			<OnlineKernelGenRequest>
+				<fileFormat>pdf</fileFormat>
+				<moduleName>UAT2</moduleName>
+				<parameterList>
+					<isArray>0</isArray>
+					<key>PORD_SOURCE</key>
+					<type>string</type>
+					<value />
+				</parameterList>
+				<parameterList>
+					<isArray>0</isArray>
+					<key>CHANNEL_ID</key>
+					<type>string</type>
+					<value>46923265</value>
+				</parameterList>
+				<parameterList>
+					<isArray>0</isArray>
+					<key>PRODUCT_ID</key>
+					<type>string</type>
+					<value />
+				</parameterList>
+				<parameterList>
+					<isArray>0</isArray>
+					<key>PRODUCT_LIST</key>
+					<type>string</type>
+					<value>10229</value>
+				</parameterList>
+				<parameterList>
+					<isArray>0</isArray>
+					<key>GENERATE_DATE</key>
+					<type>date</type>
+					<value>20170615</value>
+				</parameterList>
+				<parameterList>
+					<isArray>0</isArray>
+					<key>USER</key>
+					<type>string</type>
+					<value>001120</value>
+				</parameterList>
+				<parameterList>
+					<isArray>0</isArray>
+					<key>p_userid</key>
+					<type>string</type>
+					<value>001120</value>
+				</parameterList>
+				<reportId>LS_SC_5011</reportId>
+				<userId>001120</userId>
+			</OnlineKernelGenRequest>
+		</ns2:downloadFile>
+	</soap:Body>
+</soap:Envelope>

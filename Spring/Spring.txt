@@ -382,97 +382,97 @@ AOP(Aspect Oriented Programming)
 					proceed(Object[] args)					繼續執行下一個通知或目標方法 (含參數)
 					set$AroundClosure(AroundClosure arc)	設定AroundClosure (用途???)
 			
-			JDBC Supported
-				目的 : 簡化繁雜的JDBC寫法
-				
-			春哥教材(補!!!!!!!!!!!!!!)
-				1. DriverManagerDataSource
-				2. JdbcTemplate
-				3. RowMapper
-				4. JdbcDaoSupport
-				
-				JdbcTemplate類別
-					*註 : Spring框架中, 名稱為XxxTemplate的類別/介面為整合多功能之意
-					功能
-			1. update sql script
-			2. call procedure
-			3. get result
-			4. catch SQLException
-					
-					建立步驟
-			1. 宣告DataSource
-			2. 宣告JdbcTemplate, 並透過建構子將DataSource注入
-				<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-					<constructor-arg ref="dataSource" />
-				</bean>
-				
-			3. 定義映射器類別
-				3.1 實作RowMapper<XxxBean>
-				3.2 實作mapRow()方法, 用JDBC方式指定ResultSet的第幾欄放入POJO的哪一個性質
-				3.ex
-					public class XxxMapper implements RowMapper<XxxBean> {
-						@Override
-						public Xxx mapRow(ResultSet rs, int rowNum) throws SQLException {
-							Xxx xxx = new Xxx();
-							xxx.set性質1(rs.get資料型態(1));
-							xxx.set性質2(rs.get資料型態(2));
-							...
-							return xxx;
-						}
-					}
-					
-			4. 定義DAO介面, 內含DML方法
-			5. 定義DAO實作類別
-				5.1 實作DAO介面
-				5.2 宣告一屬性JdbcTemplate jdbcTemplate : private JdbcTemplate jdbcTemplate;
-				5.3 定義一建構子, 含有一JdbcTemplate類別之參數
-				5.4 實作DML方法
-					INSERT、DELETE、UPDATE : jdbcTemplate.update(String sql, Object... args)
-					SELECT BY KEY : jdbcTemplate.queryForObject(String sql, Object[] args, RowMapper<T> rowMapper)
-					SELECT ALL : jdbcTemplate.query(String sql, RowMapper<T> rowMapper)
-					OTHERS(CREATE、DROP、TRUNCATE...) : jdbcTemplate.execute(String sql)
-				5.ex
-					public class XxxDAO implements IXxxDAO {
-						private JdbcTemplate jdbcTemplate;
-						
-						public XxxDAO(JdbcTemplate jdbcTemplate) {
-							this.jdbcTemplate = jdbcTemplate;
-						}
+JDBC Supported
+	目的 : 簡化繁雜的JDBC寫法
+	
+春哥教材(補!!!!!!!!!!!!!!)
+	1. DriverManagerDataSource
+	2. JdbcTemplate
+	3. RowMapper
+	4. JdbcDaoSupport
+	
+	JdbcTemplate類別
+		*註 : Spring框架中, 名稱為XxxTemplate的類別/介面為整合多功能之意
+		功能
+1. update sql script
+2. call procedure
+3. get result
+4. catch SQLException
+		
+		建立步驟
+1. 宣告DataSource
+2. 宣告JdbcTemplate, 並透過建構子將DataSource注入
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<constructor-arg ref="dataSource" />
+	</bean>
+	
+3. 定義映射器類別
+	3.1 實作RowMapper<XxxBean>
+	3.2 實作mapRow()方法, 用JDBC方式指定ResultSet的第幾欄放入POJO的哪一個性質
+	3.ex
+		public class XxxMapper implements RowMapper<XxxBean> {
+			@Override
+			public Xxx mapRow(ResultSet rs, int rowNum) throws SQLException {
+				Xxx xxx = new Xxx();
+				xxx.set性質1(rs.get資料型態(1));
+				xxx.set性質2(rs.get資料型態(2));
+				...
+				return xxx;
+			}
+		}
+		
+4. 定義DAO介面, 內含DML方法
+5. 定義DAO實作類別
+	5.1 實作DAO介面
+	5.2 宣告一屬性JdbcTemplate jdbcTemplate : private JdbcTemplate jdbcTemplate;
+	5.3 定義一建構子, 含有一JdbcTemplate類別之參數
+	5.4 實作DML方法
+		INSERT、DELETE、UPDATE : jdbcTemplate.update(String sql, Object... args)
+		SELECT BY KEY : jdbcTemplate.queryForObject(String sql, Object[] args, RowMapper<T> rowMapper)
+		SELECT ALL : jdbcTemplate.query(String sql, RowMapper<T> rowMapper)
+		OTHERS(CREATE、DROP、TRUNCATE...) : jdbcTemplate.execute(String sql)
+	5.ex
+		public class XxxDAO implements IXxxDAO {
+			private JdbcTemplate jdbcTemplate;
 			
-						@Override
-						public Integer insert(XxxBean bean) {
-							String sql = "INSERT XXX(...) VALUES(...)";
-							return jdbcTemplate.update(sql, bean.getXxx(), bean.getYyy());
-						}
-			
-						@Override
-						public int deleteByKey(Integer key) {
-							String sql = "DELETE FROM XXX WHERE KEY = ?";
-							return jdbcTemplate.update(sql, key);
-						}
-			
-						@Override
-						public int update(XxxBean bean) {
-							String sql = "UPDATE XXX SET COLUMN1 = ?, ...";
-							return jdbcTemplate.update(sql, bean.getXxx(), bean.getYyy());
-						}
-			
-						@Override
-						public XxxBean selectByKey(Integer key) {
-							String sql = "SELECT * FROM XXX WHERE KEY = ?";
-							return jdbcTemplate.queryForObject(sql, new Object[]{key}, new XxxMapper());
-						}
-			
-						@Override
-						public List<XxxBean> selectAll() {
-							String sql = "SELECT * FROM XXX";
-							return jdbcTemplate.query(sql, new XxxMapper());
-						}
-					}
-					
-				SimpleJdbcCall類別
-					功能 : 對內儲程序呼叫/取結果
-					建立步驟
+			public XxxDAO(JdbcTemplate jdbcTemplate) {
+				this.jdbcTemplate = jdbcTemplate;
+			}
+
+			@Override
+			public Integer insert(XxxBean bean) {
+				String sql = "INSERT XXX(...) VALUES(...)";
+				return jdbcTemplate.update(sql, bean.getXxx(), bean.getYyy());
+			}
+
+			@Override
+			public int deleteByKey(Integer key) {
+				String sql = "DELETE FROM XXX WHERE KEY = ?";
+				return jdbcTemplate.update(sql, key);
+			}
+
+			@Override
+			public int update(XxxBean bean) {
+				String sql = "UPDATE XXX SET COLUMN1 = ?, ...";
+				return jdbcTemplate.update(sql, bean.getXxx(), bean.getYyy());
+			}
+
+			@Override
+			public XxxBean selectByKey(Integer key) {
+				String sql = "SELECT * FROM XXX WHERE KEY = ?";
+				return jdbcTemplate.queryForObject(sql, new Object[]{key}, new XxxMapper());
+			}
+
+			@Override
+			public List<XxxBean> selectAll() {
+				String sql = "SELECT * FROM XXX";
+				return jdbcTemplate.query(sql, new XxxMapper());
+			}
+		}
+		
+	SimpleJdbcCall類別
+		功能 : 對內儲程序呼叫/取結果
+		建立步驟
 			1. 宣告DataSource
 			2. 宣告SimpleJdbcCall, 並透過建構子將DataSource注入
 				<bean id="simpleJdbcCall" class="org.springframework.jdbc.core.simple.SimpleJdbcCall">
@@ -527,9 +527,9 @@ AOP(Aspect Oriented Programming)
 						END @@
 					DELIMITER ;
 				
-				SimpleJdbcInsert類別
-					功能 : INSERT資料, 並回傳自動產生的鍵值
-					建立步驟
+	SimpleJdbcInsert類別
+		功能 : INSERT資料, 並回傳自動產生的鍵值
+		建立步驟
 			1. 宣告DataSource
 			2. 宣告SimpleJdbcInsert, 並透過建構子將DataSource注入
 			3. 宣告SimpleJdbcInsert : SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource);
@@ -564,183 +564,182 @@ AOP(Aspect Oriented Programming)
 					}
 				}
 				
-				其他類別
-					1. NamedParameterJdbcTemplate
-					2. SimpleJdbcTemplate
+	其他類別
+		1. NamedParameterJdbcTemplate
+		2. SimpleJdbcTemplate
+		
+	交易控制(Transaction Management)
+		關聯式資料庫的交易控制特性(ACID)
+			1. Atomicity(原子性)
+			2. Consistency(一致性)
+			3. Isolation(隔離性)
+			4. Durability(持久性)
 				
-				
-			交易控制(Transaction Management)
-				關聯式資料庫的交易控制特性(ACID)
-					1. Atomicity(原子性)
-					2. Consistency(一致性)
-					3. Isolation(隔離性)
-					4. Durability(持久性)
-				
-				PlatformTransactionManager - Spring交易控制的核心介面
-					方法
-			TransactionStatus getTransaction(TransactionDefinition definition) : 依傳播行為參數, 回傳當前交易或新建一個交易
-			void commit(TransactionStatus status) : 依狀態參數, 成功交易
-			void rollback(TransactionStatus status) : 依狀態參數, 回滾交易
-				
-				TransactionDefinition - 交易定義介面, 即設定交易傳播行為和隔離層級介面
-					方法
-			int getPropagationBehavior() : 傳回交易傳播行為代碼. Spring提供與EJB CMT類似的交易傳播選項
-			int getIsolationLevel() : 傳回交易隔離層級
-			String getName() : 傳回交易名稱
-			int getTimeout() : 傳回交易時間上限
-			boolean isReadOnly() : 交易唯讀否
-				
-					常數
-			隔離層級(Isolation Level)
-				ISOLATION_DEFAULT : 預設的隔離層級
-				ISOLATION_READ_UNCOMMITTED : 最低的層級, 允許髒讀、不可重複讀和幻讀
-				ISOLATION_READ_COMMITTED : 次低的層級, 防止髒讀, 但允許不可重複讀和幻讀
-				ISOLATION_REPEATABLE_READ : 第三層級, 防止髒讀和不可重複讀, 但允許幻讀
-				ISOLATION_SERIALIZABLE : 最高的層級, 防止髒讀、不可重複讀和幻讀
-			
-			傳播類型
-				PROPAGATION_MANDATORY : 支援當前交易, 若無當前交易則拋出例外
-				PROPAGATION_NESTED : 若當前交易存在, 則在內部的交易執行
-				PROPAGATION_NEVER : 不支援當前交易, 若當前交易存在則拋出例外
-				PROPAGATION_NOT_SUPPORTED : 不支援當前交易, 只執行非交易控制動作
-				PROPAGATION_REQUIRED : 支援當前交易, 若無當前交易則建立一個新的交易
-				PROPAGATION_REQUIRES_NEW : 建立一個新的交易, 若當前交易存在則停止當前交易
-				PROPAGATION_SUPPORTS : 支援當前交易, 若當前交易不存在則執行非交易控制動作
-				TIMEOUT_DEFAULT : 使用底層的超時控制, 若底層不支援則無
-				
-					TransactionStatus - 交易狀態介面
+		PlatformTransactionManager - Spring交易控制的核心介面
 			方法
-				boolean hasSavepoint() : 交易有保存點否
-				boolean isCompleted() : 交易已完成否. (已經commit / rollback)
-				boolean isNewTransaction() : 當前交易為新建否
-				boolean isRollbackOnly() : 交易被設定為只能回滾否
-				void setRollbackOnly() : 設定交易為只能回滾
-				
-				撰寫方式
-					1. 編程式 : 交易控制全部寫在Java裡, 靈活度高, 但難維護
-					2. 聲明式 : 使用註釋或XML, 將程式與交易控制抽離, 易維護
+				TransactionStatus getTransaction(TransactionDefinition definition) : 依傳播行為參數, 回傳當前交易或新建一個交易
+				void commit(TransactionStatus status) : 依狀態參數, 成功交易
+				void rollback(TransactionStatus status) : 依狀態參數, 回滾交易
 					
-				編程式建立步驟
-					*註 : 編程式是在DAO裡加入交易控制
-					0. 先撰寫完DAO相關程式(ex. 以Jdbctemplate撰寫DAO)
+		TransactionDefinition - 交易定義介面, 即設定交易傳播行為和隔離層級介面
+			方法
+				int getPropagationBehavior() : 傳回交易傳播行為代碼. Spring提供與EJB CMT類似的交易傳播選項
+				int getIsolationLevel() : 傳回交易隔離層級
+				String getName() : 傳回交易名稱
+				int getTimeout() : 傳回交易時間上限
+				boolean isReadOnly() : 交易唯讀否
 					
-					1. 相關屬性宣告 : 在DAO實作類別內加入屬性
-			1.1 交易管理者 : private PlatformTransactionManager txManager;
-			1.2 交易定義 : private TransactionDefinition txDefinition;
-			1.3 交易狀態 : private TransactionStatus txStatus;
+			常數
+				隔離層級(Isolation Level)
+					ISOLATION_DEFAULT : 預設的隔離層級
+					ISOLATION_READ_UNCOMMITTED : 最低的層級, 允許髒讀、不可重複讀和幻讀
+					ISOLATION_READ_COMMITTED : 次低的層級, 防止髒讀, 但允許不可重複讀和幻讀
+					ISOLATION_REPEATABLE_READ : 第三層級, 防止髒讀和不可重複讀, 但允許幻讀
+					ISOLATION_SERIALIZABLE : 最高的層級, 防止髒讀、不可重複讀和幻讀
+				
+				傳播類型
+					PROPAGATION_MANDATORY : 支援當前交易, 若無當前交易則拋出例外
+					PROPAGATION_NESTED : 若當前交易存在, 則在內部的交易執行
+					PROPAGATION_NEVER : 不支援當前交易, 若當前交易存在則拋出例外
+					PROPAGATION_NOT_SUPPORTED : 不支援當前交易, 只執行非交易控制動作
+					PROPAGATION_REQUIRED : 支援當前交易, 若無當前交易則建立一個新的交易
+					PROPAGATION_REQUIRES_NEW : 建立一個新的交易, 若當前交易存在則停止當前交易
+					PROPAGATION_SUPPORTS : 支援當前交易, 若當前交易不存在則執行非交易控制動作
+					TIMEOUT_DEFAULT : 使用底層的超時控制, 若底層不支援則無
+					
+						TransactionStatus - 交易狀態介面
+				方法
+					boolean hasSavepoint() : 交易有保存點否
+					boolean isCompleted() : 交易已完成否. (已經commit / rollback)
+					boolean isNewTransaction() : 當前交易為新建否
+					boolean isRollbackOnly() : 交易被設定為只能回滾否
+					void setRollbackOnly() : 設定交易為只能回滾
+				
+		撰寫方式
+			1. 編程式 : 交易控制全部寫在Java裡, 靈活度高, 但難維護
+			2. 聲明式 : 使用註釋或XML, 將程式與交易控制抽離, 易維護
 			
-					2. 初始化交易管理者 : 在DAO實作類別內
-			2.1 透過建構子注入DataSource
-			2.2 在建構子內初始化 : txManager = new DataSourceTransactionManager(dataSource);
-			2.補充 : jdbcTemplate = new JdbcTemplate(dataSource);
-				
-					3. 加入交易控制 :  : 在DAO實作類別內, 需要交易控制的方法內加上..
-			3.1 加上try-catch : 至少要包含jdbcTemplate.update(...);
-			3.2 交易定義初始化 : txDefinition = new DefaultTransactionDefinition();
-			3.3 交易狀態初始化 : txStatus = txManager.getTransaction(txDefinition);
-			3.4 Commit : 在try區塊內, jdbcTemplate.update(...)的下一行, 加上txManager.commit(txStatus);
-			3.5 Rollback : 在catch區塊內, e.printStackTrace()的下一行, 加上txManager.rollback(txStatus);
-				
-					ex.
-			public class MemberDAOTxManage implements IMemberDAO {
-				private final static MemberMapper MAPPER = new MemberMapper();
-				private JdbcTemplate jdbcTemplate;
-				private PlatformTransactionManager txManager;
-				private TransactionDefinition txDefinition;
-				private TransactionStatus txStatus;
-				
-				public MemberDAOTxManage(DataSource dataSource) {
-					jdbcTemplate = new JdbcTemplate(dataSource);
-					txManager = new DataSourceTransactionManager(dataSource);
-				}
+		編程式建立步驟
+			*註 : 編程式是在DAO裡加入交易控制
+			0. 先撰寫完DAO相關程式(ex. 以Jdbctemplate撰寫DAO)
 			
-				@Override
-				public int insertMember(Member bean) {
-					int result = -1;
-					String sql = "INSERT MEMBER(ACCOUNT, PASSWORD, NICKNAME, CREATE_TIME, PASS, SESSION_ID) VALUES(?, ?, ?, ?, ?, ?)";
-					txDefinition = new DefaultTransactionDefinition();
-					txStatus = txManager.getTransaction(txDefinition);
-					try {
-						result = jdbcTemplate.update(sql, bean.getAccount(), bean.getPassword(), bean.getNickname(), bean.getCreateTime(), bean.getPass(), bean.getSessionId());
-						txManager.commit(txStatus);
-					} catch (Exception e) {
-						e.printStackTrace();
-						txManager.rollback(txStatus);
+			1. 相關屬性宣告 : 在DAO實作類別內加入屬性
+				1.1 交易管理者 : private PlatformTransactionManager txManager;
+				1.2 交易定義 : private TransactionDefinition txDefinition;
+				1.3 交易狀態 : private TransactionStatus txStatus;
+			
+			2. 初始化交易管理者 : 在DAO實作類別內
+				2.1 透過建構子注入DataSource
+				2.2 在建構子內初始化 : txManager = new DataSourceTransactionManager(dataSource);
+				2.補充 : jdbcTemplate = new JdbcTemplate(dataSource);
+					
+						3. 加入交易控制 :  : 在DAO實作類別內, 需要交易控制的方法內加上..
+				3.1 加上try-catch : 至少要包含jdbcTemplate.update(...);
+				3.2 交易定義初始化 : txDefinition = new DefaultTransactionDefinition();
+				3.3 交易狀態初始化 : txStatus = txManager.getTransaction(txDefinition);
+				3.4 Commit : 在try區塊內, jdbcTemplate.update(...)的下一行, 加上txManager.commit(txStatus);
+				3.5 Rollback : 在catch區塊內, e.printStackTrace()的下一行, 加上txManager.rollback(txStatus);
+				
+			ex.
+				public class MemberDAOTxManage implements IMemberDAO {
+					private final static MemberMapper MAPPER = new MemberMapper();
+					private JdbcTemplate jdbcTemplate;
+					private PlatformTransactionManager txManager;
+					private TransactionDefinition txDefinition;
+					private TransactionStatus txStatus;
+					
+					public MemberDAOTxManage(DataSource dataSource) {
+						jdbcTemplate = new JdbcTemplate(dataSource);
+						txManager = new DataSourceTransactionManager(dataSource);
 					}
-					return result;
-				}
-			
-				@Override
-				public int deleteMemberByKey(Integer id) {
-					int result = -1;
-					String sql = "DELETE FROM MEMBER WHERE ID = ?";
-					txDefinition = new DefaultTransactionDefinition();
-					txStatus = txManager.getTransaction(txDefinition);
-					try {
-						result = jdbcTemplate.update(sql, id);
-						txManager.commit(txStatus);
-					} catch (Exception e) {
-						e.printStackTrace();
-						txManager.rollback(txStatus);
+				
+					@Override
+					public int insertMember(Member bean) {
+						int result = -1;
+						String sql = "INSERT MEMBER(ACCOUNT, PASSWORD, NICKNAME, CREATE_TIME, PASS, SESSION_ID) VALUES(?, ?, ?, ?, ?, ?)";
+						txDefinition = new DefaultTransactionDefinition();
+						txStatus = txManager.getTransaction(txDefinition);
+						try {
+							result = jdbcTemplate.update(sql, bean.getAccount(), bean.getPassword(), bean.getNickname(), bean.getCreateTime(), bean.getPass(), bean.getSessionId());
+							txManager.commit(txStatus);
+						} catch (Exception e) {
+							e.printStackTrace();
+							txManager.rollback(txStatus);
+						}
+						return result;
 					}
-					return result;
-				}
 			
-				@Override
-				public int updateMember(Member bean) {
-					int result = -1;
-					String sql = "UPDATE MEMBER SET ACCOUNT = ?, PASSWORD = ?, NICKNAME = ?, CREATE_TIME = ?, PASS = ?, SESSION_ID = ? WHERE ID = ?";
-					txDefinition = new DefaultTransactionDefinition();
-					txStatus = txManager.getTransaction(txDefinition);
-					try {
-						result = jdbcTemplate.update(sql, bean.getAccount(), bean.getPassword(), bean.getNickname(), bean.getCreateTime(), bean.getPass(), bean.getSessionId(), bean.getId());
-						txManager.commit(txStatus);
-					} catch (Exception e) {
-						e.printStackTrace();
-						txManager.rollback(txStatus);
+					@Override
+					public int deleteMemberByKey(Integer id) {
+						int result = -1;
+						String sql = "DELETE FROM MEMBER WHERE ID = ?";
+						txDefinition = new DefaultTransactionDefinition();
+						txStatus = txManager.getTransaction(txDefinition);
+						try {
+							result = jdbcTemplate.update(sql, id);
+							txManager.commit(txStatus);
+						} catch (Exception e) {
+							e.printStackTrace();
+							txManager.rollback(txStatus);
+						}
+						return result;
 					}
-					return result; 
+				
+					@Override
+					public int updateMember(Member bean) {
+						int result = -1;
+						String sql = "UPDATE MEMBER SET ACCOUNT = ?, PASSWORD = ?, NICKNAME = ?, CREATE_TIME = ?, PASS = ?, SESSION_ID = ? WHERE ID = ?";
+						txDefinition = new DefaultTransactionDefinition();
+						txStatus = txManager.getTransaction(txDefinition);
+						try {
+							result = jdbcTemplate.update(sql, bean.getAccount(), bean.getPassword(), bean.getNickname(), bean.getCreateTime(), bean.getPass(), bean.getSessionId(), bean.getId());
+							txManager.commit(txStatus);
+						} catch (Exception e) {
+							e.printStackTrace();
+							txManager.rollback(txStatus);
+						}
+						return result; 
+					}
+			
+					...//(select不需交易控制, 略..)
+			
 				}
-			
-				...//(select不需交易控制, 略..)
-			
-			}
 				
-				聲明式建立步驟
-					*註 : 聲明式是在XML裡加入交易控制, 而此方式是用AOP來完成交易控制
+		聲明式建立步驟
+			*註 : 聲明式是在XML裡加入交易控制, 而此方式是用AOP來完成交易控制
 					
-					0. 先撰寫完DAO相關程式(ex. 以Jdbctemplate撰寫DAO)
+			0. 先撰寫完DAO相關程式(ex. 以Jdbctemplate撰寫DAO)
 				
-					1. 宣告交易管理者
-			<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-				<property name="dataSource"  ref="dataSource" />    
-			</bean>
+			1. 宣告交易管理者
+				<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+					<property name="dataSource"  ref="dataSource" />    
+				</bean>
 					
-					2. 設定交易控制通知(Advice) : 指向需交易控制的方法
-			<tx:advice id="txAdvice"  transaction-manager="txManager">
-				<tx:attributes>
-					<tx:method name="insertXxx" />	<--方法名
-					<tx:method name="deleteXxx" />	<--方法名
-					<tx:method name="updateXxx" />	<--方法名
-				</tx:attributes>
-			</tx:advice>
+			2. 設定交易控制通知(Advice) : 指向需交易控制的方法
+				<tx:advice id="txAdvice"  transaction-manager="txManager">
+					<tx:attributes>
+						<tx:method name="insertXxx" />	<--方法名
+						<tx:method name="deleteXxx" />	<--方法名
+						<tx:method name="updateXxx" />	<--方法名
+					</tx:attributes>
+				</tx:advice>
 			
-					3. 設定交易控制實際切入點
-			<aop:config>
-				<aop:pointcut id="DMLOperation" expression="execution(* model.dao.XxxDAO.*(..))"/>	<--設定實際切入點監控的方法expression
-				<aop:advisor advice-ref="txAdvice" pointcut-ref="DMLOperation"/>	<--指定通知及實際切入點
-			</aop:config>
+			3. 設定交易控制實際切入點
+				<aop:config>
+					<aop:pointcut id="DMLOperation" expression="execution(* model.dao.XxxDAO.*(..))"/>	<--設定實際切入點監控的方法expression
+					<aop:advisor advice-ref="txAdvice" pointcut-ref="DMLOperation"/>	<--指定通知及實際切入點
+				</aop:config>
 				
-			MVC
-				支援技術
-					Model : POJO
-					View : HTML、JSP、File(pdf、excel)、XML、JSON、Velocity模板、XSLT、Atom、RSS提要、JasperReports
-					Controller : Spring Controller
-				
-				DispatcherServlet - 分派者
-					角色 : Spring-MVC的核心類別, 整個Spring-MVC都是圍繞著DispatcherServlet設計
-					功能 : 所有請求和回應的調派
-					請求回應流程
+MVC
+	支援技術
+		Model : POJO
+		View : HTML、JSP、File(pdf、excel)、XML、JSON、Velocity模板、XSLT、Atom、RSS提要、JasperReports
+		Controller : Spring Controller
+	
+	DispatcherServlet - 分派者
+		角色 : Spring-MVC的核心類別, 整個Spring-MVC都是圍繞著DispatcherServlet設計
+		功能 : 所有請求和回應的調派
+		請求回應流程
 			0. 用戶端發出請求
 			1. DispatcherServlet接收請求, 參考HandlerMapping
 			2. HandlerMapping依映射設定, 返回選擇的Controller名稱給DispatcherServlet
@@ -756,19 +755,19 @@ AOP(Aspect Oriented Programming)
 			8. View顯示結果
 			*註 : HandlerMapping、Controller、ViewResolver都是WebApplicationContext的一部分
 				
-				建立步驟
-					1. 宣告DispatcherServlet : 在web.xml的<web-app>內加入
+	建立步驟
+		1. 宣告DispatcherServlet : 在web.xml的<web-app>內加入
 			<servlet>
-			      			<servlet-name>mvcDispatcher</servlet-name>	<--自訂的DispatcherServlet名稱
-			     	 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-			      			<load-on-startup>1</load-on-startup>
+				<servlet-name>mvcDispatcher</servlet-name>	<--自訂的DispatcherServlet名稱
+				<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+				<load-on-startup>1</load-on-startup>
 			</servlet>
 			<servlet-mapping>
 				<servlet-name>mvcDispatcher</servlet-name>	<--自訂的DispatcherServlet名稱
 				<url-pattern>/</url-pattern>	<--指定哪些url會經過DispatcherServlet
 			</servlet-mapping>
 				
-					2. 指定DispatcherServlet組態檔路徑和檔名 : 在web.xml
+		2. 指定DispatcherServlet組態檔路徑和檔名 : 在web.xml
 			*註 : 若使用預設的路徑和檔名則不需指定. 預設路徑和檔名為 : WEB-INFO/步驟1自訂的DispatcherServlet名稱-servlet.xml
 					
 			方式1 : <web-app>內加入
@@ -783,7 +782,7 @@ AOP(Aspect Oriented Programming)
 					<param-value>路徑/檔名.xml</param-value>
 				</init-param>
 				
-					3. 建立及定義組態檔
+		3. 建立及定義組態檔
 			3.1 建立 : 依步驟2所指定位置及名稱建立組態檔
 			
 			3.2 引用xsd
@@ -817,7 +816,7 @@ AOP(Aspect Oriented Programming)
 					<property name="contentType" value="text/html;charset=UTF-8" />		<--設定View的類型(Content Type)及編碼
 				</bean> 
 				
-					4. 建立及撰寫控制器類別		
+		4. 建立及撰寫控制器類別		
 			4.1 建立 : 依步驟3.3所指定套件下新增一類別, 名稱為XxxController
 			
 			4.2 撰寫 : 開啟步驟4.1建立的XxxController, 加入..
@@ -859,8 +858,8 @@ AOP(Aspect Oriented Programming)
 					}
 				}
 				
-				RESTFul風格的Spring MVC
-					說明 : 用http的請求方法操作資料
+	RESTFul風格的Spring MVC
+		說明 : 用http的請求方法操作資料
 			action	http Request Method		DB DML Operation
 			------------------------------------------------
 			取得	GET						SELECT
@@ -868,10 +867,10 @@ AOP(Aspect Oriented Programming)
 			更新	PUT						UPDATE
 			刪除	DELETE					DELETE
 				
-					HiddenHttpMethodFilter
+		HiddenHttpMethodFilter
 			用途 : 因為<form>只支援GET和POST方法, 使用此過濾器能"模擬"出PUT和DELETE的請求, 來達到RESUTful
 			
-					建立步驟
+		建立步驟
 			1. 宣告DispatcherServlet : 同上建立步驟
 			
 			2. 指定DispatcherServlet組態檔路徑和檔名 : 同上建立步驟
@@ -915,8 +914,7 @@ AOP(Aspect Oriented Programming)
 					public @ResponseBody int put(@PathVariable Integer id) {
 						...
 					}
-				}
-				
+				}		
 	
 	加入Spring jstl的MVC範例
 		MemberController.java
@@ -1278,23 +1276,3 @@ AOP(Aspect Oriented Programming)
 					//..and setter/getter here
 				}
 				
-----------------------------------------------------------------------------------------------
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-	
