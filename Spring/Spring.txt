@@ -1,15 +1,15 @@
-®e¾¹
+å®¹å™¨
 	1. BeanFactory
 		BeanFactory factory = new XmlBeanFactory(new ClassPathResource("beans.xml"));
 		
 	2. ApplicationContext
-		2.1 ¨Ì§¹¾ã¸ô®|¸ü¤J : ApplicationContext context = new FileSystemXmlApplicationContext("§¹¾ã¸ô®|+ÀÉ¦W");
-		2.2 ¨Ìclasspath¸ü¤J : ApplicationContext context = new ClassPathXmlApplicationContext("ÀÉ¦W");
-		2.3 ¨ÌwebÀô¹Ò®Ú¥Ø¿ı¸ü¤JApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(sc);
-			*µù : sc¬°ServletContext, ¦bServlet¥ÎgetServletContext()¨ú±o
-		2.4 Ãö³¬ : ((ConfigurableApplicationContext) context).close();
-²ÕºAÀÉ - ¦bXML¸Ì²ÕºA³]©w
-	1. °ò¥»¬[ºc :
+		2.1 ä¾å®Œæ•´è·¯å¾‘è¼‰å…¥ : ApplicationContext context = new FileSystemXmlApplicationContext("å®Œæ•´è·¯å¾‘+æª”å");
+		2.2 ä¾classpathè¼‰å…¥ : ApplicationContext context = new ClassPathXmlApplicationContext("æª”å");
+		2.3 ä¾webç’°å¢ƒæ ¹ç›®éŒ„è¼‰å…¥ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(sc);
+			*è¨» : scç‚ºServletContext, åœ¨Servletç”¨getServletContext()å–å¾—
+		2.4 é—œé–‰ : ((ConfigurableApplicationContext) context).close();
+çµ„æ…‹æª” - åœ¨XMLè£¡çµ„æ…‹è¨­å®š
+	1. åŸºæœ¬æ¶æ§‹ :
 		<?xml version="1.0" encoding="UTF-8"?>
 		<beans xmlns="http://www.springframework.org/schema/beans"
     			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -18,70 +18,70 @@
 
 		</beans>
 	2. <bean>
-		2.1 Äİ©Ê»¡©ú©M¤l¼ĞÅÒ
+		2.1 å±¬æ€§èªªæ˜å’Œå­æ¨™ç±¤
 			Property			Required	Description
 			----------------------------------------------------------------------------------------------------------------------------
-			id						O		ÃÑ§O¦WºÙ
-			name					O		§O¦W, ¥i©w¸q¦h­Ó§O¦W, ¥H¤À¸¹¡BªÅ®æ©Î³r¸¹¤À¹j. ­YµL©w¸qid®É, nameªº²Ä¤@­Ó§O¦W¬°ÃÑ§O¦WºÙ. 
-			class					R		©ÒÄİÃş§O
-			scope					O		½d³ò, singleton | prototype | session | request
-			autowire				O		¦Û°Ê¸Ë°t, default | byName | byType | constructor | no
-			lazy-init				O		©µ¿ğªì©l¤Æ
-			init-method				O		ªì©l¤Æ¤èªk
-			destroy-method			O		¾P·´¤èªk
-			parent					O		¤÷bean, ¤lbean·|Ä~©Ó¤÷bean¤§Äİ©Ê­È
-			abstract				O		¬°©â¶Hbean§_. abstract="true"®É, ¤£³]©wclassÄİ©Ê. (©â¶Hbean¥i±N©w¸q¦nªºÄİ©Ê­È, µ¹¤lbeanÄ~©Ó)
-			<constructor-arg>				¥H«Øºc¤lª`¤J, ¨Ï¥Î¦h°Ñ¼Æ«Øºc¤l®É¥i¥ÎindexÄİ©Ê³]©w°Ñ¼Æ¶¶§Ç
-			<property>						¥Hsetterª`¤J
-			<list>							ª`¤J¦h­È, ¥i­«½Æ
-			<set>							ª`¤J¦h­È, ¤£¥i­«½Æ
-			<map>							ª`¤J¦h­È, ¬°entry model, key©Mvalue¥i¥H¬O¥ô¦ó«¬ºA
-			<props>							ª`¤J¦h­È, ¬°entry model, key©Mvalue¥u¯à¬O¦r¦ê«¬ºA
+			id						O		è­˜åˆ¥åç¨±
+			name					O		åˆ¥å, å¯å®šç¾©å¤šå€‹åˆ¥å, ä»¥åˆ†è™Ÿã€ç©ºæ ¼æˆ–é€—è™Ÿåˆ†éš”. è‹¥ç„¡å®šç¾©idæ™‚, nameçš„ç¬¬ä¸€å€‹åˆ¥åç‚ºè­˜åˆ¥åç¨±. 
+			class					R		æ‰€å±¬é¡åˆ¥
+			scope					O		ç¯„åœ, singleton | prototype | session | request
+			autowire				O		è‡ªå‹•è£é…, default | byName | byType | constructor | no
+			lazy-init				O		å»¶é²åˆå§‹åŒ–
+			init-method				O		åˆå§‹åŒ–æ–¹æ³•
+			destroy-method			O		éŠ·æ¯€æ–¹æ³•
+			parent					O		çˆ¶bean, å­beanæœƒç¹¼æ‰¿çˆ¶beanä¹‹å±¬æ€§å€¼
+			abstract				O		ç‚ºæŠ½è±¡beanå¦. abstract="true"æ™‚, ä¸è¨­å®šclasså±¬æ€§. (æŠ½è±¡beanå¯å°‡å®šç¾©å¥½çš„å±¬æ€§å€¼, çµ¦å­beanç¹¼æ‰¿)
+			<constructor-arg>				ä»¥å»ºæ§‹å­æ³¨å…¥, ä½¿ç”¨å¤šåƒæ•¸å»ºæ§‹å­æ™‚å¯ç”¨indexå±¬æ€§è¨­å®šåƒæ•¸é †åº
+			<property>						ä»¥setteræ³¨å…¥
+			<list>							æ³¨å…¥å¤šå€¼, å¯é‡è¤‡
+			<set>							æ³¨å…¥å¤šå€¼, ä¸å¯é‡è¤‡
+			<map>							æ³¨å…¥å¤šå€¼, ç‚ºentry model, keyå’Œvalueå¯ä»¥æ˜¯ä»»ä½•å‹æ…‹
+			<props>							æ³¨å…¥å¤šå€¼, ç‚ºentry model, keyå’Œvalueåªèƒ½æ˜¯å­—ä¸²å‹æ…‹
 
-		2.2 ¥Í©R¶g´ÁºŞ²z
-			2.2.1 ­×§ïÃş§O : ¦bÃş§O¸Ì¥[¤J..
+		2.2 ç”Ÿå‘½é€±æœŸç®¡ç†
+			2.2.1 ä¿®æ”¹é¡åˆ¥ : åœ¨é¡åˆ¥è£¡åŠ å…¥..
 				public void init(){
 						...
    				}
    				public void destroy(){
 						...
    				}
-			2.2.2 <bean>¥[¤Jinit-method¡Bdestroy-method
+			2.2.2 <bean>åŠ å…¥init-methodã€destroy-method
 				<bean id="person" class="..." init-method="init" destroy-method="destroy">
 						...
    				</bean>
-			2.2.3 ¥HAbstractApplicationContextÃö³¬ : ((AbstractApplicationContext) context).registerShutdownHook();
-			2.2.o ¬°¨C­Ó<bean>¥[¤Jªì©l¤Æ¤èªk©M¾P·´¤èªk
+			2.2.3 ä»¥AbstractApplicationContexté—œé–‰ : ((AbstractApplicationContext) context).registerShutdownHook();
+			2.2.o ç‚ºæ¯å€‹<bean>åŠ å…¥åˆå§‹åŒ–æ–¹æ³•å’ŒéŠ·æ¯€æ–¹æ³•
 				<beans ...
 						default-init-method="init" 
 						default-destroy-method="destroy">
-		2.3 ¨Ì¿àª`¤J
-			ª`¤J¤è¦¡
-				1. ³z¹L«Øºc¤lª`¤J
+		2.3 ä¾è³´æ³¨å…¥
+			æ³¨å…¥æ–¹å¼
+				1. é€éå»ºæ§‹å­æ³¨å…¥
 					<bean id="person" class="...">
 							<constructor-arg index="0" value="30" />
 							<constructor-arg index="1" value="William" />
    					</bean>
-				2. ³z¹Lsetterª`¤J
+				2. é€ésetteræ³¨å…¥
 					<bean id="person" class="...">
 							<property name="age" value="30" />
 							<property name="name" ref="William" />
    					</bean>
-				3. p-namespace (¥t¤@ºØ¼gªk)
-					µù : »İ¥ı¤Ş¤Jxmlns:p="http://www.springframework.org/schema/p"
+				3. p-namespace (å¦ä¸€ç¨®å¯«æ³•)
+					è¨» : éœ€å…ˆå¼•å…¥xmlns:p="http://www.springframework.org/schema/p"
 					<bean id="person" class="..."
-      						p:age="30"				<--age¬°©Ê½è
-      						p:name-ref="myName"/>	<--name¬°©Ê½è, ª`¤Jª«¥ó®É»İ¥[-ref
+      						p:age="30"				<--ageç‚ºæ€§è³ª
+      						p:name-ref="myName"/>	<--nameç‚ºæ€§è³ª, æ³¨å…¥ç‰©ä»¶æ™‚éœ€åŠ -ref
 
-			ª`¤J«¬ºA
-				1. ¤º³¡ª`¤J
+			æ³¨å…¥å‹æ…‹
+				1. å…§éƒ¨æ³¨å…¥
 					<bean id="outerBean" class="...">
 						<property name="pro1">
-									<bean id="innerBean" class="..."/>	<-- ª½±µ¦b<property>¤º«Å§i¥t¥~¤@­Ó<bean>
+									<bean id="innerBean" class="..."/>	<-- ç›´æ¥åœ¨<property>å…§å®£å‘Šå¦å¤–ä¸€å€‹<bean>
 						</property>
    					</bean>
-				2. ª`¤J¶°¦X
-					2.1 list : ¥i­«½Æªº¦h­È
+				2. æ³¨å…¥é›†åˆ
+					2.1 list : å¯é‡è¤‡çš„å¤šå€¼
 						<bean id="listExample" class="...">
 							<property name="peopleList">
 									<list>
@@ -92,7 +92,7 @@
 									</list>
 							</property>
 						</bean>
-					2.2 set : ¤£¥i­«½Æªº¦h­È
+					2.2 set : ä¸å¯é‡è¤‡çš„å¤šå€¼
 						<bean id="setExample" class="...">
 							<property name="peopleList">
 									<set>
@@ -102,7 +102,7 @@
 									</set>
 							</property>
 						</bean>
-					2.3 map : key©Mvalue¥i¬°¥ô¦ó«¬ºAªºentry
+					2.3 map : keyå’Œvalueå¯ç‚ºä»»ä½•å‹æ…‹çš„entry
 						<bean id="mapExample" class="...">
 							<property name="peopleList">
          							<map>
@@ -113,7 +113,7 @@
          							</map>
      						</property>
 						</bean>
-					2.4 props : key©Mvalue¥u¯à¬°¦r¦êªºentry
+					2.4 props : keyå’Œvalueåªèƒ½ç‚ºå­—ä¸²çš„entry
 						<bean id="propsExample" class="...">
 							<property name="addressList">
          							<props>
@@ -126,8 +126,8 @@
 						</bean>
 
 			
-«á¸m³B²z¾¹
-	1. ½s¼g«á¸m³B²z¾¹
+å¾Œç½®è™•ç†å™¨
+	1. ç·¨å¯«å¾Œç½®è™•ç†å™¨
 		public class MyPostProcessor implements BeanPostProcessor {
 
 			@Override
@@ -143,153 +143,153 @@
 			}
 
 		}
-	2. ¥[¤J<bean>
+	2. åŠ å…¥<bean>
 		<bean class="xxx.yyy.MyPostProcessor" />
 
-²ÕºAÀÉ¸Ìªº¦Û°Ê¸Ë°t(<bean autowire="xxx">)
-		¼Ò¦¡			»¡©ú
+çµ„æ…‹æª”è£¡çš„è‡ªå‹•è£é…(<bean autowire="xxx">)
+		æ¨¡å¼			èªªæ˜
 		------------------------------------------------------------------------------------------------
-		no(default)		¤£¨Ï¥Î¦Û°Ê¸Ë°t
-		byName			¨Ì"¦WºÙ"¦Û°Ê¸Ë°t (©Ê½è¦W <--> beanªºid©Îname)
-		byType			¨Ì"«¬ºA"¦Û°Ê¸Ë°t, ­Y¦³¨â­Ó¥H¤W¤Ç°tªºbean«h·|©ß¥X¨Ò¥~ (©Ê½è«¬ºA <--> beanªºclass)
-		constructor		¨Ì«Øºc¤l"°Ñ¼Æ«¬ºA"¦Û°Ê¸Ë°t («Øºc¤l°Ñ¼Æ«¬ºA <--> beanªºclass)
-		autodetect		¥ı¸ÕµÛ¥Îconstructor¼Ò¦¡¸Ë°t, ­Y¥¢±Ñ«h¥ÎbyType¼Ò¦¡
-		*µù : ¥H¤W¤è¦¡­Y§ä¤£¨ì¤Ç°tbean, «h·|©ß¥X¨Ò¥~
+		no(default)		ä¸ä½¿ç”¨è‡ªå‹•è£é…
+		byName			ä¾"åç¨±"è‡ªå‹•è£é… (æ€§è³ªå <--> beançš„idæˆ–name)
+		byType			ä¾"å‹æ…‹"è‡ªå‹•è£é…, è‹¥æœ‰å…©å€‹ä»¥ä¸ŠåŒ¹é…çš„beanå‰‡æœƒæ‹‹å‡ºä¾‹å¤– (æ€§è³ªå‹æ…‹ <--> beançš„class)
+		constructor		ä¾å»ºæ§‹å­"åƒæ•¸å‹æ…‹"è‡ªå‹•è£é… (å»ºæ§‹å­åƒæ•¸å‹æ…‹ <--> beançš„class)
+		autodetect		å…ˆè©¦è‘—ç”¨constructoræ¨¡å¼è£é…, è‹¥å¤±æ•—å‰‡ç”¨byTypeæ¨¡å¼
+		*è¨» : ä»¥ä¸Šæ–¹å¼è‹¥æ‰¾ä¸åˆ°åŒ¹é…bean, å‰‡æœƒæ‹‹å‡ºä¾‹å¤–
 
-Java¸Ìªº¦Û°Ê¸Ë°t - ³z¹LAnnotation
+Javaè£¡çš„è‡ªå‹•è£é… - é€éAnnotation
 	Spring Annotation
-		*µù : »İ¥ıÅX°Ê, ¦b²ÕºAÀÉ¸Ì<beans>¤º¥[¤J<context:annotation-config />
-		µùÄÀ			»¡©ú
+		*è¨» : éœ€å…ˆé©…å‹•, åœ¨çµ„æ…‹æª”è£¡<beans>å…§åŠ å…¥<context:annotation-config />
+		è¨»é‡‹			èªªæ˜
 		-----------------------------------------------------------------------------------------------------------------------------------------
-		@Required		Án©ú©ósetter«e, ªí¥Ü¦¹©Ê½è"¥²¶·"¦b²ÕºAÀÉ¸Ì³Qª`¤J
-		@Autowired		¥iÁn©ú©ó«Øºc¤l¡Bsetter¡B°Ñ¼Æ¡BÄİ©Êµ¥¦ì¸m«e, ªí¥Ü¨Ï¥Î¦Û°Ê°t¸m. ¹w³]¬°¤@©w­nª`¤J, ¥i³]©w@Autowired(required = false)ªí¥Ü«D¥²­n
-		@Qualifier		¥iÁn©ú©óTYPE¡BFIELD¡BMETHOD(setter)¡BPARAMETER, ªí¥Üª`¤J¤§beanªºid
+		@Required		è²æ˜æ–¼setterå‰, è¡¨ç¤ºæ­¤æ€§è³ª"å¿…é ˆ"åœ¨çµ„æ…‹æª”è£¡è¢«æ³¨å…¥
+		@Autowired		å¯è²æ˜æ–¼å»ºæ§‹å­ã€setterã€åƒæ•¸ã€å±¬æ€§ç­‰ä½ç½®å‰, è¡¨ç¤ºä½¿ç”¨è‡ªå‹•é…ç½®. é è¨­ç‚ºä¸€å®šè¦æ³¨å…¥, å¯è¨­å®š@Autowired(required = false)è¡¨ç¤ºéå¿…è¦
+		@Qualifier		å¯è²æ˜æ–¼TYPEã€FIELDã€METHOD(setter)ã€PARAMETER, è¡¨ç¤ºæ³¨å…¥ä¹‹beançš„id
 		
 	JSR-250 Annotation
-		*µù : ¥t¥~Spring FrameÁÙ¤ä´©JSR-250, JSR-250¬°Java¦Û¤vªºAnnotation
-		µùÄÀ			»¡©ú
+		*è¨» : å¦å¤–Spring Frameé‚„æ”¯æ´JSR-250, JSR-250ç‚ºJavaè‡ªå·±çš„Annotation
+		è¨»é‡‹			èªªæ˜
 		---------------------------------------------------------------------------------------------------------------------------------
-		@PostConstruct	«ü©wªì©l¤Æ¤èªk, µ¥¦P¦b<bean>«ü©winit-method
-		@PreDestroy		«ü©w¾P·´¤èªk, µ¥¦P¦b<bean>«ü©wdestroy-method
-		@Resource		¥iÁn©ú©óTYPE, FIELD, METHOD, ªí¥Üª`¤J(­ì¬°JNDI¨Ï¥Î), ¥i¥Îname="id"¤Îtype="Ãş§O¦W.class"«ü©wbeanªºid©Mclass
+		@PostConstruct	æŒ‡å®šåˆå§‹åŒ–æ–¹æ³•, ç­‰åŒåœ¨<bean>æŒ‡å®šinit-method
+		@PreDestroy		æŒ‡å®šéŠ·æ¯€æ–¹æ³•, ç­‰åŒåœ¨<bean>æŒ‡å®šdestroy-method
+		@Resource		å¯è²æ˜æ–¼TYPE, FIELD, METHOD, è¡¨ç¤ºæ³¨å…¥(åŸç‚ºJNDIä½¿ç”¨), å¯ç”¨name="id"åŠtype="é¡åˆ¥å.class"æŒ‡å®šbeançš„idå’Œclass
 
-Java¸Ìª½±µª`¤J : SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(Object target)
+Javaè£¡ç›´æ¥æ³¨å…¥ : SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(Object target)
 		
-²ÕºAÃş§O - ¦bJava¸Ì²ÕºA³]©w
+çµ„æ…‹é¡åˆ¥ - åœ¨Javaè£¡çµ„æ…‹è¨­å®š
 	Annotation
-		µùÄÀ			»¡©ú
+		è¨»é‡‹			èªªæ˜
 		---------------------------------------------------------------------------------------------------------------------------------------------------
-		@Configuration	Án©ú©óTYPE, ªí¥Ü¦¹Ãş§O¥Î©ó²ÕºA³]©w, µ¥¦P©ó«Ø¥ß¤@­ÓSpring²ÕºAÀÉ
-		@Bean			Án©ú©óMETHOD, ªí¥Ü¦¹¤èªk¶Ç¦^ª«¥ó¥æ¥ÑSpringºŞ²z, µ¥¦P<bean id=¡K>
-		@Import			Án©ú©óTYPE, ªí¥Ü¦P®É¸ü¤J¨ä¥L²ÕºAÃş§O. ¥Î¦¹µùÄÀ´N¤£¥Îcontext.register(SpringConfig2.class);context.register(SpringConfig3.class);...
+		@Configuration	è²æ˜æ–¼TYPE, è¡¨ç¤ºæ­¤é¡åˆ¥ç”¨æ–¼çµ„æ…‹è¨­å®š, ç­‰åŒæ–¼å»ºç«‹ä¸€å€‹Springçµ„æ…‹æª”
+		@Bean			è²æ˜æ–¼METHOD, è¡¨ç¤ºæ­¤æ–¹æ³•å‚³å›ç‰©ä»¶äº¤ç”±Springç®¡ç†, ç­‰åŒ<bean id=â€¦>
+		@Import			è²æ˜æ–¼TYPE, è¡¨ç¤ºåŒæ™‚è¼‰å…¥å…¶ä»–çµ„æ…‹é¡åˆ¥. ç”¨æ­¤è¨»é‡‹å°±ä¸ç”¨context.register(SpringConfig2.class);context.register(SpringConfig3.class);...
 		
-	¸ü¤J²ÕºAÃş§O¨BÆJ
-		§Ç	»¡©ú			½d¨Ò																						³Æµù
+	è¼‰å…¥çµ„æ…‹é¡åˆ¥æ­¥é©Ÿ
+		åº	èªªæ˜			ç¯„ä¾‹																						å‚™è¨»
 		------------------------------------------------------------------------------------------------------------------------------------------------------
-		1	«Å§iContext		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();		¨Ï¥ÎAnnotationConfigApplicationContext
-		2	«ü©w²ÕºAÃş§O	context.register(SpringConfig.class);														¥ç¥i¦bnew®É«ü©w
-		3	§ó·s(¥ß§Y¸ü¤J)	context.refresh();																			¦bnew®É«ü©w²ÕºAÃş§O«h¤£»İ
-		4	¸ü¤Jbean		context.getBean("id");														
+		1	å®£å‘ŠContext		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();		ä½¿ç”¨AnnotationConfigApplicationContext
+		2	æŒ‡å®šçµ„æ…‹é¡åˆ¥	context.register(SpringConfig.class);														äº¦å¯åœ¨newæ™‚æŒ‡å®š
+		3	æ›´æ–°(ç«‹å³è¼‰å…¥)	context.refresh();																			åœ¨newæ™‚æŒ‡å®šçµ„æ…‹é¡åˆ¥å‰‡ä¸éœ€
+		4	è¼‰å…¥bean		context.getBean("id");														
 		
-¨Æ¥ó³B²z
-	¨Æ¥óºØÃş
-		*µù : Springµo¥¬Ä²µo¤§¨Æ¥ó¬°³æThread¤è¦¡, ©Ò¥H­Y¦³¤@±µ¦¬ªÌ¥¼¦¬¨ì³qª¾, «h·|¾É­Pªı¶ë
-		§Ç	Ãş§O¦W					»¡©ú
+äº‹ä»¶è™•ç†
+	äº‹ä»¶ç¨®é¡
+		*è¨» : Springç™¼å¸ƒè§¸ç™¼ä¹‹äº‹ä»¶ç‚ºå–®Threadæ–¹å¼, æ‰€ä»¥è‹¥æœ‰ä¸€æ¥æ”¶è€…æœªæ”¶åˆ°é€šçŸ¥, å‰‡æœƒå°è‡´é˜»å¡
+		åº	é¡åˆ¥å					èªªæ˜
 		---------------------------------------------------------------------------------------
-		1	ContextRefreshedEvent	ApplicationContextªì©l¤Æ(new)©Î§ó·s®É
-									¥H¤Î©I¥sconfigurableApplicationContext.refresh()®ÉÄ²µo¦¹¨Æ¥ó
-		2	ContextStartedEvent		©I¥sconfigurableApplicationContext.start()®ÉÄ²µo¦¹¨Æ¥ó
-		3	ContextStoppedEvent		©I¥sconfigurableApplicationContext.stop()®ÉÄ²µo¦¹¨Æ¥ó
-		4	ContextClosedEvent		©I¥sconfigurableApplicationContext.close()®ÉÄ²µo¦¹¨Æ¥ó
-		5	RequestHandledEvent		webÀô¹Ò¤U, http request¤w³QªA°È®ÉÄ²µo¦¹¨Æ¥ó
+		1	ContextRefreshedEvent	ApplicationContextåˆå§‹åŒ–(new)æˆ–æ›´æ–°æ™‚
+									ä»¥åŠå‘¼å«configurableApplicationContext.refresh()æ™‚è§¸ç™¼æ­¤äº‹ä»¶
+		2	ContextStartedEvent		å‘¼å«configurableApplicationContext.start()æ™‚è§¸ç™¼æ­¤äº‹ä»¶
+		3	ContextStoppedEvent		å‘¼å«configurableApplicationContext.stop()æ™‚è§¸ç™¼æ­¤äº‹ä»¶
+		4	ContextClosedEvent		å‘¼å«configurableApplicationContext.close()æ™‚è§¸ç™¼æ­¤äº‹ä»¶
+		5	RequestHandledEvent		webç’°å¢ƒä¸‹, http requestå·²è¢«æœå‹™æ™‚è§¸ç™¼æ­¤äº‹ä»¶
 		
-	ºÊÅ¥¨BÆJ
-		1. «Ø¥ßºÊÅ¥¾¹
+	ç›£è½æ­¥é©Ÿ
+		1. å»ºç«‹ç›£è½å™¨
 			public class ApplicationContextListener implements ApplicationListener<ApplicationEvent> {
 				@Override
 				public void onApplicationEvent(ApplicationEvent event) {
 					System.out.println(event.getClass().getSimpleName());
 				}
 			}
-		2. «Å§iºÊÅ¥¾¹ (¥ç¥i¥Î¦b²ÕºAÃş§O¥Î@Bean)
+		2. å®£å‘Šç›£è½å™¨ (äº¦å¯ç”¨åœ¨çµ„æ…‹é¡åˆ¥ç”¨@Bean)
 			<bean class="xxx.yyy.ApplicationContextListener" />
 			
-	¦Û­q¨Æ¥ó¨BÆJ
-		1. «Ø¥ß¦Û­qEventÃş§O
-				1.1 Ä~©ÓApplicationEvent
-				1.2 ©w¸q«Øºc¤l
-		2. «Ø¥ß¦Û­qPublisherÃş§O
-				*µù : ­Y¤@Ãş§O¹ê§@ApplicationEventPublisherAware, ¥B«Å§i¬°bean, «hSpring±N¦¹ª«¥óµø¬°¨Æ¥óµo¥¬ªÌ
-				2.1 ¹ê§@ApplicationEventPublisherAware
-				2.2 «Å§i¤@Äİ©Ê : private ApplicationEventPublisher publisher;
-				2.3 ¹ê§@setApplicationEventPublisher : this.publisher = publisher;
-				2.3 ©w¸q¤@¤èªk : publish(), publisher.publishEvent(new MyEvent(this));
-		3. «Ø¥ß¦Û­qListenerÃş§O
-				3.1 ¹ê§@ApplicationListener<MyEvent>
-				3.2 ¹ê§@onApplicationEvent(MyEvent event)
-				3.3 «Å§i¬°bean
+	è‡ªè¨‚äº‹ä»¶æ­¥é©Ÿ
+		1. å»ºç«‹è‡ªè¨‚Eventé¡åˆ¥
+				1.1 ç¹¼æ‰¿ApplicationEvent
+				1.2 å®šç¾©å»ºæ§‹å­
+		2. å»ºç«‹è‡ªè¨‚Publisheré¡åˆ¥
+				*è¨» : è‹¥ä¸€é¡åˆ¥å¯¦ä½œApplicationEventPublisherAware, ä¸”å®£å‘Šç‚ºbean, å‰‡Springå°‡æ­¤ç‰©ä»¶è¦–ç‚ºäº‹ä»¶ç™¼å¸ƒè€…
+				2.1 å¯¦ä½œApplicationEventPublisherAware
+				2.2 å®£å‘Šä¸€å±¬æ€§ : private ApplicationEventPublisher publisher;
+				2.3 å¯¦ä½œsetApplicationEventPublisher : this.publisher = publisher;
+				2.3 å®šç¾©ä¸€æ–¹æ³• : publish(), publisher.publishEvent(new MyEvent(this));
+		3. å»ºç«‹è‡ªè¨‚Listeneré¡åˆ¥
+				3.1 å¯¦ä½œApplicationListener<MyEvent>
+				3.2 å¯¦ä½œonApplicationEvent(MyEvent event)
+				3.3 å®£å‘Šç‚ºbean
 
 AOP(Aspect Oriented Programming)
-	¦Wµü¸ÑÄÀ
-		¦WºÙ			»¡©ú
+	åè©è§£é‡‹
+		åç¨±			èªªæ˜
 		-------------------------------------------------------------------------------
-		Aspect			¾î¤ÁÃöª`ÂI, ¥X²{¦b¤£¦Pµ{¦¡ªº¬Û¦Pµ{¦¡¤ù¬q, javaÃş§O
-		Join point		¤Á¤JÂI
-		Advice			³qª¾
-		Pointcut		¹ê»Ú¤Á¤JÂI
-		Introduction	´À²{¦³ªºÃş§O¥[¤J·s¥\¯à¦Ó¤£»İ­×§ï­ìµ{¦¡
-		Target object	±µ¨ü³qª¾ªºª«¥ó
-		Weaving			Â´¤J
-		Proxy			¥N²z
-		AutoProxy		¦Û°Ê¥N²z, ¥i¼Ò½k¹LÂo­n³QÄdºIªºª«¥ó, ex. ÄdºI"*Service"
+		Aspect			æ©«åˆ‡é—œæ³¨é», å‡ºç¾åœ¨ä¸åŒç¨‹å¼çš„ç›¸åŒç¨‹å¼ç‰‡æ®µ, javaé¡åˆ¥
+		Join point		åˆ‡å…¥é»
+		Advice			é€šçŸ¥
+		Pointcut		å¯¦éš›åˆ‡å…¥é»
+		Introduction	æ›¿ç¾æœ‰çš„é¡åˆ¥åŠ å…¥æ–°åŠŸèƒ½è€Œä¸éœ€ä¿®æ”¹åŸç¨‹å¼
+		Target object	æ¥å—é€šçŸ¥çš„ç‰©ä»¶
+		Weaving			ç¹”å…¥
+		Proxy			ä»£ç†
+		AutoProxy		è‡ªå‹•ä»£ç†, å¯æ¨¡ç³Šéæ¿¾è¦è¢«æ””æˆªçš„ç‰©ä»¶, ex. æ””æˆª"*Service"
 
-	³qª¾ªººØÃş
-		¦WºÙ			»¡©ú
+	é€šçŸ¥çš„ç¨®é¡
+		åç¨±			èªªæ˜
 		---------------------------------------------------
-		before			«e¸m³qª¾, ¤èªk°õ¦æ«e³qª¾
-		after			«á¸m³qª¾, ¤èªk°õ¦æ«á³qª¾, ¤£¦Ò¼{µ²ªG
-		after-retirning	ªğ¦^«á³qª¾, return«á³qª¾
-		after-throwing	¨Ò¥~«á³qª¾, ©ß¥X¨Ò¥~«á³qª¾
-		around			ÀôÂ¶³qª¾, ©I¥s¤èªk«e¡B«á³qª¾
+		before			å‰ç½®é€šçŸ¥, æ–¹æ³•åŸ·è¡Œå‰é€šçŸ¥
+		after			å¾Œç½®é€šçŸ¥, æ–¹æ³•åŸ·è¡Œå¾Œé€šçŸ¥, ä¸è€ƒæ…®çµæœ
+		after-retirning	è¿”å›å¾Œé€šçŸ¥, returnå¾Œé€šçŸ¥
+		after-throwing	ä¾‹å¤–å¾Œé€šçŸ¥, æ‹‹å‡ºä¾‹å¤–å¾Œé€šçŸ¥
+		around			ç’°ç¹é€šçŸ¥, å‘¼å«æ–¹æ³•å‰ã€å¾Œé€šçŸ¥
 
-	©w¸q¤è¦¡
+	å®šç¾©æ–¹å¼
 		1. XML
 		2. Annotation
 
-	¥ÎXML©w¸q¨BÆJ
-		*µù : ¦pªG¬O­n¹ïController¨Ï¥ÎAOP, »İ¼g¦bSpring-MVCªº²ÕºAÀÉ¸Ì(applicationContext-mvc.xml)
+	ç”¨XMLå®šç¾©æ­¥é©Ÿ
+		*è¨» : å¦‚æœæ˜¯è¦å°Controllerä½¿ç”¨AOP, éœ€å¯«åœ¨Spring-MVCçš„çµ„æ…‹æª”è£¡(applicationContext-mvc.xml)
 	
-		1. ¥[¤JÃB¥~jarÀÉ(AspectJ)
+		1. åŠ å…¥é¡å¤–jaræª”(AspectJ)
 			1.1.aspectjrt.jar
 			1.2 aspectjweaver.jar
 			1.3 aspectj.jar
 			1.4 aopalliance.jar	
-		2. ²ÕºAÀÉ¸Ìimport
+		2. çµ„æ…‹æª”è£¡import
 			<beans ...
 				xmlns:aop="http://www.springframework.org/schema/aop"
 				xsi:schemaLocation=...
 				http://www.springframework.org/schema/aop 
     				http://www.springframework.org/schema/aop/spring-aop-3.0.xsd ">
-		3. ©w¸q»yªk
+		3. å®šç¾©èªæ³•
 			3.0 basic
 				<aop:config>
 				</aop:config>
-			3.1 aspect : ¦b<aop:config>¸Ì, ¥[¤W
+			3.1 aspect : åœ¨<aop:config>è£¡, åŠ ä¸Š
 				<aop:aspect id="" ref="xxxAspect">
 				</aop:aspect>
-			3.2 pointcut : ¦b<aop:aspect>¸Ì, ¥[¤W
-				<aop:pointcut id="" expression="execution(xxx)" />	<--ºÊ±±ªº¤èªk (pointcut expression)
-			3.3 advice : ¦b<aop:aspect>¸Ì, ¥[¤W
-				3.3.1 «e¸m³qª¾
-					<aop:before pointcut-ref="¹ê»Ú¤Á¤JÂIId" method="¤èªk¦W"/>				
-				3.3.2 «á¸m³qª¾
-					<aop:after pointcut-ref="¹ê»Ú¤Á¤JÂIId" method="¤èªk¦W"/>
-				3.3.3 ªğ¦^«á³qª¾
-			      					<aop:after-returning pointcut-ref="¹ê»Ú¤Á¤JÂIId"  method="¤èªk¦W" returning="ªğ¦^­È" />
-				3.3.4 ¨Ò¥~«á³qª¾
-			      					<aop:after-throwing pointcut-ref="¹ê»Ú¤Á¤JÂIId" method="¤èªk¦W" throwing="????" />
-				3.3.5 ÀôÂ¶³qª¾
-					<aop:around pointcut-ref="¹ê»Ú¤Á¤JÂIId" method="¤èªk¦W"/>
+			3.2 pointcut : åœ¨<aop:aspect>è£¡, åŠ ä¸Š
+				<aop:pointcut id="" expression="execution(xxx)" />	<--ç›£æ§çš„æ–¹æ³• (pointcut expression)
+			3.3 advice : åœ¨<aop:aspect>è£¡, åŠ ä¸Š
+				3.3.1 å‰ç½®é€šçŸ¥
+					<aop:before pointcut-ref="å¯¦éš›åˆ‡å…¥é»Id" method="æ–¹æ³•å"/>				
+				3.3.2 å¾Œç½®é€šçŸ¥
+					<aop:after pointcut-ref="å¯¦éš›åˆ‡å…¥é»Id" method="æ–¹æ³•å"/>
+				3.3.3 è¿”å›å¾Œé€šçŸ¥
+			      					<aop:after-returning pointcut-ref="å¯¦éš›åˆ‡å…¥é»Id"  method="æ–¹æ³•å" returning="è¿”å›å€¼" />
+				3.3.4 ä¾‹å¤–å¾Œé€šçŸ¥
+			      					<aop:after-throwing pointcut-ref="å¯¦éš›åˆ‡å…¥é»Id" method="æ–¹æ³•å" throwing="????" />
+				3.3.5 ç’°ç¹é€šçŸ¥
+					<aop:around pointcut-ref="å¯¦éš›åˆ‡å…¥é»Id" method="æ–¹æ³•å"/>
 			3.ex
 				<beans xmlns="http://www.springframework.org/schema/beans"
 					xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -299,197 +299,197 @@ AOP(Aspect Oriented Programming)
 				    	http://www.springframework.org/schema/aop 
 				    	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd ">
 			
-					¦¹Service·|³QAOP¾÷¨î¾Ş§@			
+					æ­¤Serviceæœƒè¢«AOPæ©Ÿåˆ¶æ“ä½œ			
 					<bean id="memberService" class="model.service.member.MemberService">
 						<property name="xxx" value="yyy" />
 							...
 					</bean>
 					
-					«Å§i¦Û­qªºAspect
+					å®£å‘Šè‡ªè¨‚çš„Aspect
 					<bean id="memberAspect" class="core.aop.aspect.MemberAspect" />
 			
 					<aop:config>
-						<aop:aspect id="aspect01" ref="memberAspect">	<--«ü©w¦Û­qªºAspect
-							<aop:pointcut id="memberAllMethods" expression="execution(* model.service.member.*.*(..))" />	<--³]©w¹ê»Ú¤Á¤JÂI«ü¦Vªº¤èªk
-							<aop:before pointcut-ref="memberAllMethods" method="memberBeforeAdvice" />						<--«ü©wbefore Adviceªº¹ê»Ú¤Á¤JÂI©MAspectªº¤èªk
-							<aop:after pointcut-ref="memberAllMethods" method="memberAfterAdvice" />						<--«ü©wafter Adviceªº¹ê»Ú¤Á¤JÂI©MAspectªº¤èªk
-							<aop:after-returning pointcut-ref="memberAllMethods" method="memberAfterReturningAdvice" />		<--«ü©wafter-return Adviceªº¹ê»Ú¤Á¤JÂI©MAspectªº¤èªk
-							<aop:after-throwing pointcut-ref="memberAllMethods" method="memberAfterThrowingAdvice" />		<--«ü©wthrowing Adviceªº¹ê»Ú¤Á¤JÂI©MAspectªº¤èªk
-							<aop:around pointcut-ref="memberAllMethods" method="memberAroundAdvice" />						<--«ü©waround Adviceªº¹ê»Ú¤Á¤JÂI©MAspectªº¤èªk
+						<aop:aspect id="aspect01" ref="memberAspect">	<--æŒ‡å®šè‡ªè¨‚çš„Aspect
+							<aop:pointcut id="memberAllMethods" expression="execution(* model.service.member.*.*(..))" />	<--è¨­å®šå¯¦éš›åˆ‡å…¥é»æŒ‡å‘çš„æ–¹æ³•
+							<aop:before pointcut-ref="memberAllMethods" method="memberBeforeAdvice" />						<--æŒ‡å®šbefore Adviceçš„å¯¦éš›åˆ‡å…¥é»å’ŒAspectçš„æ–¹æ³•
+							<aop:after pointcut-ref="memberAllMethods" method="memberAfterAdvice" />						<--æŒ‡å®šafter Adviceçš„å¯¦éš›åˆ‡å…¥é»å’ŒAspectçš„æ–¹æ³•
+							<aop:after-returning pointcut-ref="memberAllMethods" method="memberAfterReturningAdvice" />		<--æŒ‡å®šafter-return Adviceçš„å¯¦éš›åˆ‡å…¥é»å’ŒAspectçš„æ–¹æ³•
+							<aop:after-throwing pointcut-ref="memberAllMethods" method="memberAfterThrowingAdvice" />		<--æŒ‡å®šthrowing Adviceçš„å¯¦éš›åˆ‡å…¥é»å’ŒAspectçš„æ–¹æ³•
+							<aop:around pointcut-ref="memberAllMethods" method="memberAroundAdvice" />						<--æŒ‡å®šaround Adviceçš„å¯¦éš›åˆ‡å…¥é»å’ŒAspectçš„æ–¹æ³•
 						</aop:aspect>
 					</aop:config>
 				</beans>
 				
-				¥ÎAnnotation©w¸q
-					1. ¥[¤JÃB¥~jarÀÉ(AspectJ)
-			1.1.aspectjrt.jar
-			1.2 aspectjweaver.jar
-			1.3 aspectj.jar
-			1.4 aopalliance.jar
-					2. ÅX°Ê : ¦b²ÕºAÀÉ¸Ì¥[¤J<aop:aspectj-autoproxy />
-					3. ©w¸qAspectÃş§O
-			3.1 ·s«Ø¤@Ãş§O
-			3.2 Ãş§O«e¥[¤W@Aspect
-			3.3 «Å§i¦¨bean (<bean>©Î²ÕºAÃş§O + @Bean)
-				*µù : ¦pªG¬O­n¹ïController¨Ï¥ÎAOP, »İ¼g¦bSpring-MVCªº²ÕºAÀÉ¸Ì(applicationContext-mvc.xml)
-			3.4 ©w¸q¤@Advice¤èªk
-				3.4.1 ¥[¤W³qª¾µùÄÀ (@After | @Before | @AfterReturning | @AfterThrowing | @Around)
-				3.4.2 ©w¸q¤èªk
-					public void xxxAdvice() {
-						...
-					}
-					*µù : AroundAdvice¸û¯S§O
-						1. ¤£¥i»PBefore | After¤@°_¨Ï¥Î						
-						2. ¥²¶·¦³¦^¶Ç­È
-						ex.
-							public Obejct aroundAdvice(ProceedingJoinPoint joinPoint) {
-								System.out.println("around before");
-								Obejct retVal = joinPoint.proceed();
-								System.out.rpintln("around after");
-								return retVal;
-							}
-			3.o ¥t¦³¤@¤è¦¡ 
-				3.o.1 ©w¸q¹ê»Ú¤Á¤JÂI
-					*µù : ¹ê»Ú¤Á¤JÂI¥»Åé¤º¥²¶·¬°ªÅ
+				ç”¨Annotationå®šç¾©
+					1. åŠ å…¥é¡å¤–jaræª”(AspectJ)
+						1.1.aspectjrt.jar
+						1.2 aspectjweaver.jar
+						1.3 aspectj.jar
+						1.4 aopalliance.jar
+					2. é©…å‹• : åœ¨çµ„æ…‹æª”è£¡åŠ å…¥<aop:aspectj-autoproxy />
+					3. å®šç¾©Aspecté¡åˆ¥
+						3.1 æ–°å»ºä¸€é¡åˆ¥
+						3.2 é¡åˆ¥å‰åŠ ä¸Š@Aspect
+						3.3 å®£å‘Šæˆbean (<bean>æˆ–çµ„æ…‹é¡åˆ¥ + @Bean)
+							*è¨» : å¦‚æœæ˜¯è¦å°Controllerä½¿ç”¨AOP, éœ€å¯«åœ¨Spring-MVCçš„çµ„æ…‹æª”è£¡(applicationContext-mvc.xml)
+						3.4 å®šç¾©ä¸€Adviceæ–¹æ³•
+							3.4.1 åŠ ä¸Šé€šçŸ¥è¨»é‡‹ (@After | @Before | @AfterReturning | @AfterThrowing | @Around)
+							3.4.2 å®šç¾©æ–¹æ³•
+								public void xxxAdvice() {
+									...
+								}
+								*è¨» : AroundAdviceè¼ƒç‰¹åˆ¥
+									1. ä¸å¯èˆ‡Before | Afterä¸€èµ·ä½¿ç”¨						
+									2. å¿…é ˆæœ‰å›å‚³å€¼
+									ex.
+										public Obejct aroundAdvice(ProceedingJoinPoint joinPoint) {
+											System.out.println("around before");
+											Obejct retVal = joinPoint.proceed();
+											System.out.rpintln("around after");
+											return retVal;
+										}
+			3.o å¦æœ‰ä¸€æ–¹å¼ 
+				3.o.1 å®šç¾©å¯¦éš›åˆ‡å…¥é»
+					*è¨» : å¯¦éš›åˆ‡å…¥é»æœ¬é«”å…§å¿…é ˆç‚ºç©º
 					ex.	
 						@Pointcut("execution( .. )")
 						private void myPointcut() {}
-				3.o.2 ©w¸q³qª¾ : ©w¸q³qª¾, ¨Ã«ü¦V¸Ó¹ê»Ú¤Á¤JÂI
+				3.o.2 å®šç¾©é€šçŸ¥ : å®šç¾©é€šçŸ¥, ä¸¦æŒ‡å‘è©²å¯¦éš›åˆ‡å…¥é»
 					ex.
 						@Before("myPointcut")
 						public void beforeAdvice() {
 							...
 						}
-				*****returning="xxx", ­Yxxx¬°°ò¥»«¬ºA, ¥ÎObject«¬ºA±µ¶Ç¦^­È®É·|µo¥Í¨Ò¥~*****
-				JoinPoint¤¶­±ªº¤èªk
-					¤èªk¦WºÙ			»¡©ú
+				*****returning="xxx", è‹¥xxxç‚ºåŸºæœ¬å‹æ…‹, ç”¨Objectå‹æ…‹æ¥å‚³å›å€¼æ™‚æœƒç™¼ç”Ÿä¾‹å¤–*****
+				JoinPointä»‹é¢çš„æ–¹æ³•
+					æ–¹æ³•åç¨±			èªªæ˜
 					----------------------------------------------------------------------------
-					getArgs()			¨ú±o°Ñ¼Æ³QÂ´¤J¤èªkªº°Ñ¼Æ, «¬ºA¬°Object[]
-					getKind()			¨ú±o¦¹¤Á¤JÂIªº¤Á¤J¤è¦¡
-					getSignature()		¨ú±oSignatureª«¥ó, ¥Nªí³QÂ´¤J¤èªk¦¡¼Ë
-					getSourceLocation()	¨ú±oSourceLocationª«¥ó, ¥Nªí¹ê§@¦¹¤Á¤JÂI¹ïÀ³AOP¤§¦ì¸m
-					getStaticPart()		¨ú±oStaticPartª«¥ó, ¥Nªí¦¹¤Á¤JÂIÀRºA³¡¤À
-					getTarget()			¨ú±o³QÂ´¤Jª«¥ó
-					getThis()			¨ú±o·í«e°õ¦æ¤§ª«¥ó
-					toLongString()		¦^¶Ç¥Nªí¦¹¤Á¤JÂI§¹¾ã¦r¦ê
-					toShortString()		¦^¶Ç¥Nªí¦¹¤Á¤JÂIÂ²µu¦r¦ê
+					getArgs()			å–å¾—åƒæ•¸è¢«ç¹”å…¥æ–¹æ³•çš„åƒæ•¸, å‹æ…‹ç‚ºObject[]
+					getKind()			å–å¾—æ­¤åˆ‡å…¥é»çš„åˆ‡å…¥æ–¹å¼
+					getSignature()		å–å¾—Signatureç‰©ä»¶, ä»£è¡¨è¢«ç¹”å…¥æ–¹æ³•å¼æ¨£
+					getSourceLocation()	å–å¾—SourceLocationç‰©ä»¶, ä»£è¡¨å¯¦ä½œæ­¤åˆ‡å…¥é»å°æ‡‰AOPä¹‹ä½ç½®
+					getStaticPart()		å–å¾—StaticPartç‰©ä»¶, ä»£è¡¨æ­¤åˆ‡å…¥é»éœæ…‹éƒ¨åˆ†
+					getTarget()			å–å¾—è¢«ç¹”å…¥ç‰©ä»¶
+					getThis()			å–å¾—ç•¶å‰åŸ·è¡Œä¹‹ç‰©ä»¶
+					toLongString()		å›å‚³ä»£è¡¨æ­¤åˆ‡å…¥é»å®Œæ•´å­—ä¸²
+					toShortString()		å›å‚³ä»£è¡¨æ­¤åˆ‡å…¥é»ç°¡çŸ­å­—ä¸²
 					
-				ProceedingJoinPoint¤¶­±ªº¤èªk
-					*µù : ¥u¤ä´©ÀôÂ¶³qª¾(AroundAdvice)
-					¤èªk¦WºÙ								»¡©ú
+				ProceedingJoinPointä»‹é¢çš„æ–¹æ³•
+					*è¨» : åªæ”¯æ´ç’°ç¹é€šçŸ¥(AroundAdvice)
+					æ–¹æ³•åç¨±								èªªæ˜
 					----------------------------------------------------------------------------
-					proceed()								Ä~Äò°õ¦æ¤U¤@­Ó³qª¾©Î¥Ø¼Ğ¤èªk
-					proceed(Object[] args)					Ä~Äò°õ¦æ¤U¤@­Ó³qª¾©Î¥Ø¼Ğ¤èªk (§t°Ñ¼Æ)
-					set$AroundClosure(AroundClosure arc)	³]©wAroundClosure (¥Î³~???)
+					proceed()								ç¹¼çºŒåŸ·è¡Œä¸‹ä¸€å€‹é€šçŸ¥æˆ–ç›®æ¨™æ–¹æ³•
+					proceed(Object[] args)					ç¹¼çºŒåŸ·è¡Œä¸‹ä¸€å€‹é€šçŸ¥æˆ–ç›®æ¨™æ–¹æ³• (å«åƒæ•¸)
+					set$AroundClosure(AroundClosure arc)	è¨­å®šAroundClosure (ç”¨é€”???)
 			
 JDBC Supported
-	¥Øªº : Â²¤ÆÁcÂøªºJDBC¼gªk
+	ç›®çš„ : ç°¡åŒ–ç¹é›œçš„JDBCå¯«æ³•
 	
-¬K­ô±Ğ§÷(¸É!!!!!!!!!!!!!!)
-	1. DriverManagerDataSource
-	2. JdbcTemplate
-	3. RowMapper
-	4. JdbcDaoSupport
+	æ˜¥å“¥æ•™æ(è£œ!!!!!!!!!!!!!!)
+		1. DriverManagerDataSource
+		2. JdbcTemplate
+		3. RowMapper
+		4. JdbcDaoSupport
 	
-	JdbcTemplateÃş§O
-		*µù : Spring®Ø¬[¤¤, ¦WºÙ¬°XxxTemplateªºÃş§O/¤¶­±¬°¾ã¦X¦h¥\¯à¤§·N
-		¥\¯à
-1. update sql script
-2. call procedure
-3. get result
-4. catch SQLException
+	JdbcTemplateé¡åˆ¥
+		*è¨» : Springæ¡†æ¶ä¸­, åç¨±ç‚ºXxxTemplateçš„é¡åˆ¥/ä»‹é¢ç‚ºæ•´åˆå¤šåŠŸèƒ½ä¹‹æ„
+		åŠŸèƒ½
+			1. update sql script
+			2. call procedure
+			3. get result
+			4. catch SQLException
 		
-		«Ø¥ß¨BÆJ
-1. «Å§iDataSource
-2. «Å§iJdbcTemplate, ¨Ã³z¹L«Øºc¤l±NDataSourceª`¤J
-	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-		<constructor-arg ref="dataSource" />
-	</bean>
+		å»ºç«‹æ­¥é©Ÿ
+			1. å®£å‘ŠDataSource
+			2. å®£å‘ŠJdbcTemplate, ä¸¦é€éå»ºæ§‹å­å°‡DataSourceæ³¨å…¥
+				<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+					<constructor-arg ref="dataSource" />
+				</bean>
 	
-3. ©w¸q¬M®g¾¹Ãş§O
-	3.1 ¹ê§@RowMapper<XxxBean>
-	3.2 ¹ê§@mapRow()¤èªk, ¥ÎJDBC¤è¦¡«ü©wResultSetªº²Ä´XÄæ©ñ¤JPOJOªº­ş¤@­Ó©Ê½è
-	3.ex
-		public class XxxMapper implements RowMapper<XxxBean> {
-			@Override
-			public Xxx mapRow(ResultSet rs, int rowNum) throws SQLException {
-				Xxx xxx = new Xxx();
-				xxx.set©Ê½è1(rs.get¸ê®Æ«¬ºA(1));
-				xxx.set©Ê½è2(rs.get¸ê®Æ«¬ºA(2));
-				...
-				return xxx;
-			}
-		}
+			3. å®šç¾©æ˜ å°„å™¨é¡åˆ¥
+				3.1 å¯¦ä½œRowMapper<XxxBean>
+				3.2 å¯¦ä½œmapRow()æ–¹æ³•, ç”¨JDBCæ–¹å¼æŒ‡å®šResultSetçš„ç¬¬å¹¾æ¬„æ”¾å…¥POJOçš„å“ªä¸€å€‹æ€§è³ª
+				3.ex
+					public class XxxMapper implements RowMapper<XxxBean> {
+						@Override
+						public Xxx mapRow(ResultSet rs, int rowNum) throws SQLException {
+							Xxx xxx = new Xxx();
+							xxx.setæ€§è³ª1(rs.getè³‡æ–™å‹æ…‹(1));
+							xxx.setæ€§è³ª2(rs.getè³‡æ–™å‹æ…‹(2));
+							...
+							return xxx;
+						}
+					}
 		
-4. ©w¸qDAO¤¶­±, ¤º§tDML¤èªk
-5. ©w¸qDAO¹ê§@Ãş§O
-	5.1 ¹ê§@DAO¤¶­±
-	5.2 «Å§i¤@Äİ©ÊJdbcTemplate jdbcTemplate : private JdbcTemplate jdbcTemplate;
-	5.3 ©w¸q¤@«Øºc¤l, §t¦³¤@JdbcTemplateÃş§O¤§°Ñ¼Æ
-	5.4 ¹ê§@DML¤èªk
-		INSERT¡BDELETE¡BUPDATE : jdbcTemplate.update(String sql, Object... args)
-		SELECT BY KEY : jdbcTemplate.queryForObject(String sql, Object[] args, RowMapper<T> rowMapper)
-		SELECT ALL : jdbcTemplate.query(String sql, RowMapper<T> rowMapper)
-		OTHERS(CREATE¡BDROP¡BTRUNCATE...) : jdbcTemplate.execute(String sql)
-	5.ex
-		public class XxxDAO implements IXxxDAO {
-			private JdbcTemplate jdbcTemplate;
-			
-			public XxxDAO(JdbcTemplate jdbcTemplate) {
-				this.jdbcTemplate = jdbcTemplate;
-			}
+			4. å®šç¾©DAOä»‹é¢, å…§å«DMLæ–¹æ³•
+			5. å®šç¾©DAOå¯¦ä½œé¡åˆ¥
+				5.1 å¯¦ä½œDAOä»‹é¢
+				5.2 å®£å‘Šä¸€å±¬æ€§JdbcTemplate jdbcTemplate : private JdbcTemplate jdbcTemplate;
+				5.3 å®šç¾©ä¸€å»ºæ§‹å­, å«æœ‰ä¸€JdbcTemplateé¡åˆ¥ä¹‹åƒæ•¸
+				5.4 å¯¦ä½œDMLæ–¹æ³•
+					INSERTã€DELETEã€UPDATE : jdbcTemplate.update(String sql, Object... args)
+					SELECT BY KEY : jdbcTemplate.queryForObject(String sql, Object[] args, RowMapper<T> rowMapper)
+					SELECT ALL : jdbcTemplate.query(String sql, RowMapper<T> rowMapper)
+					OTHERS(CREATEã€DROPã€TRUNCATE...) : jdbcTemplate.execute(String sql)
+				5.ex
+					public class XxxDAO implements IXxxDAO {
+						private JdbcTemplate jdbcTemplate;
+						
+						public XxxDAO(JdbcTemplate jdbcTemplate) {
+							this.jdbcTemplate = jdbcTemplate;
+						}
 
-			@Override
-			public Integer insert(XxxBean bean) {
-				String sql = "INSERT XXX(...) VALUES(...)";
-				return jdbcTemplate.update(sql, bean.getXxx(), bean.getYyy());
-			}
+						@Override
+						public Integer insert(XxxBean bean) {
+							String sql = "INSERT XXX(...) VALUES(...)";
+							return jdbcTemplate.update(sql, bean.getXxx(), bean.getYyy());
+						}
 
-			@Override
-			public int deleteByKey(Integer key) {
-				String sql = "DELETE FROM XXX WHERE KEY = ?";
-				return jdbcTemplate.update(sql, key);
-			}
+						@Override
+						public int deleteByKey(Integer key) {
+							String sql = "DELETE FROM XXX WHERE KEY = ?";
+							return jdbcTemplate.update(sql, key);
+						}
 
-			@Override
-			public int update(XxxBean bean) {
-				String sql = "UPDATE XXX SET COLUMN1 = ?, ...";
-				return jdbcTemplate.update(sql, bean.getXxx(), bean.getYyy());
-			}
+						@Override
+						public int update(XxxBean bean) {
+							String sql = "UPDATE XXX SET COLUMN1 = ?, ...";
+							return jdbcTemplate.update(sql, bean.getXxx(), bean.getYyy());
+						}
 
-			@Override
-			public XxxBean selectByKey(Integer key) {
-				String sql = "SELECT * FROM XXX WHERE KEY = ?";
-				return jdbcTemplate.queryForObject(sql, new Object[]{key}, new XxxMapper());
-			}
+						@Override
+						public XxxBean selectByKey(Integer key) {
+							String sql = "SELECT * FROM XXX WHERE KEY = ?";
+							return jdbcTemplate.queryForObject(sql, new Object[]{key}, new XxxMapper());
+						}
 
-			@Override
-			public List<XxxBean> selectAll() {
-				String sql = "SELECT * FROM XXX";
-				return jdbcTemplate.query(sql, new XxxMapper());
-			}
-		}
+						@Override
+						public List<XxxBean> selectAll() {
+							String sql = "SELECT * FROM XXX";
+							return jdbcTemplate.query(sql, new XxxMapper());
+						}
+					}
 		
-	SimpleJdbcCallÃş§O
-		¥\¯à : ¹ï¤ºÀxµ{§Ç©I¥s/¨úµ²ªG
-		«Ø¥ß¨BÆJ
-			1. «Å§iDataSource
-			2. «Å§iSimpleJdbcCall, ¨Ã³z¹L«Øºc¤l±NDataSourceª`¤J
+	SimpleJdbcCallé¡åˆ¥
+		åŠŸèƒ½ : å°å…§å„²ç¨‹åºå‘¼å«/å–çµæœ
+		å»ºç«‹æ­¥é©Ÿ
+			1. å®£å‘ŠDataSource
+			2. å®£å‘ŠSimpleJdbcCall, ä¸¦é€éå»ºæ§‹å­å°‡DataSourceæ³¨å…¥
 				<bean id="simpleJdbcCall" class="org.springframework.jdbc.core.simple.SimpleJdbcCall">
 					<constructor-arg ref="dataSource" />
 				</bean>
 			
-			3. ©w¸qDAO¤¶­±, ¤º§t©I¥s¤ºÀxµ{§Çªº¤èªk
-			4. ©w¸qDAO¹ê§@Ãş§O
-				4.1 ¹ê§@DAO¤¶­±
-				4.2 «Å§i¤@Äİ©ÊSimpleJdbcCall simpleJdbcCall : private SimpleJdbcCall simpleJdbcCall;
-				4.3 ©w¸q¤@«Øºc¤l, §t¦³¤@JdbcTemplateÃş§O¤§°Ñ¼Æ
-				4.4 ¹ê§@©I¥s¤ºÀxµ{§Çªº¤èªk
-					4.4.1 «Å§iMapSqlParameterSource : MapSqlParameterSouce inMap = new MapSqlParameterSource();
-					4.4.2 ³]©w¤ºÀxµ{§ÇªºIN°Ñ¼Æ : inMap.addValue("IN°Ñ¼Æ¦WºÙ1", ­È2); inMap.addValue("IN°Ñ¼Æ¦WºÙ2", ­È2); ...
-					4.4.3 «ü©w¤ºÀxµ{§Ç : simpleJdbcCall.withProcedureName("¤ºÀxµ{§Ç¦WºÙ");
-					4.4.4 ©I¥s¤ºÀxµ{§Ç : Map<String, Object> outMap = simpleJdbcCall.execute(inMap);
-					4.4.5 ¨ú¥X°õ¦æµ²ªG : outMap.get("OUT°Ñ¼Æ¦WºÙ1"); outMap.get("OUT°Ñ¼Æ¦WºÙ2");
+			3. å®šç¾©DAOä»‹é¢, å…§å«å‘¼å«å…§å„²ç¨‹åºçš„æ–¹æ³•
+			4. å®šç¾©DAOå¯¦ä½œé¡åˆ¥
+				4.1 å¯¦ä½œDAOä»‹é¢
+				4.2 å®£å‘Šä¸€å±¬æ€§SimpleJdbcCall simpleJdbcCall : private SimpleJdbcCall simpleJdbcCall;
+				4.3 å®šç¾©ä¸€å»ºæ§‹å­, å«æœ‰ä¸€JdbcTemplateé¡åˆ¥ä¹‹åƒæ•¸
+				4.4 å¯¦ä½œå‘¼å«å…§å„²ç¨‹åºçš„æ–¹æ³•
+					4.4.1 å®£å‘ŠMapSqlParameterSource : MapSqlParameterSouce inMap = new MapSqlParameterSource();
+					4.4.2 è¨­å®šå…§å„²ç¨‹åºçš„INåƒæ•¸ : inMap.addValue("INåƒæ•¸åç¨±1", å€¼2); inMap.addValue("INåƒæ•¸åç¨±2", å€¼2); ...
+					4.4.3 æŒ‡å®šå…§å„²ç¨‹åº : simpleJdbcCall.withProcedureName("å…§å„²ç¨‹åºåç¨±");
+					4.4.4 å‘¼å«å…§å„²ç¨‹åº : Map<String, Object> outMap = simpleJdbcCall.execute(inMap);
+					4.4.5 å–å‡ºåŸ·è¡Œçµæœ : outMap.get("OUTåƒæ•¸åç¨±1"); outMap.get("OUTåƒæ•¸åç¨±2");
 				4.ex
 					public class MemberDAO_SimpleJdbcCall implements IMemberDAO {
 						private SimpleJdbcCall simpleJdbcCall;
@@ -503,19 +503,19 @@ JDBC Supported
 						@Override
 						public XxxBean selectByKey(Integer key) {
 							MapSqlParameterSource inMap = new MapSqlParameterSource();
-							inMap.addValue("INOUT°Ñ¼Æ¦WºÙ", key);
-							simpleJdbcCall.withProcedureName("¤ºÀxµ{§Ç¦WºÙ");
+							inMap.addValue("INOUTåƒæ•¸åç¨±", key);
+							simpleJdbcCall.withProcedureName("å…§å„²ç¨‹åºåç¨±");
 							Map<String, Object> outMap = simpleJdbcCall.execute(inMap);
 							XxxBean bean = new XxxBean();
-							bean.setXxx((«¬ºA) outMap.get("OUT°Ñ¼Æ¦WºÙ1"));
-							bean.setYyy((«¬ºA) outMap.get("OUT°Ñ¼Æ¦WºÙ2"));
+							bean.setXxx((å‹æ…‹) outMap.get("OUTåƒæ•¸åç¨±1"));
+							bean.setYyy((å‹æ…‹) outMap.get("OUTåƒæ•¸åç¨±2"));
 							...
 							return bean;
 						}
 			
 					}
 					
-				4.¸É¥R : ³Ğ«Ø¤ºÀxµ{§Çscript
+				4.è£œå…… : å‰µå»ºå…§å„²ç¨‹åºscript
 					DELIMITER @@
 					CREATE PROCEDURE TEST(INOUT inout_id INTEGER, OUT out_account VARCHAR(50), OUT out_password VARCHAR(50), OUT out_nickname VARCHAR(50),
 					OUT out_createTime DATETIME, OUT out_pass BIT(1), OUT out_sessionId VARCHAR(50))
@@ -527,25 +527,25 @@ JDBC Supported
 						END @@
 					DELIMITER ;
 				
-	SimpleJdbcInsertÃş§O
-		¥\¯à : INSERT¸ê®Æ, ¨Ã¦^¶Ç¦Û°Ê²£¥ÍªºÁä­È
-		«Ø¥ß¨BÆJ
-			1. «Å§iDataSource
-			2. «Å§iSimpleJdbcInsert, ¨Ã³z¹L«Øºc¤l±NDataSourceª`¤J
-			3. «Å§iSimpleJdbcInsert : SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource);
-			4. «ü©wTABLE : simpleJdbcInsert.withTableName("ªí®æ¦W");
-			5. «ü©w¦Û°Ê²£¥ÍÁä­ÈªºCOLUMN : simpleJdbcInsert.usingGeneratedKeyColumns("Äæ¦ì¦W");
-			6. «ü©w¨ä¥L«D¦Û°Ê²£¥ÍÁä­ÈªºCOLUMN : simpleJdbcInsert.usingColumns("Äæ¦ì¦W1", "Äæ¦ì¦W2", ...);
-			7. «Å§i¤Î³]©wINSERT¸ê®Æ
-				7.1 «Å§i : Map<String, Object> insertMap = new HashMap<>();
-				7.2 ³]©w¸ê®Æ : insertMap.put("Äæ¦ì¦W1", ­È1); insertMap.put("Äæ¦ì¦W2", ­È2); ...
-			8. °õ¦æ¨Ã¨ú¦^µ²ªG : Number key = simpleJdbcInsert.executeAndReturnKey(insertMap);
+	SimpleJdbcInserté¡åˆ¥
+		åŠŸèƒ½ : INSERTè³‡æ–™, ä¸¦å›å‚³è‡ªå‹•ç”¢ç”Ÿçš„éµå€¼
+		å»ºç«‹æ­¥é©Ÿ
+			1. å®£å‘ŠDataSource
+			2. å®£å‘ŠSimpleJdbcInsert, ä¸¦é€éå»ºæ§‹å­å°‡DataSourceæ³¨å…¥
+			3. å®£å‘ŠSimpleJdbcInsert : SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource);
+			4. æŒ‡å®šTABLE : simpleJdbcInsert.withTableName("è¡¨æ ¼å");
+			5. æŒ‡å®šè‡ªå‹•ç”¢ç”Ÿéµå€¼çš„COLUMN : simpleJdbcInsert.usingGeneratedKeyColumns("æ¬„ä½å");
+			6. æŒ‡å®šå…¶ä»–éè‡ªå‹•ç”¢ç”Ÿéµå€¼çš„COLUMN : simpleJdbcInsert.usingColumns("æ¬„ä½å1", "æ¬„ä½å2", ...);
+			7. å®£å‘ŠåŠè¨­å®šINSERTè³‡æ–™
+				7.1 å®£å‘Š : Map<String, Object> insertMap = new HashMap<>();
+				7.2 è¨­å®šè³‡æ–™ : insertMap.put("æ¬„ä½å1", å€¼1); insertMap.put("æ¬„ä½å2", å€¼2); ...
+			8. åŸ·è¡Œä¸¦å–å›çµæœ : Number key = simpleJdbcInsert.executeAndReturnKey(insertMap);
 			ex.
 				public class XxxDAO implements IXxxDAO {
 					private SimpleJdbcInsert simpleJdbcInsert;
-					private final static String TABLE_NAME = "ªí®æ¦W";
-					private final static String COLUMN_PK = "¦Û°Ê²£¥ÍÁä­È±oÄæ¦ì¦W";
-					private final static String[] COLUMNS = {"Äæ¦ì¦W1", "Äæ¦ì¦W2", ...};
+					private final static String TABLE_NAME = "è¡¨æ ¼å";
+					private final static String COLUMN_PK = "è‡ªå‹•ç”¢ç”Ÿéµå€¼å¾—æ¬„ä½å";
+					private final static String[] COLUMNS = {"æ¬„ä½å1", "æ¬„ä½å2", ...};
 					
 					public XxxDAO(DataSource dataSource) {
 						simpleJdbcInsert = new SimpleJdbcInsert(dataSource);
@@ -557,88 +557,88 @@ JDBC Supported
 					@Override
 					public Integer insertXxx(XxxBean bean) {
 						Map<String, Object> insertMap = new HashMap<>();
-						insertMap.put("Äæ¦ì¦W1", bean.getXxx());
-						insertMap.put("Äæ¦ì¦W2", bean.getYyy());
+						insertMap.put("æ¬„ä½å1", bean.getXxx());
+						insertMap.put("æ¬„ä½å2", bean.getYyy());
 						...
 						return simpleJdbcInsert.executeAndReturnKeyHolder(insertMap).intValue();
 					}
 				}
 				
-	¨ä¥LÃş§O
+	å…¶ä»–é¡åˆ¥
 		1. NamedParameterJdbcTemplate
 		2. SimpleJdbcTemplate
 		
-	¥æ©ö±±¨î(Transaction Management)
-		ÃöÁp¦¡¸ê®Æ®wªº¥æ©ö±±¨î¯S©Ê(ACID)
-			1. Atomicity(­ì¤l©Ê)
-			2. Consistency(¤@­P©Ê)
-			3. Isolation(¹jÂ÷©Ê)
-			4. Durability(«ù¤[©Ê)
+	äº¤æ˜“æ§åˆ¶(Transaction Management)
+		é—œè¯å¼è³‡æ–™åº«çš„äº¤æ˜“æ§åˆ¶ç‰¹æ€§(ACID)
+			1. Atomicity(åŸå­æ€§)
+			2. Consistency(ä¸€è‡´æ€§)
+			3. Isolation(éš”é›¢æ€§)
+			4. Durability(æŒä¹…æ€§)
 				
-		PlatformTransactionManager - Spring¥æ©ö±±¨îªº®Ö¤ß¤¶­±
-			¤èªk
-				TransactionStatus getTransaction(TransactionDefinition definition) : ¨Ì¶Ç¼½¦æ¬°°Ñ¼Æ, ¦^¶Ç·í«e¥æ©ö©Î·s«Ø¤@­Ó¥æ©ö
-				void commit(TransactionStatus status) : ¨Ìª¬ºA°Ñ¼Æ, ¦¨¥\¥æ©ö
-				void rollback(TransactionStatus status) : ¨Ìª¬ºA°Ñ¼Æ, ¦^ºu¥æ©ö
+		PlatformTransactionManager - Springäº¤æ˜“æ§åˆ¶çš„æ ¸å¿ƒä»‹é¢
+			æ–¹æ³•
+				TransactionStatus getTransaction(TransactionDefinition definition) : ä¾å‚³æ’­è¡Œç‚ºåƒæ•¸, å›å‚³ç•¶å‰äº¤æ˜“æˆ–æ–°å»ºä¸€å€‹äº¤æ˜“
+				void commit(TransactionStatus status) : ä¾ç‹€æ…‹åƒæ•¸, æˆåŠŸäº¤æ˜“
+				void rollback(TransactionStatus status) : ä¾ç‹€æ…‹åƒæ•¸, å›æ»¾äº¤æ˜“
 					
-		TransactionDefinition - ¥æ©ö©w¸q¤¶­±, §Y³]©w¥æ©ö¶Ç¼½¦æ¬°©M¹jÂ÷¼h¯Å¤¶­±
-			¤èªk
-				int getPropagationBehavior() : ¶Ç¦^¥æ©ö¶Ç¼½¦æ¬°¥N½X. Spring´£¨Ñ»PEJB CMTÃş¦üªº¥æ©ö¶Ç¼½¿ï¶µ
-				int getIsolationLevel() : ¶Ç¦^¥æ©ö¹jÂ÷¼h¯Å
-				String getName() : ¶Ç¦^¥æ©ö¦WºÙ
-				int getTimeout() : ¶Ç¦^¥æ©ö®É¶¡¤W­­
-				boolean isReadOnly() : ¥æ©ö°ßÅª§_
+		TransactionDefinition - äº¤æ˜“å®šç¾©ä»‹é¢, å³è¨­å®šäº¤æ˜“å‚³æ’­è¡Œç‚ºå’Œéš”é›¢å±¤ç´šä»‹é¢
+			æ–¹æ³•
+				int getPropagationBehavior() : å‚³å›äº¤æ˜“å‚³æ’­è¡Œç‚ºä»£ç¢¼. Springæä¾›èˆ‡EJB CMTé¡ä¼¼çš„äº¤æ˜“å‚³æ’­é¸é …
+				int getIsolationLevel() : å‚³å›äº¤æ˜“éš”é›¢å±¤ç´š
+				String getName() : å‚³å›äº¤æ˜“åç¨±
+				int getTimeout() : å‚³å›äº¤æ˜“æ™‚é–“ä¸Šé™
+				boolean isReadOnly() : äº¤æ˜“å”¯è®€å¦
 					
-			±`¼Æ
-				¹jÂ÷¼h¯Å(Isolation Level)
-					ISOLATION_DEFAULT : ¹w³]ªº¹jÂ÷¼h¯Å
-					ISOLATION_READ_UNCOMMITTED : ³Ì§Cªº¼h¯Å, ¤¹³\Å¼Åª¡B¤£¥i­«½ÆÅª©M¤ÛÅª
-					ISOLATION_READ_COMMITTED : ¦¸§Cªº¼h¯Å, ¨¾¤îÅ¼Åª, ¦ı¤¹³\¤£¥i­«½ÆÅª©M¤ÛÅª
-					ISOLATION_REPEATABLE_READ : ²Ä¤T¼h¯Å, ¨¾¤îÅ¼Åª©M¤£¥i­«½ÆÅª, ¦ı¤¹³\¤ÛÅª
-					ISOLATION_SERIALIZABLE : ³Ì°ªªº¼h¯Å, ¨¾¤îÅ¼Åª¡B¤£¥i­«½ÆÅª©M¤ÛÅª
+			å¸¸æ•¸
+				éš”é›¢å±¤ç´š(Isolation Level)
+					ISOLATION_DEFAULT : é è¨­çš„éš”é›¢å±¤ç´š
+					ISOLATION_READ_UNCOMMITTED : æœ€ä½çš„å±¤ç´š, å…è¨±é«’è®€ã€ä¸å¯é‡è¤‡è®€å’Œå¹»è®€
+					ISOLATION_READ_COMMITTED : æ¬¡ä½çš„å±¤ç´š, é˜²æ­¢é«’è®€, ä½†å…è¨±ä¸å¯é‡è¤‡è®€å’Œå¹»è®€
+					ISOLATION_REPEATABLE_READ : ç¬¬ä¸‰å±¤ç´š, é˜²æ­¢é«’è®€å’Œä¸å¯é‡è¤‡è®€, ä½†å…è¨±å¹»è®€
+					ISOLATION_SERIALIZABLE : æœ€é«˜çš„å±¤ç´š, é˜²æ­¢é«’è®€ã€ä¸å¯é‡è¤‡è®€å’Œå¹»è®€
 				
-				¶Ç¼½Ãş«¬
-					PROPAGATION_MANDATORY : ¤ä´©·í«e¥æ©ö, ­YµL·í«e¥æ©ö«h©ß¥X¨Ò¥~
-					PROPAGATION_NESTED : ­Y·í«e¥æ©ö¦s¦b, «h¦b¤º³¡ªº¥æ©ö°õ¦æ
-					PROPAGATION_NEVER : ¤£¤ä´©·í«e¥æ©ö, ­Y·í«e¥æ©ö¦s¦b«h©ß¥X¨Ò¥~
-					PROPAGATION_NOT_SUPPORTED : ¤£¤ä´©·í«e¥æ©ö, ¥u°õ¦æ«D¥æ©ö±±¨î°Ê§@
-					PROPAGATION_REQUIRED : ¤ä´©·í«e¥æ©ö, ­YµL·í«e¥æ©ö«h«Ø¥ß¤@­Ó·sªº¥æ©ö
-					PROPAGATION_REQUIRES_NEW : «Ø¥ß¤@­Ó·sªº¥æ©ö, ­Y·í«e¥æ©ö¦s¦b«h°±¤î·í«e¥æ©ö
-					PROPAGATION_SUPPORTS : ¤ä´©·í«e¥æ©ö, ­Y·í«e¥æ©ö¤£¦s¦b«h°õ¦æ«D¥æ©ö±±¨î°Ê§@
-					TIMEOUT_DEFAULT : ¨Ï¥Î©³¼hªº¶W®É±±¨î, ­Y©³¼h¤£¤ä´©«hµL
+				å‚³æ’­é¡å‹
+					PROPAGATION_MANDATORY : æ”¯æ´ç•¶å‰äº¤æ˜“, è‹¥ç„¡ç•¶å‰äº¤æ˜“å‰‡æ‹‹å‡ºä¾‹å¤–
+					PROPAGATION_NESTED : è‹¥ç•¶å‰äº¤æ˜“å­˜åœ¨, å‰‡åœ¨å…§éƒ¨çš„äº¤æ˜“åŸ·è¡Œ
+					PROPAGATION_NEVER : ä¸æ”¯æ´ç•¶å‰äº¤æ˜“, è‹¥ç•¶å‰äº¤æ˜“å­˜åœ¨å‰‡æ‹‹å‡ºä¾‹å¤–
+					PROPAGATION_NOT_SUPPORTED : ä¸æ”¯æ´ç•¶å‰äº¤æ˜“, åªåŸ·è¡Œéäº¤æ˜“æ§åˆ¶å‹•ä½œ
+					PROPAGATION_REQUIRED : æ”¯æ´ç•¶å‰äº¤æ˜“, è‹¥ç„¡ç•¶å‰äº¤æ˜“å‰‡å»ºç«‹ä¸€å€‹æ–°çš„äº¤æ˜“
+					PROPAGATION_REQUIRES_NEW : å»ºç«‹ä¸€å€‹æ–°çš„äº¤æ˜“, è‹¥ç•¶å‰äº¤æ˜“å­˜åœ¨å‰‡åœæ­¢ç•¶å‰äº¤æ˜“
+					PROPAGATION_SUPPORTS : æ”¯æ´ç•¶å‰äº¤æ˜“, è‹¥ç•¶å‰äº¤æ˜“ä¸å­˜åœ¨å‰‡åŸ·è¡Œéäº¤æ˜“æ§åˆ¶å‹•ä½œ
+					TIMEOUT_DEFAULT : ä½¿ç”¨åº•å±¤çš„è¶…æ™‚æ§åˆ¶, è‹¥åº•å±¤ä¸æ”¯æ´å‰‡ç„¡
 					
-						TransactionStatus - ¥æ©öª¬ºA¤¶­±
-				¤èªk
-					boolean hasSavepoint() : ¥æ©ö¦³«O¦sÂI§_
-					boolean isCompleted() : ¥æ©ö¤w§¹¦¨§_. (¤w¸gcommit / rollback)
-					boolean isNewTransaction() : ·í«e¥æ©ö¬°·s«Ø§_
-					boolean isRollbackOnly() : ¥æ©ö³Q³]©w¬°¥u¯à¦^ºu§_
-					void setRollbackOnly() : ³]©w¥æ©ö¬°¥u¯à¦^ºu
+						TransactionStatus - äº¤æ˜“ç‹€æ…‹ä»‹é¢
+				æ–¹æ³•
+					boolean hasSavepoint() : äº¤æ˜“æœ‰ä¿å­˜é»å¦
+					boolean isCompleted() : äº¤æ˜“å·²å®Œæˆå¦. (å·²ç¶“commit / rollback)
+					boolean isNewTransaction() : ç•¶å‰äº¤æ˜“ç‚ºæ–°å»ºå¦
+					boolean isRollbackOnly() : äº¤æ˜“è¢«è¨­å®šç‚ºåªèƒ½å›æ»¾å¦
+					void setRollbackOnly() : è¨­å®šäº¤æ˜“ç‚ºåªèƒ½å›æ»¾
 				
-		¼¶¼g¤è¦¡
-			1. ½sµ{¦¡ : ¥æ©ö±±¨î¥ş³¡¼g¦bJava¸Ì, ÆF¬¡«×°ª, ¦ıÃøºûÅ@
-			2. Án©ú¦¡ : ¨Ï¥ÎµùÄÀ©ÎXML, ±Nµ{¦¡»P¥æ©ö±±¨î©âÂ÷, ©öºûÅ@
+		æ’°å¯«æ–¹å¼
+			1. ç·¨ç¨‹å¼ : äº¤æ˜“æ§åˆ¶å…¨éƒ¨å¯«åœ¨Javaè£¡, éˆæ´»åº¦é«˜, ä½†é›£ç¶­è­·
+			2. è²æ˜å¼ : ä½¿ç”¨è¨»é‡‹æˆ–XML, å°‡ç¨‹å¼èˆ‡äº¤æ˜“æ§åˆ¶æŠ½é›¢, æ˜“ç¶­è­·
 			
-		½sµ{¦¡«Ø¥ß¨BÆJ
-			*µù : ½sµ{¦¡¬O¦bDAO¸Ì¥[¤J¥æ©ö±±¨î
-			0. ¥ı¼¶¼g§¹DAO¬ÛÃöµ{¦¡(ex. ¥HJdbctemplate¼¶¼gDAO)
+		ç·¨ç¨‹å¼å»ºç«‹æ­¥é©Ÿ
+			*è¨» : ç·¨ç¨‹å¼æ˜¯åœ¨DAOè£¡åŠ å…¥äº¤æ˜“æ§åˆ¶
+			0. å…ˆæ’°å¯«å®ŒDAOç›¸é—œç¨‹å¼(ex. ä»¥Jdbctemplateæ’°å¯«DAO)
 			
-			1. ¬ÛÃöÄİ©Ê«Å§i : ¦bDAO¹ê§@Ãş§O¤º¥[¤JÄİ©Ê
-				1.1 ¥æ©öºŞ²zªÌ : private PlatformTransactionManager txManager;
-				1.2 ¥æ©ö©w¸q : private TransactionDefinition txDefinition;
-				1.3 ¥æ©öª¬ºA : private TransactionStatus txStatus;
+			1. ç›¸é—œå±¬æ€§å®£å‘Š : åœ¨DAOå¯¦ä½œé¡åˆ¥å…§åŠ å…¥å±¬æ€§
+				1.1 äº¤æ˜“ç®¡ç†è€… : private PlatformTransactionManager txManager;
+				1.2 äº¤æ˜“å®šç¾© : private TransactionDefinition txDefinition;
+				1.3 äº¤æ˜“ç‹€æ…‹ : private TransactionStatus txStatus;
 			
-			2. ªì©l¤Æ¥æ©öºŞ²zªÌ : ¦bDAO¹ê§@Ãş§O¤º
-				2.1 ³z¹L«Øºc¤lª`¤JDataSource
-				2.2 ¦b«Øºc¤l¤ºªì©l¤Æ : txManager = new DataSourceTransactionManager(dataSource);
-				2.¸É¥R : jdbcTemplate = new JdbcTemplate(dataSource);
+			2. åˆå§‹åŒ–äº¤æ˜“ç®¡ç†è€… : åœ¨DAOå¯¦ä½œé¡åˆ¥å…§
+				2.1 é€éå»ºæ§‹å­æ³¨å…¥DataSource
+				2.2 åœ¨å»ºæ§‹å­å…§åˆå§‹åŒ– : txManager = new DataSourceTransactionManager(dataSource);
+				2.è£œå…… : jdbcTemplate = new JdbcTemplate(dataSource);
 					
-						3. ¥[¤J¥æ©ö±±¨î :  : ¦bDAO¹ê§@Ãş§O¤º, »İ­n¥æ©ö±±¨îªº¤èªk¤º¥[¤W..
-				3.1 ¥[¤Wtry-catch : ¦Ü¤Ö­n¥]§tjdbcTemplate.update(...);
-				3.2 ¥æ©ö©w¸qªì©l¤Æ : txDefinition = new DefaultTransactionDefinition();
-				3.3 ¥æ©öª¬ºAªì©l¤Æ : txStatus = txManager.getTransaction(txDefinition);
-				3.4 Commit : ¦btry°Ï¶ô¤º, jdbcTemplate.update(...)ªº¤U¤@¦æ, ¥[¤WtxManager.commit(txStatus);
-				3.5 Rollback : ¦bcatch°Ï¶ô¤º, e.printStackTrace()ªº¤U¤@¦æ, ¥[¤WtxManager.rollback(txStatus);
+						3. åŠ å…¥äº¤æ˜“æ§åˆ¶ :  : åœ¨DAOå¯¦ä½œé¡åˆ¥å…§, éœ€è¦äº¤æ˜“æ§åˆ¶çš„æ–¹æ³•å…§åŠ ä¸Š..
+				3.1 åŠ ä¸Štry-catch : è‡³å°‘è¦åŒ…å«jdbcTemplate.update(...);
+				3.2 äº¤æ˜“å®šç¾©åˆå§‹åŒ– : txDefinition = new DefaultTransactionDefinition();
+				3.3 äº¤æ˜“ç‹€æ…‹åˆå§‹åŒ– : txStatus = txManager.getTransaction(txDefinition);
+				3.4 Commit : åœ¨tryå€å¡Šå…§, jdbcTemplate.update(...)çš„ä¸‹ä¸€è¡Œ, åŠ ä¸ŠtxManager.commit(txStatus);
+				3.5 Rollback : åœ¨catchå€å¡Šå…§, e.printStackTrace()çš„ä¸‹ä¸€è¡Œ, åŠ ä¸ŠtxManager.rollback(txStatus);
 				
 			ex.
 				public class MemberDAOTxManage implements IMemberDAO {
@@ -701,91 +701,91 @@ JDBC Supported
 						return result; 
 					}
 			
-					...//(select¤£»İ¥æ©ö±±¨î, ²¤..)
+					...//(selectä¸éœ€äº¤æ˜“æ§åˆ¶, ç•¥..)
 			
 				}
 				
-		Án©ú¦¡«Ø¥ß¨BÆJ
-			*µù : Án©ú¦¡¬O¦bXML¸Ì¥[¤J¥æ©ö±±¨î, ¦Ó¦¹¤è¦¡¬O¥ÎAOP¨Ó§¹¦¨¥æ©ö±±¨î
+		è²æ˜å¼å»ºç«‹æ­¥é©Ÿ
+			*è¨» : è²æ˜å¼æ˜¯åœ¨XMLè£¡åŠ å…¥äº¤æ˜“æ§åˆ¶, è€Œæ­¤æ–¹å¼æ˜¯ç”¨AOPä¾†å®Œæˆäº¤æ˜“æ§åˆ¶
 					
-			0. ¥ı¼¶¼g§¹DAO¬ÛÃöµ{¦¡(ex. ¥HJdbctemplate¼¶¼gDAO)
+			0. å…ˆæ’°å¯«å®ŒDAOç›¸é—œç¨‹å¼(ex. ä»¥Jdbctemplateæ’°å¯«DAO)
 				
-			1. «Å§i¥æ©öºŞ²zªÌ
+			1. å®£å‘Šäº¤æ˜“ç®¡ç†è€…
 				<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 					<property name="dataSource"  ref="dataSource" />    
 				</bean>
 					
-			2. ³]©w¥æ©ö±±¨î³qª¾(Advice) : «ü¦V»İ¥æ©ö±±¨îªº¤èªk
+			2. è¨­å®šäº¤æ˜“æ§åˆ¶é€šçŸ¥(Advice) : æŒ‡å‘éœ€äº¤æ˜“æ§åˆ¶çš„æ–¹æ³•
 				<tx:advice id="txAdvice"  transaction-manager="txManager">
 					<tx:attributes>
-						<tx:method name="insertXxx" />	<--¤èªk¦W
-						<tx:method name="deleteXxx" />	<--¤èªk¦W
-						<tx:method name="updateXxx" />	<--¤èªk¦W
+						<tx:method name="insertXxx" />	<--æ–¹æ³•å
+						<tx:method name="deleteXxx" />	<--æ–¹æ³•å
+						<tx:method name="updateXxx" />	<--æ–¹æ³•å
 					</tx:attributes>
 				</tx:advice>
 			
-			3. ³]©w¥æ©ö±±¨î¹ê»Ú¤Á¤JÂI
+			3. è¨­å®šäº¤æ˜“æ§åˆ¶å¯¦éš›åˆ‡å…¥é»
 				<aop:config>
-					<aop:pointcut id="DMLOperation" expression="execution(* model.dao.XxxDAO.*(..))"/>	<--³]©w¹ê»Ú¤Á¤JÂIºÊ±±ªº¤èªkexpression
-					<aop:advisor advice-ref="txAdvice" pointcut-ref="DMLOperation"/>	<--«ü©w³qª¾¤Î¹ê»Ú¤Á¤JÂI
+					<aop:pointcut id="DMLOperation" expression="execution(* model.dao.XxxDAO.*(..))"/>	<--è¨­å®šå¯¦éš›åˆ‡å…¥é»ç›£æ§çš„æ–¹æ³•expression
+					<aop:advisor advice-ref="txAdvice" pointcut-ref="DMLOperation"/>	<--æŒ‡å®šé€šçŸ¥åŠå¯¦éš›åˆ‡å…¥é»
 				</aop:config>
 				
 MVC
-	¤ä´©§Ş³N
+	æ”¯æ´æŠ€è¡“
 		Model : POJO
-		View : HTML¡BJSP¡BFile(pdf¡Bexcel)¡BXML¡BJSON¡BVelocity¼ÒªO¡BXSLT¡BAtom¡BRSS´£­n¡BJasperReports
+		View : HTMLã€JSPã€File(pdfã€excel)ã€XMLã€JSONã€Velocityæ¨¡æ¿ã€XSLTã€Atomã€RSSæè¦ã€JasperReports
 		Controller : Spring Controller
 	
-	DispatcherServlet - ¤À¬£ªÌ
-		¨¤¦â : Spring-MVCªº®Ö¤ßÃş§O, ¾ã­ÓSpring-MVC³£¬O³òÂ¶µÛDispatcherServlet³]­p
-		¥\¯à : ©Ò¦³½Ğ¨D©M¦^À³ªº½Õ¬£
-		½Ğ¨D¦^À³¬yµ{
-			0. ¥Î¤áºİµo¥X½Ğ¨D
-			1. DispatcherServlet±µ¦¬½Ğ¨D, °Ñ¦ÒHandlerMapping
-			2. HandlerMapping¨Ì¬M®g³]©w, ªğ¦^¿ï¾ÜªºController¦WºÙµ¹DispatcherServlet
-			3. DispatcherServlet±µ¦¬Controller¦WºÙ, ±N±±¨îÅv¥æµ¹Controller
+	DispatcherServlet - åˆ†æ´¾è€…
+		è§’è‰² : Spring-MVCçš„æ ¸å¿ƒé¡åˆ¥, æ•´å€‹Spring-MVCéƒ½æ˜¯åœç¹è‘—DispatcherServletè¨­è¨ˆ
+		åŠŸèƒ½ : æ‰€æœ‰è«‹æ±‚å’Œå›æ‡‰çš„èª¿æ´¾
+		è«‹æ±‚å›æ‡‰æµç¨‹
+			0. ç”¨æˆ¶ç«¯ç™¼å‡ºè«‹æ±‚
+			1. DispatcherServletæ¥æ”¶è«‹æ±‚, åƒè€ƒHandlerMapping
+			2. HandlerMappingä¾æ˜ å°„è¨­å®š, è¿”å›é¸æ“‡çš„Controlleråç¨±çµ¦DispatcherServlet
+			3. DispatcherServletæ¥æ”¶Controlleråç¨±, å°‡æ§åˆ¶æ¬Šäº¤çµ¦Controller
 			4. Controller
-				4.1 ±µ¨ü½Ğ¨D¨Ã¿ë§O½Ğ¨D¤èªk(GET / POST)
-				4.2 ½Õ¥Î¾A·íªºService¤èªk°µ°Ó·~ÅŞ¿è¹Bºâ
-				4.3 ªğ¦^View¦WºÙ©MModelª«¥ó¨ìDispatcherServlet
-				*µù : ¦¹Model«üªº¬OData, §YPOJO(©ÎÃş¦üPOJO)ªºBeanª«¥ó, «D¥²­n
-			5. DispatcherServlet±µ¦¬View¦WºÙ©MModelª«¥ó, °Ñ¦ÒView¸ÑªR¾¹
-			6. View¸ÑªR¾¹±µ¦¬View¦WºÙ, ¨Ã¨Ì¾Ú³]©w¸ÑªR, ¸ÑªR§¹«á±N¸ÑªR¥XªºView¦WºÙ¥æµ¹DispatcherServlet
-			7. DispatcherServlet±µ¦¬¸ÑªR¹LªºView¦WºÙ, ¨Ã±NModelª«¥ó¶Çµ¹View, ¸õÂà¦ÜView
-			8. ViewÅã¥Üµ²ªG
-			*µù : HandlerMapping¡BController¡BViewResolver³£¬OWebApplicationContextªº¤@³¡¤À
+				4.1 æ¥å—è«‹æ±‚ä¸¦è¾¨åˆ¥è«‹æ±‚æ–¹æ³•(GET / POST)
+				4.2 èª¿ç”¨é©ç•¶çš„Serviceæ–¹æ³•åšå•†æ¥­é‚è¼¯é‹ç®—
+				4.3 è¿”å›Viewåç¨±å’ŒModelç‰©ä»¶åˆ°DispatcherServlet
+				*è¨» : æ­¤ModelæŒ‡çš„æ˜¯Data, å³POJO(æˆ–é¡ä¼¼POJO)çš„Beanç‰©ä»¶, éå¿…è¦
+			5. DispatcherServletæ¥æ”¶Viewåç¨±å’ŒModelç‰©ä»¶, åƒè€ƒViewè§£æå™¨
+			6. Viewè§£æå™¨æ¥æ”¶Viewåç¨±, ä¸¦ä¾æ“šè¨­å®šè§£æ, è§£æå®Œå¾Œå°‡è§£æå‡ºçš„Viewåç¨±äº¤çµ¦DispatcherServlet
+			7. DispatcherServletæ¥æ”¶è§£æéçš„Viewåç¨±, ä¸¦å°‡Modelç‰©ä»¶å‚³çµ¦View, è·³è½‰è‡³View
+			8. Viewé¡¯ç¤ºçµæœ
+			*è¨» : HandlerMappingã€Controllerã€ViewResolveréƒ½æ˜¯WebApplicationContextçš„ä¸€éƒ¨åˆ†
 				
-	«Ø¥ß¨BÆJ
-		1. «Å§iDispatcherServlet : ¦bweb.xmlªº<web-app>¤º¥[¤J
+	å»ºç«‹æ­¥é©Ÿ
+		1. å®£å‘ŠDispatcherServlet : åœ¨web.xmlçš„<web-app>å…§åŠ å…¥
 			<servlet>
-				<servlet-name>mvcDispatcher</servlet-name>	<--¦Û­qªºDispatcherServlet¦WºÙ
+				<servlet-name>mvcDispatcher</servlet-name>	<--è‡ªè¨‚çš„DispatcherServletåç¨±
 				<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 				<load-on-startup>1</load-on-startup>
 			</servlet>
 			<servlet-mapping>
-				<servlet-name>mvcDispatcher</servlet-name>	<--¦Û­qªºDispatcherServlet¦WºÙ
-				<url-pattern>/</url-pattern>	<--«ü©w­ş¨Çurl·|¸g¹LDispatcherServlet
+				<servlet-name>mvcDispatcher</servlet-name>	<--è‡ªè¨‚çš„DispatcherServletåç¨±
+				<url-pattern>/</url-pattern>	<--æŒ‡å®šå“ªäº›urlæœƒç¶“éDispatcherServlet
 			</servlet-mapping>
 				
-		2. «ü©wDispatcherServlet²ÕºAÀÉ¸ô®|©MÀÉ¦W : ¦bweb.xml
-			*µù : ­Y¨Ï¥Î¹w³]ªº¸ô®|©MÀÉ¦W«h¤£»İ«ü©w. ¹w³]¸ô®|©MÀÉ¦W¬° : WEB-INFO/¨BÆJ1¦Û­qªºDispatcherServlet¦WºÙ-servlet.xml
+		2. æŒ‡å®šDispatcherServletçµ„æ…‹æª”è·¯å¾‘å’Œæª”å : åœ¨web.xml
+			*è¨» : è‹¥ä½¿ç”¨é è¨­çš„è·¯å¾‘å’Œæª”åå‰‡ä¸éœ€æŒ‡å®š. é è¨­è·¯å¾‘å’Œæª”åç‚º : WEB-INFO/æ­¥é©Ÿ1è‡ªè¨‚çš„DispatcherServletåç¨±-servlet.xml
 					
-			¤è¦¡1 : <web-app>¤º¥[¤J
+			æ–¹å¼1 : <web-app>å…§åŠ å…¥
 				<context-param>
 					<param-name>contextConfigLocation</param-name>
-					<param-value>¸ô®|/ÀÉ¦W.xml</param-value>
+					<param-value>è·¯å¾‘/æª”å.xml</param-value>
 				</context-param
 			
-			¤è¦¡2 : ¦b¨BÆJ1©w¸qDispatcherServletªº<servlet>¤º, <load-up-startup>«e¥[¤J
+			æ–¹å¼2 : åœ¨æ­¥é©Ÿ1å®šç¾©DispatcherServletçš„<servlet>å…§, <load-up-startup>å‰åŠ å…¥
 				<init-param>
 					<param-name>contextConfigLocation</param-name>
-					<param-value>¸ô®|/ÀÉ¦W.xml</param-value>
+					<param-value>è·¯å¾‘/æª”å.xml</param-value>
 				</init-param>
 				
-		3. «Ø¥ß¤Î©w¸q²ÕºAÀÉ
-			3.1 «Ø¥ß : ¨Ì¨BÆJ2©Ò«ü©w¦ì¸m¤Î¦WºÙ«Ø¥ß²ÕºAÀÉ
+		3. å»ºç«‹åŠå®šç¾©çµ„æ…‹æª”
+			3.1 å»ºç«‹ : ä¾æ­¥é©Ÿ2æ‰€æŒ‡å®šä½ç½®åŠåç¨±å»ºç«‹çµ„æ…‹æª”
 			
-			3.2 ¤Ş¥Îxsd
+			3.2 å¼•ç”¨xsd
 				<beans xmlns="http://www.springframework.org/schema/beans"
 					xmlns:context="http://www.springframework.org/schema/context"
 					xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -796,52 +796,52 @@ MVC
 					
 				</beans>
 				
-			3.3 ÅX°Ê¯S©wAnnotation¨Ã«ü©wController©Ò¦b®M¥ó : ¦b<beans>¤º¥[¤W
-				<context:component-scan base-package="xxx.yyy" />	<--«ü©w±½´yªº®M¥ó	
-				*µù
-					1. Spring-MVC±Ò°Ê®É·|¦b®M¥óxxx.yyy¤U, §ä¦³¥[¤W@Controller¡B@RestController..µ¥µùÄÀªºÃş§O
-					2. ­Y¦³¦h­Ó®M¥ó, ¥i¥Î"³r¸¹"¹j¶}. ¥i«ü©w¸û°ª¼hªº®M¥ó, ©³¤U©Ò¦³¤l®M¥ó³£·|³Q±½´y
-					3. ¦³Filter¾÷¨î, ¥i«ü©w(¥Õ¦W³æ)©Î±Æ°£(¶Â¦W³æ)­n±½´yªº¥Ø¼Ğ
-						«ü©w : <context:include-filter type="¹LÂoÃş«¬" expression="®M¥ó" />
-						±Æ°£ : <context:exclude-filter type="¹LÂoÃş«¬" expression="®M¥ó" />
-							type : annotation¡Bregex¡Baspectj¡Bassignable¡Bcustom
+			3.3 é©…å‹•ç‰¹å®šAnnotationä¸¦æŒ‡å®šControlleræ‰€åœ¨å¥—ä»¶ : åœ¨<beans>å…§åŠ ä¸Š
+				<context:component-scan base-package="xxx.yyy" />	<--æŒ‡å®šæƒæçš„å¥—ä»¶	
+				*è¨»
+					1. Spring-MVCå•Ÿå‹•æ™‚æœƒåœ¨å¥—ä»¶xxx.yyyä¸‹, æ‰¾æœ‰åŠ ä¸Š@Controllerã€@RestController..ç­‰è¨»é‡‹çš„é¡åˆ¥
+					2. è‹¥æœ‰å¤šå€‹å¥—ä»¶, å¯ç”¨"é€—è™Ÿ"éš”é–‹. å¯æŒ‡å®šè¼ƒé«˜å±¤çš„å¥—ä»¶, åº•ä¸‹æ‰€æœ‰å­å¥—ä»¶éƒ½æœƒè¢«æƒæ
+					3. æœ‰Filteræ©Ÿåˆ¶, å¯æŒ‡å®š(ç™½åå–®)æˆ–æ’é™¤(é»‘åå–®)è¦æƒæçš„ç›®æ¨™
+						æŒ‡å®š : <context:include-filter type="éæ¿¾é¡å‹" expression="å¥—ä»¶" />
+						æ’é™¤ : <context:exclude-filter type="éæ¿¾é¡å‹" expression="å¥—ä»¶" />
+							type : annotationã€regexã€aspectjã€assignableã€custom
 							ex
 								<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller />
 								<context:exclude-filter type="regex" expression=".*Stub.*Repository" />
 				
-			3.4 «Å§iView¸ÑªR¾¹ : ¦b<beans>¤º¥[¤W
+			3.4 å®£å‘ŠViewè§£æå™¨ : åœ¨<beans>å…§åŠ ä¸Š
 				<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-			      				<property name="prefix" value="/" />		<--³]©w«eºó¦r
-			      				<property name="suffix" value=".jsp" />		<--³]©w«áºó¦r
-					<property name="contentType" value="text/html;charset=UTF-8" />		<--³]©wViewªºÃş«¬(Content Type)¤Î½s½X
+			      				<property name="prefix" value="/" />		<--è¨­å®šå‰ç¶´å­—
+			      				<property name="suffix" value=".jsp" />		<--è¨­å®šå¾Œç¶´å­—
+					<property name="contentType" value="text/html;charset=UTF-8" />		<--è¨­å®šViewçš„é¡å‹(Content Type)åŠç·¨ç¢¼
 				</bean> 
 				
-		4. «Ø¥ß¤Î¼¶¼g±±¨î¾¹Ãş§O		
-			4.1 «Ø¥ß : ¨Ì¨BÆJ3.3©Ò«ü©w®M¥ó¤U·s¼W¤@Ãş§O, ¦WºÙ¬°XxxController
+		4. å»ºç«‹åŠæ’°å¯«æ§åˆ¶å™¨é¡åˆ¥		
+			4.1 å»ºç«‹ : ä¾æ­¥é©Ÿ3.3æ‰€æŒ‡å®šå¥—ä»¶ä¸‹æ–°å¢ä¸€é¡åˆ¥, åç¨±ç‚ºXxxController
 			
-			4.2 ¼¶¼g : ¶}±Ò¨BÆJ4.1«Ø¥ßªºXxxController, ¥[¤J..
-				4.2.1 «Å§i¦¨±±¨î¾¹Ãş§O : ¦bXxxController¤W¤@¦æ¥[¤W@Controller
+			4.2 æ’°å¯« : é–‹å•Ÿæ­¥é©Ÿ4.1å»ºç«‹çš„XxxController, åŠ å…¥..
+				4.2.1 å®£å‘Šæˆæ§åˆ¶å™¨é¡åˆ¥ : åœ¨XxxControllerä¸Šä¸€è¡ŒåŠ ä¸Š@Controller
 				
-				4.2.2 ³]©w¦¹±±¨î¾¹¬M®gªº®ÚURL : ¦bXxxController¸ò@Controller¤¤¶¡´¡¤J¤@¦æ, ¥[¤W@RequestMapping("¦Û­q±±¨î¾¹Ãş§O®ÚURL")
-					*µù : http://hostName:port/ProjectName/¦Û­q±±¨î¾¹Ãş§O®ÚURL
+				4.2.2 è¨­å®šæ­¤æ§åˆ¶å™¨æ˜ å°„çš„æ ¹URL : åœ¨XxxControllerè·Ÿ@Controllerä¸­é–“æ’å…¥ä¸€è¡Œ, åŠ ä¸Š@RequestMapping("è‡ªè¨‚æ§åˆ¶å™¨é¡åˆ¥æ ¹URL")
+					*è¨» : http://hostName:port/ProjectName/è‡ªè¨‚æ§åˆ¶å™¨é¡åˆ¥æ ¹URL
 					
-				4.2.3 ¼¶¼g±±¨î¾¹¤èªk
-					*µù : Spring-MVCÀô¹Ò¤Uªº±±¨î¾¹Ãş§O(¦³¥[@ControllerªºÃş§O), ¨ä¤ºªº"¤@­Ó¤èªk"µ¥¦PJava EEÀô¹Ò¤Uªº"¤@­ÓServlet"
-					4.2.3.1 ·s¼W¤@¤èªk
+				4.2.3 æ’°å¯«æ§åˆ¶å™¨æ–¹æ³•
+					*è¨» : Spring-MVCç’°å¢ƒä¸‹çš„æ§åˆ¶å™¨é¡åˆ¥(æœ‰åŠ @Controllerçš„é¡åˆ¥), å…¶å…§çš„"ä¸€å€‹æ–¹æ³•"ç­‰åŒJava EEç’°å¢ƒä¸‹çš„"ä¸€å€‹Servlet"
+					4.2.3.1 æ–°å¢ä¸€æ–¹æ³•
 						public ReturnType methodName(arg...) {}
-						*µù : ¦^¶Ç«¬ºA»P°Ñ¼Æ¦³¦hºØ¼gªk
+						*è¨» : å›å‚³å‹æ…‹èˆ‡åƒæ•¸æœ‰å¤šç¨®å¯«æ³•
 				
-					4.2.3.2 ³]©w¦¹±±¨î¾¹¤èªkªºURL : ¦b¤èªk«e¤@¦æ¥[¤W
-						@RequestMapping("¦Û­q±±¨î¾¹¤èªkURL")
+					4.2.3.2 è¨­å®šæ­¤æ§åˆ¶å™¨æ–¹æ³•çš„URL : åœ¨æ–¹æ³•å‰ä¸€è¡ŒåŠ ä¸Š
+						@RequestMapping("è‡ªè¨‚æ§åˆ¶å™¨æ–¹æ³•URL")
 						or
-						@RequestMapping(value ="¦Û­q±±¨î¾¹¤èªkURL", method = RequestMethod.½Ğ¨D¤èªk)//GET©ÎPOST
-						*µù : http://hostName:port/ProjectName/¦Û­qªº±±¨î¾¹Ãş§O®ÚURL/¦Û­q±±¨î¾¹¤èªkURL
+						@RequestMapping(value ="è‡ªè¨‚æ§åˆ¶å™¨æ–¹æ³•URL", method = RequestMethod.è«‹æ±‚æ–¹æ³•)//GETæˆ–POST
+						*è¨» : http://hostName:port/ProjectName/è‡ªè¨‚çš„æ§åˆ¶å™¨é¡åˆ¥æ ¹URL/è‡ªè¨‚æ§åˆ¶å™¨æ–¹æ³•URL
 				
-					4.2.3.3 ©w¸q¤èªk¥»Åé(©I¥s°Ó·~ÅŞ¿èService..µ¥)
+					4.2.3.3 å®šç¾©æ–¹æ³•æœ¬é«”(å‘¼å«å•†æ¥­é‚è¼¯Service..ç­‰)
 				
-					4.2.3.4 «ü©wÅã¥Üµ²ªG¤§View¦WºÙ
-						return "View¦WºÙ";//¦^¶ÇView¦WºÙ¦³¦hºØ¼gªk
-						*µù : ¦¹View¦WºÙ·|°eµ¹View¸ÑªR¾¹, ¸ÑªR«á±o¨ì§¹¾ãView¦WºÙ
+					4.2.3.4 æŒ‡å®šé¡¯ç¤ºçµæœä¹‹Viewåç¨±
+						return "Viewåç¨±";//å›å‚³Viewåç¨±æœ‰å¤šç¨®å¯«æ³•
+						*è¨» : æ­¤Viewåç¨±æœƒé€çµ¦Viewè§£æå™¨, è§£æå¾Œå¾—åˆ°å®Œæ•´Viewåç¨±
 				
 			4.ex
 				@Controller
@@ -858,26 +858,26 @@ MVC
 					}
 				}
 				
-	RESTFul­·®æªºSpring MVC
-		»¡©ú : ¥Îhttpªº½Ğ¨D¤èªk¾Ş§@¸ê®Æ
+	RESTFulé¢¨æ ¼çš„Spring MVC
+		èªªæ˜ : ç”¨httpçš„è«‹æ±‚æ–¹æ³•æ“ä½œè³‡æ–™
 			action	http Request Method		DB DML Operation
 			------------------------------------------------
-			¨ú±o	GET						SELECT
-			·s¼W	POST					INSERT
-			§ó·s	PUT						UPDATE
-			§R°£	DELETE					DELETE
+			å–å¾—	GET						SELECT
+			æ–°å¢	POST					INSERT
+			æ›´æ–°	PUT						UPDATE
+			åˆªé™¤	DELETE					DELETE
 				
 		HiddenHttpMethodFilter
-			¥Î³~ : ¦]¬°<form>¥u¤ä´©GET©MPOST¤èªk, ¨Ï¥Î¦¹¹LÂo¾¹¯à"¼ÒÀÀ"¥XPUT©MDELETEªº½Ğ¨D, ¨Ó¹F¨ìRESUTful
+			ç”¨é€” : å› ç‚º<form>åªæ”¯æ´GETå’ŒPOSTæ–¹æ³•, ä½¿ç”¨æ­¤éæ¿¾å™¨èƒ½"æ¨¡æ“¬"å‡ºPUTå’ŒDELETEçš„è«‹æ±‚, ä¾†é”åˆ°RESUTful
 			
-		«Ø¥ß¨BÆJ
-			1. «Å§iDispatcherServlet : ¦P¤W«Ø¥ß¨BÆJ
+		å»ºç«‹æ­¥é©Ÿ
+			1. å®£å‘ŠDispatcherServlet : åŒä¸Šå»ºç«‹æ­¥é©Ÿ
 			
-			2. «ü©wDispatcherServlet²ÕºAÀÉ¸ô®|©MÀÉ¦W : ¦P¤W«Ø¥ß¨BÆJ
+			2. æŒ‡å®šDispatcherServletçµ„æ…‹æª”è·¯å¾‘å’Œæª”å : åŒä¸Šå»ºç«‹æ­¥é©Ÿ
 			
-			3. «Ø¥ß¤Î©w¸q²ÕºAÀÉ : ¦P¤W«Ø¥ß¨BÆJ
+			3. å»ºç«‹åŠå®šç¾©çµ„æ…‹æª” : åŒä¸Šå»ºç«‹æ­¥é©Ÿ
 			
-			4. «Å§iHiddenHttpMethodFilter : ¦bweb.xmlªº<web-app>¤º¥[¤J
+			4. å®£å‘ŠHiddenHttpMethodFilter : åœ¨web.xmlçš„<web-app>å…§åŠ å…¥
 				<filter>
 					<filter-name>HiddenHttpMethodFilter</filter-name>
 					<filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
@@ -887,36 +887,36 @@ MVC
 					<url-pattern>/*</url-pattern>
 				</filter-mapping>
 				
-			5. ¼¶¼g«eºİºô­¶ : RestfulTest.jsp (¥u¦C¥XDELETE¡BPUT³¡¤À)
+			5. æ’°å¯«å‰ç«¯ç¶²é  : RestfulTest.jsp (åªåˆ—å‡ºDELETEã€PUTéƒ¨åˆ†)
 				<h3>DELETE</h3>
-				<form action="restfulTest/delete/28" method="POST">		<-- <form>¬Ò¥ÎPOST½Ğ¨D
-					<input type="hidden" name="_method" value="DELETE">	<--nameÄİ©Ê¤§­È©T©w«ü©w¬°"_method", valueÄİ©Ê¤§­È«ü©w­n¼ÒÀÀªº½Ğ¨D¤èªk
+				<form action="restfulTest/delete/28" method="POST">		<-- <form>çš†ç”¨POSTè«‹æ±‚
+					<input type="hidden" name="_method" value="DELETE">	<--nameå±¬æ€§ä¹‹å€¼å›ºå®šæŒ‡å®šç‚º"_method", valueå±¬æ€§ä¹‹å€¼æŒ‡å®šè¦æ¨¡æ“¬çš„è«‹æ±‚æ–¹æ³•
 					<input type="submit">
 				</form>
 				
 				<h3>PUT</h3>
-				<form action="restfulTest/put/1" method="POST">			<-- <form>¬Ò¥ÎPOST½Ğ¨D
-					<input type="hidden" name="_method" value="PUT">	<--nameÄİ©Ê¤§­È©T©w«ü©w¬°"_method", valueÄİ©Ê¤§­È«ü©w­n¼ÒÀÀªº½Ğ¨D¤èªk
+				<form action="restfulTest/put/1" method="POST">			<-- <form>çš†ç”¨POSTè«‹æ±‚
+					<input type="hidden" name="_method" value="PUT">	<--nameå±¬æ€§ä¹‹å€¼å›ºå®šæŒ‡å®šç‚º"_method", valueå±¬æ€§ä¹‹å€¼æŒ‡å®šè¦æ¨¡æ“¬çš„è«‹æ±‚æ–¹æ³•
 					<input type="submit">
 				</form>
 				
-			6. ¼¶¼g±±¨î¾¹ : RestfulTestController.java (¥u¦C¥XDELETE¡BPUT³¡¤À)
+			6. æ’°å¯«æ§åˆ¶å™¨ : RestfulTestController.java (åªåˆ—å‡ºDELETEã€PUTéƒ¨åˆ†)
 				@Controller
 				@RequestMapping("restfulTest")
 				public class RestfulTestController {
 				
-					@RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)	<--«ü©w¬°DELETE¤èªk
+					@RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)	<--æŒ‡å®šç‚ºDELETEæ–¹æ³•
 					public @ResponseBody int delete(@PathVariable Integer id) {
 						...
 					}
 					
-					@RequestMaping(value = "put/{id}", method = RequestMethod.PUT)			<--«ü©w¬°PUT¤èªk
+					@RequestMaping(value = "put/{id}", method = RequestMethod.PUT)			<--æŒ‡å®šç‚ºPUTæ–¹æ³•
 					public @ResponseBody int put(@PathVariable Integer id) {
 						...
 					}
 				}		
 	
-	¥[¤JSpring jstlªºMVC½d¨Ò
+	åŠ å…¥Spring jstlçš„MVCç¯„ä¾‹
 		MemberController.java
 			@Controller
 			@RequestMapping("member")
@@ -924,11 +924,11 @@ MVC
 				
 				@RequestMapping("")
 				public ModelAndView init() {
-					return new ModelAndView("memberView", "memberName2", new MemberBean());//memberName2¹ïÀ³jsp¸ÌªºcommandName="xxx"
+					return new ModelAndView("memberView", "memberName2", new MemberBean());//memberName2å°æ‡‰jspè£¡çš„commandName="xxx"
 				}
 				
 				@RequestMapping(value = "addMember", method = RequestMethod.POST)
-				public String t1(@ModelAttribute("mb") MemberBean mb, ModelMap model) {//@ModelAttribute("Äİ©Êª«¥óªºÃÑ§O§O¦W")
+				public String t1(@ModelAttribute("mb") MemberBean mb, ModelMap model) {//@ModelAttribute("å±¬æ€§ç‰©ä»¶çš„è­˜åˆ¥åˆ¥å")
 					model.addAttribute("member", mb);
 					return "result";
 				}
@@ -937,61 +937,61 @@ MVC
 		memberView.jsp
 			<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 			<html>
-			...²¤
+			...ç•¥
 			<body>
-				<form:form action="test/t1" method="POST" commandName="memberName2">	<!-- commandName¹ïÀ³java¸ÌÃÑ§O§O¦W -->
+				<form:form action="test/t1" method="POST" commandName="memberName2">	<!-- commandNameå°æ‡‰javaè£¡è­˜åˆ¥åˆ¥å -->
 					<form:label path="id">id</form:label>
-					<form:input path="id" /><br>		<!-- id¬°MemberBeanªº©Ê½è -->
+					<form:input path="id" /><br>		<!-- idç‚ºMemberBeançš„æ€§è³ª -->
 					<form:label path="account">account</form:label>
-					<form:input path="account" /><br>	<!-- account¬°MemberBeanªº©Ê½è -->
+					<form:input path="account" /><br>	<!-- accountç‚ºMemberBeançš„æ€§è³ª -->
 					<td colspan="2"><input type="submit" />
 				</form:form>
 			</body>
 			</html>
-			*µù : <form:form commandName="xxx">
-				1. xxx¹ïÀ³Controller¸Ìnew ModelAndView(..., xxx, ...), ¬°Äİ©Êª«¥óªºÃÑ§O§O¦W
-				2. ¹w³]­È¬°command
+			*è¨» : <form:form commandName="xxx">
+				1. xxxå°æ‡‰Controllerè£¡new ModelAndView(..., xxx, ...), ç‚ºå±¬æ€§ç‰©ä»¶çš„è­˜åˆ¥åˆ¥å
+				2. é è¨­å€¼ç‚ºcommand
 	
-	ÀRºA¸ê·½ºŞ²z
-		»¡©ú : ¦]¬°¦b³]©w<url-pattern>/</url-pattern>, §YSpring-MVC DispatcherServletºÊ±±¾ã­Ó±M®×,
-			   ¦ı±M®×¸ÌªºÀRºA¸ê·½(ex. html¡B¹ÏÀÉ¡BcssÀÉ¡BjsÀÉµ¥µ¥)¤£À³¨üºÊ±±, »İÃB¥~ºŞ²z
+	éœæ…‹è³‡æºç®¡ç†
+		èªªæ˜ : å› ç‚ºåœ¨è¨­å®š<url-pattern>/</url-pattern>, å³Spring-MVC DispatcherServletç›£æ§æ•´å€‹å°ˆæ¡ˆ,
+			   ä½†å°ˆæ¡ˆè£¡çš„éœæ…‹è³‡æº(ex. htmlã€åœ–æª”ã€cssæª”ã€jsæª”ç­‰ç­‰)ä¸æ‡‰å—ç›£æ§, éœ€é¡å¤–ç®¡ç†
 		
-		¤è¦¡1 - ¨Ï¥ÎÀRºA¸ê·½ºŞ²zªÌ : ¦bSpring²ÕºAÀÉ<beans>¤¤¥[¤J
+		æ–¹å¼1 - ä½¿ç”¨éœæ…‹è³‡æºç®¡ç†è€… : åœ¨Springçµ„æ…‹æª”<beans>ä¸­åŠ å…¥
 			<mvc:default-servlet-handler />
 
-		¤è¦¡2 - ­«·s¬M®gÀRºA¸ê·½ :  ¦bSpring²ÕºAÀÉ<beans>¤¤¥[¤J
-			<mvc:resources location="/ÀRºA¸ê·½¦s©ñ¸ô®|" mapping="/¬M®gªº·s¸ô®|" />
-			*µù : ÀRºA¸ê·½¦s©ñ¸ô®|­Y¬°¦h­Ó, ¥i¥Î"³r¸¹"¹j¶}
+		æ–¹å¼2 - é‡æ–°æ˜ å°„éœæ…‹è³‡æº :  åœ¨Springçµ„æ…‹æª”<beans>ä¸­åŠ å…¥
+			<mvc:resources location="/éœæ…‹è³‡æºå­˜æ”¾è·¯å¾‘" mapping="/æ˜ å°„çš„æ–°è·¯å¾‘" />
+			*è¨» : éœæ…‹è³‡æºå­˜æ”¾è·¯å¾‘è‹¥ç‚ºå¤šå€‹, å¯ç”¨"é€—è™Ÿ"éš”é–‹
 			ex.
 				<mvc:resources location="/static/ mapping="/resource/**" " />
 		
-	¨Ò¥~³B²z
-		»¡©ú : ¤@­ÓÀ³¥Î¨t²Î¦b°õ¦æ¤¤, ¥i¯àµo¥Í³\¦h¨Ò¥~, ²Î¤@¥Ñ¬Y­ÓÃş§O(©Î¤èªk), ©Î¬Oª½±µ¥ÑViewÅã¥Ü¸û«K©óºŞ²z
+	ä¾‹å¤–è™•ç†
+		èªªæ˜ : ä¸€å€‹æ‡‰ç”¨ç³»çµ±åœ¨åŸ·è¡Œä¸­, å¯èƒ½ç™¼ç”Ÿè¨±å¤šä¾‹å¤–, çµ±ä¸€ç”±æŸå€‹é¡åˆ¥(æˆ–æ–¹æ³•), æˆ–æ˜¯ç›´æ¥ç”±Viewé¡¯ç¤ºè¼ƒä¾¿æ–¼ç®¡ç†
 		
-		¤è¦¡
-			1. ¥ş§½¨Ò¥~³B²z
-			2. §½³¡¨Ò¥~³B²z
-			3. ¨Ò¥~Åã¥ÜView
+		æ–¹å¼
+			1. å…¨å±€ä¾‹å¤–è™•ç†
+			2. å±€éƒ¨ä¾‹å¤–è™•ç†
+			3. ä¾‹å¤–é¡¯ç¤ºView
 		
-		¥ş§½¨Ò¥~³B²z
-			»¡©ú : «Ø¥ß¦b±±¨î¾¹³qª¾Ãş§O¤º, ³B²z¾ã­ÓÀ³¥Î¨t²Î±±¨î¾¹©Òµo¥Íªº¨Ò¥~
+		å…¨å±€ä¾‹å¤–è™•ç†
+			èªªæ˜ : å»ºç«‹åœ¨æ§åˆ¶å™¨é€šçŸ¥é¡åˆ¥å…§, è™•ç†æ•´å€‹æ‡‰ç”¨ç³»çµ±æ§åˆ¶å™¨æ‰€ç™¼ç”Ÿçš„ä¾‹å¤–
 
-			«Ø¥ß¨BÆJ
-				1. «Ø¥ß±±¨î¾¹³qª¾Ãş§O : «Ø¥ß¤@Ãş§OXxxControllerAdivce
+			å»ºç«‹æ­¥é©Ÿ
+				1. å»ºç«‹æ§åˆ¶å™¨é€šçŸ¥é¡åˆ¥ : å»ºç«‹ä¸€é¡åˆ¥XxxControllerAdivce
 		
-				2. «Å§i¦¨±±¨î¾¹³qª¾Ãş§O : ¥´¶}¨BÆJ1«Ø¥ß¤§Ãş§O, ¦bXxxControllerAdivce¤W¤@¦æ¥[¤W@ControllerAdvice
-					*µù : ¥[¤W@ControllerAdviceªºÃş§O§Y¬°±±¨î¾¹³qª¾Ãş§O,
-						  ¨ä¤º¤èªk­Y¦³¥[¤W@ExceptionHandler¡B@InitBinder©Î@ModelAttribute, ±N·|À³¥Î¦Ü¦³¥[@RequestMappingªº±±¨î¾¹¤èªk
+				2. å®£å‘Šæˆæ§åˆ¶å™¨é€šçŸ¥é¡åˆ¥ : æ‰“é–‹æ­¥é©Ÿ1å»ºç«‹ä¹‹é¡åˆ¥, åœ¨XxxControllerAdivceä¸Šä¸€è¡ŒåŠ ä¸Š@ControllerAdvice
+					*è¨» : åŠ ä¸Š@ControllerAdviceçš„é¡åˆ¥å³ç‚ºæ§åˆ¶å™¨é€šçŸ¥é¡åˆ¥,
+						  å…¶å…§æ–¹æ³•è‹¥æœ‰åŠ ä¸Š@ExceptionHandlerã€@InitBinderæˆ–@ModelAttribute, å°‡æœƒæ‡‰ç”¨è‡³æœ‰åŠ @RequestMappingçš„æ§åˆ¶å™¨æ–¹æ³•
 		
-				3. «Ø¥ß¨Ò¥~³B²z¤èªk : (..¨Ì³B²z¤º®e¦Û­q)
+				3. å»ºç«‹ä¾‹å¤–è™•ç†æ–¹æ³• : (..ä¾è™•ç†å…§å®¹è‡ªè¨‚)
 		
-				4. «Å§i¦¨¨Ò¥~³B²z¤èªk : ¦b¨BÆJ3«Ø¥ßªº¤èªk¤W¤@¦æ¥[¤W@ExceptionHandler(±ı³B²zªº¨Ò¥~Ãş§O¦W.class)
+				4. å®£å‘Šæˆä¾‹å¤–è™•ç†æ–¹æ³• : åœ¨æ­¥é©Ÿ3å»ºç«‹çš„æ–¹æ³•ä¸Šä¸€è¡ŒåŠ ä¸Š@ExceptionHandler(æ¬²è™•ç†çš„ä¾‹å¤–é¡åˆ¥å.class)
 		
-			½d¨Ò
+			ç¯„ä¾‹
 				@ControllerAdvice
 				public class MyControllerAdvice {
 				
-					@ExceptionHandler(Throwable.class)//³]©w±ı³B²zªº¨Ò¥~Ãş§O
+					@ExceptionHandler(Throwable.class)//è¨­å®šæ¬²è™•ç†çš„ä¾‹å¤–é¡åˆ¥
 					public ModelAndView exceptionHandler1(Throwable t) {
 						System.out.println("exceptionHandler1 : " + t.getClass().getSimpleName());
 						ModelAndView mv = new ModelAndView("error");
@@ -1000,21 +1000,21 @@ MVC
 					}
 				}
 		
-		§½³¡¨Ò¥~³B²z
-			»¡©ú : ¼g¦b±±¨î¾¹Ãş§O¤º, ¥u³B²z¸Ó±±¨î¾¹Ãş§O¤º, ±±¨î¾¹¤èªkµo¥Íªº¨Ò¥~
+		å±€éƒ¨ä¾‹å¤–è™•ç†
+			èªªæ˜ : å¯«åœ¨æ§åˆ¶å™¨é¡åˆ¥å…§, åªè™•ç†è©²æ§åˆ¶å™¨é¡åˆ¥å…§, æ§åˆ¶å™¨æ–¹æ³•ç™¼ç”Ÿçš„ä¾‹å¤–
 
-			«Ø¥ß¨BÆJ
-				1. «Ø¥ß¨Ò¥~³B²z¤èªk : ¦b±ı³B²zªº±±¨î¾¹Ãş§O¤º¥[¤J«Ø¥ß¤@¤èªk (..¨Ì³B²z¤º®e¦Û­q)
+			å»ºç«‹æ­¥é©Ÿ
+				1. å»ºç«‹ä¾‹å¤–è™•ç†æ–¹æ³• : åœ¨æ¬²è™•ç†çš„æ§åˆ¶å™¨é¡åˆ¥å…§åŠ å…¥å»ºç«‹ä¸€æ–¹æ³• (..ä¾è™•ç†å…§å®¹è‡ªè¨‚)
 				
-				2. «Å§i¦¨¨Ò¥~³B²z¤èªk : ¦b¨BÆJ3«Ø¥ßªº¤èªk¤W¤@¦æ¥[¤W@ExceptionHandler(±ı³B²zªº¨Ò¥~Ãş§O¦W.class)
+				2. å®£å‘Šæˆä¾‹å¤–è™•ç†æ–¹æ³• : åœ¨æ­¥é©Ÿ3å»ºç«‹çš„æ–¹æ³•ä¸Šä¸€è¡ŒåŠ ä¸Š@ExceptionHandler(æ¬²è™•ç†çš„ä¾‹å¤–é¡åˆ¥å.class)
 				
-			½d¨Ò
+			ç¯„ä¾‹
 				@Controller
 				@RequestMapping("member")
 				public class MemberController {
 					...
 					
-					@ExceptionHandler(Throwable.class)//³]©w±ı³B²zªº¨Ò¥~Ãş§O
+					@ExceptionHandler(Throwable.class)//è¨­å®šæ¬²è™•ç†çš„ä¾‹å¤–é¡åˆ¥
 					public ModelAndView exceptionHandler1(Throwable t) {
 						System.out.println("exceptionHandler1 : " + t.getClass().getSimpleName());
 						ModelAndView mv = new ModelAndView("error");
@@ -1023,26 +1023,26 @@ MVC
 					}
 				}
 				
-		¨Ò¥~Åã¥ÜView
-			»¡©ú : ¿W¥ßªººô­¶, µo¥Í¨Ò¥~®É, ¸õÂà¦Ü«ü¦¹View, Åã¥Ü¾ã­ÓÀ³¥Î¨t²Î±±¨î¾¹©Òµo¥Íªº¨Ò¥~
+		ä¾‹å¤–é¡¯ç¤ºView
+			èªªæ˜ : ç¨ç«‹çš„ç¶²é , ç™¼ç”Ÿä¾‹å¤–æ™‚, è·³è½‰è‡³æŒ‡æ­¤View, é¡¯ç¤ºæ•´å€‹æ‡‰ç”¨ç³»çµ±æ§åˆ¶å™¨æ‰€ç™¼ç”Ÿçš„ä¾‹å¤–
 		
-			«Ø¥ß¨BÆJ
-				1. «Ø¥ß¨Ò¥~Åã¥ÜViewºô­¶ : (..¨Ì»İ¨D¤º®e¦Û­q) ¥i¥Î${exception}¨ú±o¨Ò¥~ª«¥ó
+			å»ºç«‹æ­¥é©Ÿ
+				1. å»ºç«‹ä¾‹å¤–é¡¯ç¤ºViewç¶²é  : (..ä¾éœ€æ±‚å…§å®¹è‡ªè¨‚) å¯ç”¨${exception}å–å¾—ä¾‹å¤–ç‰©ä»¶
 		
-				2. «Å§i¨Ò¥~¸ÑªR¾¹ : ¦bSpring²ÕºAÀÉ<beans>¤º¥[¤J..
+				2. å®£å‘Šä¾‹å¤–è§£æå™¨ : åœ¨Springçµ„æ…‹æª”<beans>å…§åŠ å…¥..
 					<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 						<property name="exceptionMappings">
 							<props>
-								<prop key="xxx.yyy.¨Ò¥~Ãş§O¦W">		<--³]©w±ı³B²zªº¨Ò¥~Ãş§O
-									ExceptionPage					<--«ü©wµo¥Í¦¹¨Ò¥~, ¸õÂàView¦WºÙ
+								<prop key="xxx.yyy.ä¾‹å¤–é¡åˆ¥å">		<--è¨­å®šæ¬²è™•ç†çš„ä¾‹å¤–é¡åˆ¥
+									ExceptionPage					<--æŒ‡å®šç™¼ç”Ÿæ­¤ä¾‹å¤–, è·³è½‰Viewåç¨±
 								</prop>
 							</props>
 						</property>
-						<property name="defaultErrorView" value="error"/>	<--¥¼³B²zªº¨Ò¥~µo¥Í®É, ¸õÂàªºView¦WºÙ (¦¹ºô­¶»İ¥t¥~«Ø¥ß)
+						<property name="defaultErrorView" value="error"/>	<--æœªè™•ç†çš„ä¾‹å¤–ç™¼ç”Ÿæ™‚, è·³è½‰çš„Viewåç¨± (æ­¤ç¶²é éœ€å¦å¤–å»ºç«‹)
 					</bean>
 		
-			½d¨Ò
-				1. ExceptionPage.jsp : µo¥ÍArithmeticException®É, ¸õÂà¦Ü¦¹ºô­¶
+			ç¯„ä¾‹
+				1. ExceptionPage.jsp : ç™¼ç”ŸArithmeticExceptionæ™‚, è·³è½‰è‡³æ­¤ç¶²é 
 					<html>
 					...
 					<body>
@@ -1050,7 +1050,7 @@ MVC
 					</body>
 					</html>
 
-				2. defaultError.jsp : µo¥Í¨ä¥LException®É, ¸õÂà¦Ü¦¹ºô­¶
+				2. defaultError.jsp : ç™¼ç”Ÿå…¶ä»–Exceptionæ™‚, è·³è½‰è‡³æ­¤ç¶²é 
 					<html>
 					...
 					<body>
@@ -1058,7 +1058,7 @@ MVC
 					</body>
 					</html>
 				
-				3. Spring²ÕºAÀÉ.xml : Exception <--> View¦WºÙ, Mapping
+				3. Springçµ„æ…‹æª”.xml : Exception <--> Viewåç¨±, Mapping
 					<beans>
 					...
 						<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
@@ -1071,7 +1071,7 @@ MVC
 						</bean>
 					<beans>
 				
-				4. MemberController.java : ºÊ±±±±¨î¾¹¤èªk
+				4. MemberController.java : ç›£æ§æ§åˆ¶å™¨æ–¹æ³•
 					@Controller
 					@RequestMapping("member")
 					public class MemberController {
@@ -1085,192 +1085,192 @@ MVC
 						}
 					}
 
-	ÄdºI¾¹(Interceptor)
-		»¡©ú
-			1. ¦bSpring-MVC½Ğ¨D¦^À³¤¤¶i¦æÄdºI, Spring-MVC¤¤ªºÄdºI¾¹¦b¦P¤@­Ó½Ğ¨D¤¤¥i¥H¦³"¦h­Ó"
-			2. ¦UÄdºI¾¹¶¡¦³¶¶§Ç©Ê, ¶¶§Ç§Y¬°¦b<mvc:interceptors>¤º«Å§iªº¶¶§Ç
-			3. §¹¾ãªº¶¶§Ç(¥H2­ÓÄdºI¾¹¬°¨Ò) : ÄdºI¾¹1.preHandle() -> ÄdºI¾¹2.preHandle() -> ±±¨î¾¹ -> ÄdºI¾¹2.postHandle() -> ÄdºI¾¹1.postHandle() -> ¤À¬£ªÌ.render() -> ÄdºI¾¹2.afterCompletion() -> ÄdºI¾¹1.afterCompletion()
+	æ””æˆªå™¨(Interceptor)
+		èªªæ˜
+			1. åœ¨Spring-MVCè«‹æ±‚å›æ‡‰ä¸­é€²è¡Œæ””æˆª, Spring-MVCä¸­çš„æ””æˆªå™¨åœ¨åŒä¸€å€‹è«‹æ±‚ä¸­å¯ä»¥æœ‰"å¤šå€‹"
+			2. å„æ””æˆªå™¨é–“æœ‰é †åºæ€§, é †åºå³ç‚ºåœ¨<mvc:interceptors>å…§å®£å‘Šçš„é †åº
+			3. å®Œæ•´çš„é †åº(ä»¥2å€‹æ””æˆªå™¨ç‚ºä¾‹) : æ””æˆªå™¨1.preHandle() -> æ””æˆªå™¨2.preHandle() -> æ§åˆ¶å™¨ -> æ””æˆªå™¨2.postHandle() -> æ””æˆªå™¨1.postHandle() -> åˆ†æ´¾è€….render() -> æ””æˆªå™¨2.afterCompletion() -> æ””æˆªå™¨1.afterCompletion()
 
-		©w¸q¤è¦¡
-			1. ¹ê§@HandlerInterceptor¤¶­±, ©ÎÄ~©Ó¤w¸g¹ê§@HandlerInterceptor¤¶­±ªºÃş§O, ¦pHandlerInterceptorAdapter
-			2. ¹ê§@WebRequestInterceptor¤¶­±, ©ÎÄ~©Ó¤w¹ê§@WebRequestInterceptor¤¶­±ªºÃş§O, ¦pOpenPersistenceManagerInViewInterceptor
+		å®šç¾©æ–¹å¼
+			1. å¯¦ä½œHandlerInterceptorä»‹é¢, æˆ–ç¹¼æ‰¿å·²ç¶“å¯¦ä½œHandlerInterceptorä»‹é¢çš„é¡åˆ¥, å¦‚HandlerInterceptorAdapter
+			2. å¯¦ä½œWebRequestInterceptorä»‹é¢, æˆ–ç¹¼æ‰¿å·²å¯¦ä½œWebRequestInterceptorä»‹é¢çš„é¡åˆ¥, å¦‚OpenPersistenceManagerInViewInterceptor
 		
 		HandlerInterceptor
-			¤èªk
+			æ–¹æ³•
 				public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-					Ä²µoÂI : ±±¨î¾¹±µ¦¬½Ğ¨D«eÄ²µo
-					°Ñ¼Æ
-						request : ½Ğ¨Dª«¥ó
-						response : ¦^À³ª«¥ó
-						handler : Spring-MVC¤¤, ¹ê»Ú°Ê§@ªº³B²zªÌ. ³q±`¬°HandlerMethod
-					À³¥Î : ªì©l¤Æ
-					³Æµù : ¶Ç¦^falseªí¥Ü½Ğ¨Dµ²§ô; ªğ¦^true®É¤~·|Ä~Äò«áÄòªºÄdºI¾¹©Î±±¨î¾¹
+					è§¸ç™¼é» : æ§åˆ¶å™¨æ¥æ”¶è«‹æ±‚å‰è§¸ç™¼
+					åƒæ•¸
+						request : è«‹æ±‚ç‰©ä»¶
+						response : å›æ‡‰ç‰©ä»¶
+						handler : Spring-MVCä¸­, å¯¦éš›å‹•ä½œçš„è™•ç†è€…. é€šå¸¸ç‚ºHandlerMethod
+					æ‡‰ç”¨ : åˆå§‹åŒ–
+					å‚™è¨» : å‚³å›falseè¡¨ç¤ºè«‹æ±‚çµæŸ; è¿”å›trueæ™‚æ‰æœƒç¹¼çºŒå¾ŒçºŒçš„æ””æˆªå™¨æˆ–æ§åˆ¶å™¨
 					
 				public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
-					Ä²µoÂI : ±±¨î¾¹µo¥X¦^À³«áÄ²µo(¥BpreHandle()¶Ç¦^true), DispatcherServlet¤§«e
-					°Ñ¼Æ
-						request : ½Ğ¨Dª«¥ó
-						response : ¦^À³ª«¥ó
-						handler : Spring-MVC¤¤, ¹ê»Ú°Ê§@ªº³B²zªÌ. ³q±`¬°HandlerMethod
-						modelAndView : ±±¨î¾¹¦^À³ªºModel©MView
-					À³¥Î : ¹ï½Ğ¨D¦^À³¤¤ªºModelAndView°µÃB¥~¾Ş§@, ex. §Q¥ÎmodelAndView.getModelMap()¤Îmap.get(name)¨ú¥XÄİ©Êª«¥ó, °µÃB¥~¹Bºâ
+					è§¸ç™¼é» : æ§åˆ¶å™¨ç™¼å‡ºå›æ‡‰å¾Œè§¸ç™¼(ä¸”preHandle()å‚³å›true), DispatcherServletä¹‹å‰
+					åƒæ•¸
+						request : è«‹æ±‚ç‰©ä»¶
+						response : å›æ‡‰ç‰©ä»¶
+						handler : Spring-MVCä¸­, å¯¦éš›å‹•ä½œçš„è™•ç†è€…. é€šå¸¸ç‚ºHandlerMethod
+						modelAndView : æ§åˆ¶å™¨å›æ‡‰çš„Modelå’ŒView
+					æ‡‰ç”¨ : å°è«‹æ±‚å›æ‡‰ä¸­çš„ModelAndViewåšé¡å¤–æ“ä½œ, ex. åˆ©ç”¨modelAndView.getModelMap()åŠmap.get(name)å–å‡ºå±¬æ€§ç‰©ä»¶, åšé¡å¤–é‹ç®—
 					
 				public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
-					Ä²µoÂI : DispatcherServlet±NView¶Ç¦^«È¤áºİ«áÄ²µo(¥BpreHandle()¦^¶Çtrue)
-					°Ñ¼Æ
-						request : ½Ğ¨Dª«¥ó
-						response : ¦^À³ª«¥ó
-						handler : Spring-MVC¤¤, ¹ê»Ú°Ê§@ªº³B²zªÌ. ³q±`¬°HandlerMethod
-						ex : ½Ğ¨D¦^À³¹Lµ{¤¤µo¥Íªº¨Ò¥~. ­Y¦³¨Ï¥Î¨ä¥L¾÷¨î³B²z¨Ò¥~(¨Ò¦p@ExceptionHandler), ¦¹ª«¥ó«h¬°null
-					À³¥Î : ¸ê·½²M²z / ÄÀ©ñ
+					è§¸ç™¼é» : DispatcherServletå°‡Viewå‚³å›å®¢æˆ¶ç«¯å¾Œè§¸ç™¼(ä¸”preHandle()å›å‚³true)
+					åƒæ•¸
+						request : è«‹æ±‚ç‰©ä»¶
+						response : å›æ‡‰ç‰©ä»¶
+						handler : Spring-MVCä¸­, å¯¦éš›å‹•ä½œçš„è™•ç†è€…. é€šå¸¸ç‚ºHandlerMethod
+						ex : è«‹æ±‚å›æ‡‰éç¨‹ä¸­ç™¼ç”Ÿçš„ä¾‹å¤–. è‹¥æœ‰ä½¿ç”¨å…¶ä»–æ©Ÿåˆ¶è™•ç†ä¾‹å¤–(ä¾‹å¦‚@ExceptionHandler), æ­¤ç‰©ä»¶å‰‡ç‚ºnull
+					æ‡‰ç”¨ : è³‡æºæ¸…ç† / é‡‹æ”¾
 		
 		WebRequestInterceptor
-			¤èªk
+			æ–¹æ³•
 				void preHandle(WebRequest request)
-					Ä²µoÂI : ±±¨î¾¹±µ¦¬½Ğ¨D«eÄ²µo
-					°Ñ¼Æ
-						request : WebRequest¬OSpring©w¸qªº½Ğ¨D¤¶­±, °ò¥»¤W¸òHttpServletRequest¤@¼Ë. ¹ï¦¹ª«¥óªº©Ò¦³¾Ş§@¥ç·|¦P¨B¦ÜHttpServletRequestª«¥ó¤¤
-					À³¥Î : ¸ê·½·Ç³Æ, ex. ·Ç³ÆHibernateªºSessionª«¥ó, §Q¥ÎsetAttribute(name, value, scope), ±±¨î¾¹¦A§Q¥Îrequest©ÎsessionªºgetAttribute(name)¨ú±o¸Óª«¥ó
-						*µù : scopeªº±`¼Æ¬°SCOPE_REQUEST¡BSCOPE_SESSION¡BSCOPE_GLOBAL_SESSION
+					è§¸ç™¼é» : æ§åˆ¶å™¨æ¥æ”¶è«‹æ±‚å‰è§¸ç™¼
+					åƒæ•¸
+						request : WebRequestæ˜¯Springå®šç¾©çš„è«‹æ±‚ä»‹é¢, åŸºæœ¬ä¸Šè·ŸHttpServletRequestä¸€æ¨£. å°æ­¤ç‰©ä»¶çš„æ‰€æœ‰æ“ä½œäº¦æœƒåŒæ­¥è‡³HttpServletRequestç‰©ä»¶ä¸­
+					æ‡‰ç”¨ : è³‡æºæº–å‚™, ex. æº–å‚™Hibernateçš„Sessionç‰©ä»¶, åˆ©ç”¨setAttribute(name, value, scope), æ§åˆ¶å™¨å†åˆ©ç”¨requestæˆ–sessionçš„getAttribute(name)å–å¾—è©²ç‰©ä»¶
+						*è¨» : scopeçš„å¸¸æ•¸ç‚ºSCOPE_REQUESTã€SCOPE_SESSIONã€SCOPE_GLOBAL_SESSION
 					
 				void postHandle(WebRequest request, ModelMap model)
-					Ä²µoÂI : DispatcherServlet±NView¶Ç¦^«È¤áºİ«áÄ²µo(¥BpreHandle()¤ÎpostHandle()¬Ò¦^¶Çtrue)
-					°Ñ¼Æ
-						request : WebRequest¬OSpring©w¸qªº½Ğ¨D¤¶­±, °ò¥»¤W¸òHttpServletRequest¤@¼Ë. ¹ï¦¹ª«¥óªº©Ò¦³¾Ş§@¥ç·|¦P¨B¦ÜHttpServletRequestª«¥ó¤¤
-						model : ±±¨î¾¹¦^À³ªºModel
-					À³¥Î : ¹ï½Ğ¨D¦^À³¤¤ªºModel°µÃB¥~¾Ş§@
+					è§¸ç™¼é» : DispatcherServletå°‡Viewå‚³å›å®¢æˆ¶ç«¯å¾Œè§¸ç™¼(ä¸”preHandle()åŠpostHandle()çš†å›å‚³true)
+					åƒæ•¸
+						request : WebRequestæ˜¯Springå®šç¾©çš„è«‹æ±‚ä»‹é¢, åŸºæœ¬ä¸Šè·ŸHttpServletRequestä¸€æ¨£. å°æ­¤ç‰©ä»¶çš„æ‰€æœ‰æ“ä½œäº¦æœƒåŒæ­¥è‡³HttpServletRequestç‰©ä»¶ä¸­
+						model : æ§åˆ¶å™¨å›æ‡‰çš„Model
+					æ‡‰ç”¨ : å°è«‹æ±‚å›æ‡‰ä¸­çš„Modelåšé¡å¤–æ“ä½œ
 					
 				void afterCompletion(WebRequest request, Exception ex)
-					Ä²µoÂI : DispatcherServlet±NView¶Ç¦^«È¤áºİ«áÄ²µo(¥BpreHandle()¦^¶Çtrue)
-					°Ñ¼Æ
-						request : WebRequest¬OSpring©w¸qªº½Ğ¨D¤¶­±, °ò¥»¤W¸òHttpServletRequest¤@¼Ë. ¹ï¦¹ª«¥óªº©Ò¦³¾Ş§@¥ç·|¦P¨B¦ÜHttpServletRequestª«¥ó¤¤
-						ex : ½Ğ¨D¦^À³¹Lµ{¤¤µo¥Íªº¨Ò¥~. ­Y¦³¨Ï¥Î¨ä¥L¾÷¨î³B²z¨Ò¥~(¨Ò¦p@ExceptionHandler), ¦¹ª«¥ó«h¬°null
-					À³¥Î : ¸ê·½²M²z / ÄÀ©ñ
+					è§¸ç™¼é» : DispatcherServletå°‡Viewå‚³å›å®¢æˆ¶ç«¯å¾Œè§¸ç™¼(ä¸”preHandle()å›å‚³true)
+					åƒæ•¸
+						request : WebRequestæ˜¯Springå®šç¾©çš„è«‹æ±‚ä»‹é¢, åŸºæœ¬ä¸Šè·ŸHttpServletRequestä¸€æ¨£. å°æ­¤ç‰©ä»¶çš„æ‰€æœ‰æ“ä½œäº¦æœƒåŒæ­¥è‡³HttpServletRequestç‰©ä»¶ä¸­
+						ex : è«‹æ±‚å›æ‡‰éç¨‹ä¸­ç™¼ç”Ÿçš„ä¾‹å¤–. è‹¥æœ‰ä½¿ç”¨å…¶ä»–æ©Ÿåˆ¶è™•ç†ä¾‹å¤–(ä¾‹å¦‚@ExceptionHandler), æ­¤ç‰©ä»¶å‰‡ç‚ºnull
+					æ‡‰ç”¨ : è³‡æºæ¸…ç† / é‡‹æ”¾
 					
-		«Ø¥ß¨BÆJ
-			1. «Ø¥ß¤Î¼¶¼gÄdºI¾¹Ãş§O
-				1.1 «Ø¥ß : ·s¼W¤@Ãş§OXxxInterceptor
-				1.2 ¼¶¼g : ¹ê§@¹ê§@HandlerInterceptor(©ÎWebRequestInterceptor)¤¶­±, ©ÎÄ~©ÓHandlerInterceptor(©ÎWebRequestInterceptor)ªº¹ê§@Ãş§O
+		å»ºç«‹æ­¥é©Ÿ
+			1. å»ºç«‹åŠæ’°å¯«æ””æˆªå™¨é¡åˆ¥
+				1.1 å»ºç«‹ : æ–°å¢ä¸€é¡åˆ¥XxxInterceptor
+				1.2 æ’°å¯« : å¯¦ä½œå¯¦ä½œHandlerInterceptor(æˆ–WebRequestInterceptor)ä»‹é¢, æˆ–ç¹¼æ‰¿HandlerInterceptor(æˆ–WebRequestInterceptor)çš„å¯¦ä½œé¡åˆ¥
 			
-			2. «Å§i¬°ÄdºI¾¹ : ¦bapplicationContext-mvc.xml¸Ì¥[¤J..
+			2. å®£å‘Šç‚ºæ””æˆªå™¨ : åœ¨applicationContext-mvc.xmlè£¡åŠ å…¥..
 				<mvc:interceptors>
-					<!-- «Å§i¥ş§½ÄdºI¾¹ -->
-					<bean class="xxx.yyy.XxxInterceptor1" />	<--ª½±µ¥Î<bean>«Å§i¦b<mvc:interceptors>¸Ì«Å§i
+					<!-- å®£å‘Šå…¨å±€æ””æˆªå™¨ -->
+					<bean class="xxx.yyy.XxxInterceptor1" />	<--ç›´æ¥ç”¨<bean>å®£å‘Šåœ¨<mvc:interceptors>è£¡å®£å‘Š
 					
-					<!-- «Å§i§½³¡ÄdºI¾¹1 -->
-					<mvc:interceptor>							<--»İ¥Î<mvc:interceptor>«Å§i
-						<mvc:mapping path="/*/*" />	<--«ü©wÄdºIªºurl. 
-						<bean class="xxx.yyy.XxxInterceptor1" />	<--±NÄdºI¾¹Ãş§O«Å§i¦¨ª«¥ó
+					<!-- å®£å‘Šå±€éƒ¨æ””æˆªå™¨1 -->
+					<mvc:interceptor>							<--éœ€ç”¨<mvc:interceptor>å®£å‘Š
+						<mvc:mapping path="/*/*" />	<--æŒ‡å®šæ””æˆªçš„url. 
+						<bean class="xxx.yyy.XxxInterceptor1" />	<--å°‡æ””æˆªå™¨é¡åˆ¥å®£å‘Šæˆç‰©ä»¶
 					</mvc:interceptor>
 					
-					<!-- «Å§i§½³¡ÄdºI¾¹2 -->
+					<!-- å®£å‘Šå±€éƒ¨æ””æˆªå™¨2 -->
 					<mvc:interceptor>
 						<mvc:mapping path="/*/*" />
-						<mvc:exclude-mapping path="${adminPath}/log" />		<--¥t¥i¥Î<!-- <mvc:exclude-mapping> -->«ü©w±Æ°£ÄdºI¦W³æ
+						<mvc:exclude-mapping path="${adminPath}/log" />		<--å¦å¯ç”¨<!-- <mvc:exclude-mapping> -->æŒ‡å®šæ’é™¤æ””æˆªåå–®
 						<bean class="xxx.yyy.XxxInterceptor2" />
 					</mvc:interceptor>
 				</mvc:interceptors>
 	
 	Form Validation
-		»¡©ú : ¹ïÄİ©Êª«¥ó°µÂ²³æ¸ê®Æ­­¨î(ÅçÃÒ)
+		èªªæ˜ : å°å±¬æ€§ç‰©ä»¶åšç°¡å–®è³‡æ–™é™åˆ¶(é©—è­‰)
 		
-		ÅçÃÒ¶µ¥Ø
-			*µù
-				1. µùÄÀ¦bvalidation-api¸Ìªºjavax.validation.constraints®M¥ó
-				2. »¡©ú¤å¥ó : https://docs.jboss.org/hibernate/beanvalidation/spec/2.0/api/
-			1. ¦ì¼Æ : @Digits(integer = ¾ã¼Æ¦ì¼Æ, fraction = ¤p¼Æ¦ì¼Æ)
-			2. «H½c : @Email
-			3. ½d³ò : @Max(³Ì¤j­È)
-					  @Min(³Ì¤p­È)
-			4. ¥¿/­t­È(¥u¥Î¦b¼Æ¦r«¬ºA)
+		é©—è­‰é …ç›®
+			*è¨»
+				1. è¨»é‡‹åœ¨validation-apiè£¡çš„javax.validation.constraintså¥—ä»¶
+				2. èªªæ˜æ–‡ä»¶ : https://docs.jboss.org/hibernate/beanvalidation/spec/2.0/api/
+			1. ä½æ•¸ : @Digits(integer = æ•´æ•¸ä½æ•¸, fraction = å°æ•¸ä½æ•¸)
+			2. ä¿¡ç®± : @Email
+			3. ç¯„åœ : @Max(æœ€å¤§å€¼)
+					  @Min(æœ€å°å€¼)
+			4. æ­£/è² å€¼(åªç”¨åœ¨æ•¸å­—å‹æ…‹)
 					@Positive
-					@PositiveOrZero//0©Î¥¿­È
+					@PositiveOrZero//0æˆ–æ­£å€¼
 					@Negative
-					@NegativeOrZero//0©Î­t­È
-			5. ¦üªÅ­È : @NotBlank//«Dnull¥B«DªÅ¦r¦ê (¥u¥Î©óCharSequence¬ÛÃö«¬ºA)
-						@NotEmpty//«Dnull¥B"ªÅ­È" (¥Î©óCharSequence¡BCollection¡BMap¡BArrayµ¥«¬ºA)
-			6. ªÅ­È : @NotNull
-			7. ®É¶¡®æ¦¡ : @DateTimeFormat(pattern="®æ¦¡")//SpringªºµùÄÀ
-			8. ¹L¥h¤é´Á : @Past
-						  @PastOrPresent//¹L¥h©Î·í¤U¤é´Á
-			9. ªø«× : @Size(min=³Ìµu, max=³Ì±`)//¹w³]¬°0~2147483647
-			10. ¥¿³Wªí¥Ü¦¡ : @Pattern(regexp = "ªí¥Ü¦¡")
+					@NegativeOrZero//0æˆ–è² å€¼
+			5. ä¼¼ç©ºå€¼ : @NotBlank//énullä¸”éç©ºå­—ä¸² (åªç”¨æ–¼CharSequenceç›¸é—œå‹æ…‹)
+						@NotEmpty//énullä¸”"ç©ºå€¼" (ç”¨æ–¼CharSequenceã€Collectionã€Mapã€Arrayç­‰å‹æ…‹)
+			6. ç©ºå€¼ : @NotNull
+			7. æ™‚é–“æ ¼å¼ : @DateTimeFormat(pattern="æ ¼å¼")//Springçš„è¨»é‡‹
+			8. éå»æ—¥æœŸ : @Past
+						  @PastOrPresent//éå»æˆ–ç•¶ä¸‹æ—¥æœŸ
+			9. é•·åº¦ : @Size(min=æœ€çŸ­, max=æœ€å¸¸)//é è¨­ç‚º0~2147483647
+			10. æ­£è¦è¡¨ç¤ºå¼ : @Pattern(regexp = "è¡¨ç¤ºå¼")
 
-		«Ø¥ß¨BÆJ
-			0. §¹¦¨Spring-Core¤ÎSpring-MVC¨BÆJ
+		å»ºç«‹æ­¥é©Ÿ
+			0. å®ŒæˆSpring-CoreåŠSpring-MVCæ­¥é©Ÿ
 		
-			1. ¥[¤JÃB¥~jarÀÉ
+			1. åŠ å…¥é¡å¤–jaræª”
 				1.1 classmate-x.y.z.jar
 				1.2 hibernate-validator-x.y.z.jar
 				1.3 hibernate-validator-annotation-processor-x.y.z.jar
 				1.4 jboss-logging-x.y.z.jar
 				1.5 validation-api-x.y.z.jar
 	
-			2. ©w¸qPOJO
+			2. å®šç¾©POJO
 			
-			3. ¥[¤WÅçÃÒµùÄÀ : ¦b¨BÆJ2©w¸qªºPOJO¤§Äİ©Ê¤W¥[¤WµùÄÀ
+			3. åŠ ä¸Šé©—è­‰è¨»é‡‹ : åœ¨æ­¥é©Ÿ2å®šç¾©çš„POJOä¹‹å±¬æ€§ä¸ŠåŠ ä¸Šè¨»é‡‹
 			
-			4. ©w¸q±±¨î¾¹Ãş§O
-				4.1 ©w¸qªì©l¤Æ±±¨î¾¹¤èªk : °t¦XSpring jstlªºªì©l¤Æ¤èªk(»âÁÊª«³U)
-				4.2 ©w¸q¸ê®ÆÅçÃÒ±±¨î¾¹¤èªk
-					*µù : ¥[¤W@Validªº°Ñ¼Æ·|³QÅçÃÒ. BindingResult¬°ÅçÃÒµ²ªGª«¥ó
+			4. å®šç¾©æ§åˆ¶å™¨é¡åˆ¥
+				4.1 å®šç¾©åˆå§‹åŒ–æ§åˆ¶å™¨æ–¹æ³• : é…åˆSpring jstlçš„åˆå§‹åŒ–æ–¹æ³•(é ˜è³¼ç‰©è¢‹)
+				4.2 å®šç¾©è³‡æ–™é©—è­‰æ§åˆ¶å™¨æ–¹æ³•
+					*è¨» : åŠ ä¸Š@Validçš„åƒæ•¸æœƒè¢«é©—è­‰. BindingResultç‚ºé©—è­‰çµæœç‰©ä»¶
 					public String validate(@Valid MemberBean member, BindingResult br) {
 						if (br.hasErrors()) {
-							return "¾É¦^¿é¤J­¶­±";
+							return "å°å›è¼¸å…¥é é¢";
 						}
-						return "¾É¦V¦¨¥\­¶­±";
+						return "å°å‘æˆåŠŸé é¢";
 					}
 	
-			5. «Å§i°T®§¨Ó·½ª«¥ó
+			5. å®£å‘Šè¨Šæ¯ä¾†æºç‰©ä»¶
 				<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
-					<property name="basename" value="ÀÉ¦W" />	<--±Ò°Ê«áSpring·|Åª¨úclasspath:ÀÉ¦W.properties. ¤ä´©°ê»Ú¤Æ
+					<property name="basename" value="æª”å" />	<--å•Ÿå‹•å¾ŒSpringæœƒè®€å–classpath:æª”å.properties. æ”¯æ´åœ‹éš›åŒ–
 				</bean>
 	
-			6. ©w¸q¿ù»~°T®§ : ¨Ì¨BÆJ5«ü©wªºÀÉ¦W, ·s¼WÀÉ®× ÀÉ¦W.properties
-				¤º®e®æ¦¡ : ­­¨î¶µ¥ØÃş§O¦W.Äİ©Êª«¥óªºÃÑ§O¦WºÙ.©Ê½è¦W=¿ù»~°T®§
+			6. å®šç¾©éŒ¯èª¤è¨Šæ¯ : ä¾æ­¥é©Ÿ5æŒ‡å®šçš„æª”å, æ–°å¢æª”æ¡ˆ æª”å.properties
+				å…§å®¹æ ¼å¼ : é™åˆ¶é …ç›®é¡åˆ¥å.å±¬æ€§ç‰©ä»¶çš„è­˜åˆ¥åç¨±.æ€§è³ªå=éŒ¯èª¤è¨Šæ¯
 				ex. NotNull.member.id= is can not be null
-				*µù : .properties¤¤­Y­n¨Ï¥Î¼Æ¦r, »İ¥Î{}¥]§t
+				*è¨» : .propertiesä¸­è‹¥è¦ä½¿ç”¨æ•¸å­—, éœ€ç”¨{}åŒ…å«
 				
-			7. ©w¸q¿é¤J­¶­±(jsp)
+			7. å®šç¾©è¼¸å…¥é é¢(jsp)
 				<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 				...
-				<form:form action="¸ê®ÆÅçÃÒ±±¨î¾¹¤èªkªººô§}" method="POST" modelAttribute="Äİ©Êª«¥óªºÃÑ§O¦W">
-					<form:input type="text" path="©Ê½è¦W1" />
-					<form:errors path="©Ê½è¦W1" />
+				<form:form action="è³‡æ–™é©—è­‰æ§åˆ¶å™¨æ–¹æ³•çš„ç¶²å€" method="POST" modelAttribute="å±¬æ€§ç‰©ä»¶çš„è­˜åˆ¥å">
+					<form:input type="text" path="æ€§è³ªå1" />
+					<form:errors path="æ€§è³ªå1" />
 					
 					<!-- RadioButton -->
-					<form:radiobutton path="©Ê½è¦W2" value="­È1" />
-					<form:radiobutton path="©Ê½è¦W2" value="­È2" />
-					<form:errors path="©Ê½è¦W2" />
+					<form:radiobutton path="æ€§è³ªå2" value="å€¼1" />
+					<form:radiobutton path="æ€§è³ªå2" value="å€¼2" />
+					<form:errors path="æ€§è³ªå2" />
 					
 					<!-- CheckBox -->
-					<form:checkbox path="©Ê½è¦W3" />
-					<form:errors path="©Ê½è¦W3" />
+					<form:checkbox path="æ€§è³ªå3" />
+					<form:errors path="æ€§è³ªå3" />
 					
 					<!-- Select-Option -->
-					<form:select path="©Ê½è¦W4">
-						<form:option value="">¹w³]</form:option>
-						<form:options items="${countries}" /> <--¨Ï¥Î¨ä¥LÄİ©Êª«¥ó
+					<form:select path="æ€§è³ªå4">
+						<form:option value="">é è¨­</form:option>
+						<form:options items="${countries}" /> <--ä½¿ç”¨å…¶ä»–å±¬æ€§ç‰©ä»¶
 					</form:select>
-					<form:errors path="©Ê½è¦W4" />
+					<form:errors path="æ€§è³ªå4" />
 				</form:form>
 				
-			8. ©w¸q¦¨¥\ºô­¶
+			8. å®šç¾©æˆåŠŸç¶²é 
 	
-		¸É¥R - <form:checkbox>¬M®gList<String>©ÎString[]«¬ºA
-			«eºİ(.jsp)
-				*µù : ¥Î<form:checkbox>¬M®gString®É, ¤@©w­n³]valueÄİ©Ê
+		è£œå…… - <form:checkbox>æ˜ å°„List<String>æˆ–String[]å‹æ…‹
+			å‰ç«¯(.jsp)
+				*è¨» : ç”¨<form:checkbox>æ˜ å°„Stringæ™‚, ä¸€å®šè¦è¨­valueå±¬æ€§
 				
 				
-				<form:checkbox path="©Ê½è¦W" value="­È1" />Åã¥Ü¤å¦r1<br>
-				<form:checkbox path="©Ê½è¦W" value="­È2" />Åã¥Ü¤å¦r2<br>
+				<form:checkbox path="æ€§è³ªå" value="å€¼1" />é¡¯ç¤ºæ–‡å­—1<br>
+				<form:checkbox path="æ€§è³ªå" value="å€¼2" />é¡¯ç¤ºæ–‡å­—2<br>
 				...
-				<form:checkbox path="©Ê½è¦W" value="­È3" />Åã¥Ü¤å¦r3<br>
+				<form:checkbox path="æ€§è³ªå" value="å€¼3" />é¡¯ç¤ºæ–‡å­—3<br>
 				
 			JavaBean
 				class Foo {
 					...
-					private List<String> ©Ê½è¦W;
+					private List<String> æ€§è³ªå;
 					...
 					
 					//..and setter/getter here
