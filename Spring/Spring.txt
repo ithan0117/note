@@ -407,6 +407,8 @@ JDBC Supported
 				</bean>
 	
 			3. 定義映射器類別
+				*註 : 若是DB典型式命名映射Java駝峰式命名可直接使用BeanPropertyRowMapper
+			
 				3.1 實作RowMapper<XxxBean>
 				3.2 實作mapRow()方法, 用JDBC方式指定ResultSet的第幾欄放入POJO的哪一個性質
 				3.ex
@@ -431,6 +433,8 @@ JDBC Supported
 					SELECT BY KEY : jdbcTemplate.queryForObject(String sql, Object[] args, RowMapper<T> rowMapper)
 					SELECT ALL : jdbcTemplate.query(String sql, RowMapper<T> rowMapper)
 					OTHERS(CREATE、DROP、TRUNCATE...) : jdbcTemplate.execute(String sql)
+					*註 : JdbcTemplate的select單筆的方法(ex. queryForObject()), 在結果為空時會直接拋出例外!!!
+					
 				5.ex
 					public class XxxDAO implements IXxxDAO {
 						private JdbcTemplate jdbcTemplate;
@@ -560,7 +564,7 @@ JDBC Supported
 						insertMap.put("欄位名1", bean.getXxx());
 						insertMap.put("欄位名2", bean.getYyy());
 						...
-						return simpleJdbcInsert.executeAndReturnKeyHolder(insertMap).intValue();
+						return simpleJdbcInsert.executeAndReturnKey(insertMap).intValue();
 					}
 				}
 				
