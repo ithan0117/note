@@ -964,6 +964,26 @@ MVC
 				1. xxx對應Controller裡new ModelAndView(..., xxx, ...), 為屬性物件的識別別名
 				2. 預設值為command
 	
+		*補充 - <form:checkbox>映射List<String>或String[]型態
+			前端(.jsp)
+				*註 : 用<form:checkbox>映射String時, 一定要設value屬性
+				
+				
+				<form:checkbox path="性質名" value="值1" />顯示文字1<br>
+				<form:checkbox path="性質名" value="值2" />顯示文字2<br>
+				...
+				<form:checkbox path="性質名" value="值3" />顯示文字3<br>
+				
+			JavaBean
+				class Foo {
+					...
+					private List<String> 性質名;
+					...
+					
+					//..and setter/getter here
+				}
+	
+	
 	靜態資源管理
 		說明 : 因為在設定<url-pattern>/</url-pattern>, 即Spring-MVC DispatcherServlet監控整個專案,
 			   但專案裡的靜態資源(ex. html、圖檔、css檔、js檔等等)不應受監控, 需額外管理
@@ -1269,22 +1289,4 @@ MVC
 				
 			8. 定義成功網頁
 	
-		補充 - <form:checkbox>映射List<String>或String[]型態
-			前端(.jsp)
-				*註 : 用<form:checkbox>映射String時, 一定要設value屬性
-				
-				
-				<form:checkbox path="性質名" value="值1" />顯示文字1<br>
-				<form:checkbox path="性質名" value="值2" />顯示文字2<br>
-				...
-				<form:checkbox path="性質名" value="值3" />顯示文字3<br>
-				
-			JavaBean
-				class Foo {
-					...
-					private List<String> 性質名;
-					...
-					
-					//..and setter/getter here
-				}
 				
