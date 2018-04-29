@@ -533,6 +533,14 @@ JDBC Supported
 				
 	SimpleJdbcInsert類別
 		功能 : INSERT資料, 並回傳自動產生的鍵值
+		
+		*註 : 
+			問題 : Configuration cannot be altered once the class has been compiled or used
+			說明 : simpleJdbcInsert物件被編譯或使用後, 不可再重新設定, 所以透過注入會有問題
+			解法 : 每次重新實例化
+				1. 手動 : simpleJdbcInsert = new SimpleJdbcInsert(dataSource) or simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+				2. (未確認??)改spring-core scope : <bean id="simpleJdbcInsert" class="..." scope="prototype">...
+		
 		建立步驟
 			1. 宣告DataSource
 			2. 宣告SimpleJdbcInsert, 並透過建構子將DataSource注入
