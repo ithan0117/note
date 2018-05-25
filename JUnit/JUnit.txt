@@ -1,0 +1,165 @@
+用途 : 單元測試
+
+jar檔
+	1. junit-4.12.jar
+	2. hamcrest-all-1.3.jar
+	
+@Annotation
+	
+	Name				Target					Description					Comment
+	--------------------------------------------------------------------------------------------------------------------------
+	@Test				public 方法				測試方法				測試案例皆寫在此方法內
+	@Before				public 方法				測試方法的前置方法		可用來對一個測試類別內, 每個測試方法初始化
+	@After				public 方法				測試方法的後置方法		可用來對一個測試類別內, 每個測試方法銷毀
+	@BeforeClass		static void 方法		測試類別的前置方法		測試類別前置作業
+	@AfterClass			static void 方法		測試類別的後置方法		測試類別後置作業
+	@Ignore				測試方法				不執行測試
+	@Rule				non-static public 屬性	共用規則				
+	@FixMethodOrder		測試類別				指定測試方法的順序		選項在MethodSorters. NAME_ASCENDING : 依方法名稱
+
+	*註 : @Before、@After、@BeforeClass、@AfterClass所在的測試類別, 若沒有任何測試方法, 則不會執行
+	
+注意
+	1. 各測試方法並行執行
+	2. 若無指定@FixMethodOrder, 可能每次執行的順序不同
+	
+	
+建立步驟
+	1. 加入jar檔
+	
+	2. 建立測試類別 : 對package右鍵 -> New -> Other -> JUnit Test Case -> 輸入名稱
+		2.自訂測試方法 : -> Finish. 撰寫一public方法, 並加上@Test
+		
+		2.測試已存在方法 : -> Class under test -> 找欲測試類別 -> Next -> 勾選方法 -> Finish
+		
+	3. 執行測試 : 右鍵 -> Run As -> JUnit Test
+	
+	4. 查看結果 : 在JUnit視景, 將測試類別展開
+	
+Assert (斷言)
+	用途 : 用以此測試成功 / 失敗
+	
+	套件 : org.junit
+	
+	種類
+		1. assertArrayEquals
+		2. assertEquals: 是用equals比較，但非參考類別要注意double跟float
+		3. assertNotEquals
+		4. assertNotNull
+		5. assertSame: 若物件沒有改寫equals則跟assertEquals一樣
+		6. assertThat(actual, matcher): 比對實際值是否滿足matcher條件
+		7. assertTrue/assertFalse
+		8. fail: 直接讓測試失敗
+
+Spring-JUnit
+	jar檔
+		spring-test-x.y.z.RELEASE.jar
+	
+	解決Spring每次啟動都要重新注入問題 : 在組態類別前加上..
+		@RunWith(SpringJUnit4ClassRunner.class)
+		@ContextConfiguration(locations = …)		<--指定Spring組態檔位置
+	
+	交易測試
+		1. 聲明測試類別內含有交易測試 :
+			@Transactional
+			@EnableTransactionManagement	<--啟用
+			
+		2. @Rollback(false)				<--預設新刪修會自動rollback, 不會影響資料庫內資料.
+											   可藉由此設定不rollback
+		
+		3. @BeforeTransaction/AfterTransaction/NotTransacitonal
+
+範例
+	一. 簡易測試
+	
+		@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+		public class SimpleUnitTest {
+
+			@Test
+			public void t1() {
+				System.out.println("t1");
+			}
+			
+			@Test
+			public void t2() {
+				System.out.println("t2");
+			}
+			
+			@Test
+			public void t3() {
+				System.out.println("t3");
+			}
+
+			@Before
+			public void before() {
+				System.out.println("before");
+			}
+			
+			@After
+			public void after() {
+				System.out.println("after");
+			}
+			
+			@BeforeClass
+			public static void beforeClass() {
+				System.out.println("beforeClass");
+			}
+			
+			@AfterClass
+			public static void afterClass() {
+				System.out.println("afterClass");
+			}
+		}
+	
+	二. JUnit + Spring-Test
+	
+		@RunWith(SpringJUnit4ClassRunner.class)
+		@ContextConfiguration(locations = "classpath:applicationContext.xml")
+		@Transactional
+		@EnableTransactionManagement
+		public class SpringUnitTest {
+			
+			@Autowired
+			private MemberDao memberdao;
+			
+			//@Rollback(false)// 此行若放開, 即會真的insert資料到資料庫
+			@Test
+			public void testInsert() {
+				MemberBean member = new MemberBean(null,
+						"account",
+						"password",
+						"nickname",
+						new Timestamp(System.currentTimeMillis()),
+						false, "djkglkdfgldfhgriisrkt");
+				System.out.println(memberdao.insert(member));
+			}
+
+			@Test
+			public void testSelectByKey() {
+				MemberBean member = memberdao.selectByKey(1);
+				System.out.println(member.getId());
+				System.out.println(member.getNickname());
+			}
+		}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
