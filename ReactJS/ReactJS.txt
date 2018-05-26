@@ -1,0 +1,69 @@
+雜
+	1. ES6(arrow function、class、let、const)
+	2. React元素就是一個js物件
+	3. 在使用JavaScript classes時，你必須調用 super();方法才能在繼承父類的子類中正確獲取到類型的this
+	4. JSX 元素的最外層套上了一小括號，以防止JavaScript 代碼在解析時自動在換行處添加分號
+	5. 不可变性
+		5.1 實現撤銷/重做以及時間旅行
+		5.2 記錄變化
+		5.3 React 當中判定何時重新渲染
+	6. key	
+		6.1 渲染列表項時，React 都會試著存儲對應每個單獨項的相關信息，如果你的組件包含state 狀態數據，那麼這些狀態數據必須被排序
+		6.2 React 必須能夠知道是那一項改變了
+		6.3 key是React當中使用的一種特殊的屬性（除此之外還有ref屬性），React會將元素的key值和對應元素綁定存儲起來。無法通過this.props.key獲取到key的值
+		6.4 假如你不提供任何key值，React會提示警告，並且默認使用數組的索引作為默認的key 
+		6.5 只需要在當前的節點裡保證唯一即可
+	
+class
+	*註
+		1. 此類別為React組件類別
+		2. render()回傳React元素, 是想要渲染的內容描述
+
+	class 類別名 extends React.Component {
+		...
+	
+		render() {
+			...
+			return (...);
+		}
+	}
+	
+	render內容
+		一般js寫法
+			render() {
+				return React.createElement('根標籤', {屬性1 : '值1'},
+					React.createElement('子標籤1, {子子標籤...}),
+					React.createElement('子標籤2, {子子標籤...}),
+					...
+					React.createElement('子標籤N, {子子標籤...})
+				);
+			}
+			
+		JSX寫法
+			render() {
+				//HTML語法
+			}
+
+函數定義組件(functional components)
+	說明 : 若React組件類別內只有render(), 就可以使用較簡潔的函數定義組件寫法
+	
+	語法
+		function 組件名(props) {
+			return (
+				//JSX
+			);
+		}
+		
+		*註 : this.props需換成props
+
+
+
+
+
+
+
+
+
+
+
+			
