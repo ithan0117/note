@@ -1,3 +1,931 @@
+一. Hello World
+	IDE
+		1. codepen : https://codepen.io/gaearon/pen/ZpvBNJ
+		2. Babel REPL : http://babeljs.io/repl/
+		3. local
+		
+	cdn
+		https://reactjs.org/docs/cdn-links.html有說明
+		*註 : 開發版才有完整的錯誤訊息
+		
+	注意事項 : 常用ES6(arrow function、class、let、const)
+	
+	名詞
+		組件 : 用函數式或類別式撰寫的一段React程式(碼)定義, 函數式需回傳React元素; 類別式需實作render()回傳React元素
+		React元素 : 透過JSX或React.createElement()產生的物件, 用來描述UI上的任何東西
+
+		*註 : React元素為組件的回傳值
+		
+	簡單範例 (without JSX、npm)
+		index.html
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+				<title>Index</title>
+				<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+				<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+			</head>
+			<body>
+				<div id="root"></div>
+			</body>
+			</html>
+			<script src="index.js"></script>
+		
+		
+		index.js
+			function Welcome(props) {
+				return React.createElement(
+					"div",
+					null,
+					`hi, ${props.name}`
+				);
+			}
+
+			ReactDOM.render(
+				Welcome({name : "william"}),
+				document.getElementById("root")
+			);
+
+二. JSX
+	簡述 : JavaScript 的語法擴展, 用來聲明React當中的元素. 在編譯之後呢, JSX 其實會被轉化為普通的JavaScript表達式
+	
+	注意事項
+		1. HTML的單標籤轉成JSX都需加上斜線, ex. <br />、<input type="submit" />
+		2. 整個JSX : 放在小括號裡, 以防止分號自動插入的bug
+			ex.
+				const element = (<div>hi, </div>);
+				
+		3. JavaScript表達式 : 在JSX中使用時, 需包含在大括號裡
+			ex.
+				const element = (<div>hi, {p1.name}</div>);
+
+		4. 屬性值
+			4.1 字串型態 : "值"
+				ex.
+					const element = (<div value="abc">...</div>);
+
+			4.2 其他型態 : {JavaScript表達式}
+				ex.
+					const element = (<div value={p1.name}>...</div>);
+
+		5. 屬性命名 : 小駝峰
+		
+		6. 防止XSS : 所以要呈現的東西, 在渲染前都會轉成字串
+
+		7. 編譯時期的底層動作
+			7.1 Babel轉譯器會把JSX轉換成一個名為React.createElement()的方法呼叫
+				ex.
+					const element = (<div value="abc">hi</div>);
+					等同
+					const element = React.createElement("div", {value : "abc"}, "hi");
+
+			7.2 React.createElement()會進行一些避免bug的檢查, 並回傳一個物件
+				ex. 
+					{
+						type : "div",
+						props : {
+							value : "abc",
+							children : "hi"
+						}
+					}
+
+三. 元素渲染
+	簡述 : React元素是構成React應用的最小單位, 即描述你在屏幕上看到的內容.
+		   事實上是普通的物件, React DOM 可以確保瀏覽器DOM 的數據內容與React 元素保持一致
+
+	*註
+		1. React元素在此皆簡稱為元素
+		2. "元素"跟"組件"是不同的東西, 組件是由元素所組成
+	
+	注意事項
+		1. 根元素 : ex. <div id="root"></div>, 將由React DOM 來管理. 一般只會定義一個根節點
+		
+		2. 渲染 : 透過ReactDOM.render(元素, 根元素)
+		
+		3. immutable不可變的 : 元素被創建之後, 你是無法改變其內容或屬性, 它代表應用界面在某一時間點的樣子
+
+		4. 可配合setInterval()等函數使用
+			ex.
+				function showDate() {
+					function Test() {
+						const elt1 = (<div>{new Date().toLocaleTimeString()}</div>)
+						return elt1;
+					}
+
+					ReactDOM.render(<Test />, document.getElementById("root"));
+				}
+
+				setInterval(showDate, 1000);
+
+			*註 : 多數React應用只會調用一次ReactDOM.render()
+		
+		5. 局部更新 : React DOM 首先會比較元素內容先後的不同, 而在渲染過程中只會更新改變了的部分
+
+
+四. 組件& Props
+	簡述 : 從UI的觀念來看, 組件是將UI切分成一些的獨立的、可複用的部件; 從程式面來看它是一個函數, 可接收參數(props), 並回傳React元素
+
+	定義
+		*註
+			1. 組件名以大寫開頭
+			2. 兩種方式的回傳React元素 都可以配合 JSX 或 React.createElement() 來使用
+			3. 當React遇到元素是自定義的組件, 他會將其內的屬性紀錄在props特性
+	
+		方式1 - 函數式
+			語法
+				function 組件名(props) {
+					...
+					return React元素;
+				}
+
+			範例
+				// with JSX
+				function Square(props) {
+					return (
+						<button className="square" onClick={props.onClick}>
+							Submit
+						</button>
+					);
+				}
+				
+				// with React.createElement()
+				function Square(props) {
+					return React.createElement(
+						"button",
+						{className : "elt1", onClick : props.onClick},
+						"Submit"
+					)	
+				}
+					
+		方式2 - 類別式
+			語法
+				class 組件名 extends React.Component {
+					render() {
+						return React元素;
+					}
+				}
+
+			範例
+				// with JSX
+				class Square extends React.Component {
+					render() {
+						return (
+							<button className="square" onClick={props.onClick}>
+								Submit
+							</button>
+						);
+					}
+				}
+
+				// with React.createElement()
+				class Square extends React.Component {
+					render() {
+						return React.createElement(
+							"button",
+							{className : "elt1", onClick : props.onClick},
+							"Submit"
+						)
+					}
+				}
+
+	組合組件
+		簡述 : 組件可巢狀包含, 形成新的組件
+
+		*註 : 通常一個React程式頂端會是一個App組件
+
+		範例
+			function Square(props) {
+				return (
+					<button className="square" onClick={props.onClick}>
+						{props.text}
+					</button>
+				);
+			}
+
+			function App(props) {
+				return (
+					<div>
+						<Square text={props.text[0]} />
+						<Square text={props.text[1]} />
+						<Square text={props.text[0]} />
+					</div>
+				);
+			}
+
+			ReactDOM.render(
+				<App name={["Submit", "Confirm", "Cancel"]} />,
+				document.getElementById("root")
+			);
+
+	Props的不可變性 : 同純函數特性
+		
+			
+五. State & 生命週期
+	state特點
+		1. state跟props很像
+		2. state是私有的, 只在當前組件; props則是由別處傳來
+		3. 只限用在class定義方式
+		4. 在類別中用 this.state 存取
+		5. 不用在render()中的東西, 就不應該儲存在state
+		6. 非建構子中更新state : 使用this.setState()
+			6.1 跟props無關 : this.setState(狀態物件)
+				ex.
+					this.setState({date : new Date()});
+					
+			6.2 跟props有關 : this.setState((原狀態, props) => {})
+				*註 : 因為狀態更新可能是在非同步的狀況下, 所以需用"函數"
+				ex.
+					this.setState((prevState, props) => {
+						counter: prevState.counter + props.step;
+					});
+					
+			*註 : this.setState()會"單獨更新"有指定到的部分, 意義上比較像"updateState"
+	
+		7. 外部無法知道是否有state
+	
+	生命週期特點
+		1. 建構子 : construtor(), 在被實例化時執行, 唯一能初始化的地方
+		2. 掛載方法 : componentDidMount(), 在第一次被加入UI時執行
+		3. 卸載方法 : componentWillUnmount(), 在從UI中移除時執行
+		4. 2跟3兩方法被稱為lifecycle hooks(鉤)
+			
+			
+	範例
+		class Clock extends React.Component {
+		
+			// 建構子
+			constructor(props) {
+				super(props);
+				this.state = {date : new Date()};	// 初始化state
+			}
+			
+			// 掛載方法
+			componentDidMount() {
+				this.timerId = setInterval(
+					() => {this.setState({date : new Date()});},	// 更新state
+					1000
+				);
+			}
+  
+			// 卸載方法
+			componentWillUnmount() {
+				clearInterval(this.timerId);
+			}
+  
+			render() {
+				return (
+					<div>{this.state.date.toTimeString()}</div>
+				);
+			}
+		}
+			
+			
+六. 事件處理
+	注意
+		1. 寫法 : 與HTML DOM事件處理很相似
+		2. 命名 : 屬性命名使用小駝峰式
+		3. 註冊 : 使用JSX時, 指定代表函數的變數名, 非字串
+			ex.
+				<button onClick="{processor}">Submit</button>
+			
+		4. 取消預設行為 : 需用e.preventDefault(), 不可用return false
+		5. React的事件物件 : 事件處理器的參數, 是一個合成事件(SyntheticEvent), 已含跨瀏覽器兼容性
+			
+	建立步驟
+		0. 建立一類別
+		
+		1. 定義處理器 : 在類別裡定義一函式
+		
+		2. 把this注入處理器
+			*註 : 類別的方法預設不會注入this, 需手動把this注入進去
+		
+			方式1 - 使用 bind() (in constructor)
+				class 類別名 extends React.Component {
+			
+					constructor() {
+						...
+						this.處理器名 = this.處理器名.bind(this);	// <--
+					}
+					
+					處理器名() {
+						...
+					}
+					
+					...
+				}
+			
+			方式2 - 使用 屬性初始化器(Property initializer)
+				*註 : 此語法還屬於實驗性(??). 若使用create-react-app會自動開啟此語法支援
+				
+				class 類別名 extends React.Component {
+			
+					處理器名 = () => {		// <--
+						...
+					}
+					
+					...
+				}
+				
+			方式3 - 多包一層函數 (在註冊時)
+				*註 : 此種方式每次渲染時都會新建一個callback函數, 效能較低
+			
+				<標籤 事件屬性={(e) => this.處理器名(e)} >
+				
+				ex.
+					<button onClick={(e) => this.handleClick(e)}>	// 假設已先定義handleClick()
+			
+		3. 註冊
+		
+	範例
+		class Toggle extends React.Component {
+			constructor(props) {
+				super(props);
+				this.state = {isToggleOn : true};
+				
+				// 步驟2 : bind()
+				this.handleClick = this.handleClick.bind(this);
+			}
+			
+			// 步驟1 : 定義
+			handleClick(e) {
+				this.setState((prevState) => {
+					{isToggleOn: !prevState.isToggleOn};
+				});
+			
+			}
+			
+			render() {
+				return (
+					// 步驟3 : 註冊
+					<button onClick={this.handleClick}>
+						{this.state.isToggleOn ? "ON" : "OFF"}
+					</button>
+				);
+			}
+		}
+		
+	事件處理器的參數
+		預設參數 : 不需指定, 自動會被傳遞
+			e : React事件物件
+			
+			範例
+				<button onClick={this.deleteAll}>Submit</button>
+				
+				deleteAll(e) {
+					...
+				}
+		
+		額外參數
+			方式1 -  多包一層函數 (在註冊時)
+				*註 : e的順序自訂, 只需傳送跟接收兩端配合
+				
+				語法
+					傳送
+						<標籤 事件屬性={(e) => this.處理器名(額外參數1, 額外參數2, ..., 額外參數N, e)} >
+						
+					接收
+						處理器名(額外參數1, 額外參數2, ..., 額外參數N, e)
+						
+				範例
+					<button onClick={(e) => this.deleteById(id, e)}>Submit</button>
+					
+					deleteById(id, e) {
+						...
+					}
+		
+			方式2 - 使用 bind() (在註冊時)
+				*註 : e會"自動"被加在"最後"一個參數
+				
+				語法
+					傳送
+						<標籤 事件屬性={this.處理器名.bind(this, 額外參數1, 額外參數2, ..., 額外參數N)} >
+						
+					接收
+						處理器名(額外參數1, 額外參數2, ..., 額外參數N, e) {
+							...
+						}
+					
+				範例
+					<button onClick={this.deleteById.bind(this, id)}>Submit</button>
+
+					deleteById(id, e) {
+						...
+					}
+
+
+七. 條件渲染
+	簡述 : 根據狀態局部渲染
+
+	常用指令
+		if
+		&&
+		三元運算子
+
+	範例 - if
+		function GuestGreeting() {
+			return (
+				<h1>Please sign up</h1>
+			);
+		}
+
+		function UserGreeting(props) {
+			return (
+				<h1>Welcome back, {props.name}</h1>
+			);
+		}
+
+		function Greeting(props) {
+			const isLoggedIn = props.isLoggedIn;
+
+			if (isLoggedIn) {
+				return <UserGreeting name={props.name}/>;
+			}
+			return <GuestGreeting />;
+		}
+
+		ReactDOM.render(
+			<Greeting isLoggedIn={true} name="william" />,
+			root
+		);
+
+	範例 - &&
+		function Mailbox(props) {
+			const unreadMsg = props.unreadMsg;
+
+			return (
+				<div>
+					Hey {props.name}
+					{unreadMsg.length > 0 &&
+						<h2>You have {unreadMsg.length} unread Message.</h2>}
+				</div>
+			);
+		}
+
+		const msg = ["C", "C++", "C#", "Java", "ASP", "SQL", "Android", "JavaScript", "Scala"];
+
+		ReactDOM.render(
+			<Mailbox name="william" unreadMsg={msg} />,
+			root
+		);
+	
+	範例 - 三元運算子
+		function GuestGreeting() {
+			return (
+				<h1>Please sign up</h1>
+			);
+		}
+
+		function UserGreeting(props) {
+			return (
+				<h1>Welcome back, {props.name}</h1>
+			);
+		}
+
+		function Greeting(props) {
+			const isLoggedIn = props.isLoggedIn;
+
+			return isLoggedIn ? <UserGreeting name={props.name}/> : <GuestGreeting />;
+			 
+		}
+
+		ReactDOM.render(
+			<Greeting isLoggedIn={true} name="william" />,
+			root
+		);
+	
+	
+	阻止渲染
+		簡述 : 某些狀況下會需要"隱藏"組件
+	
+		方式 : render()回傳null
+		
+		注意 : 並不會影響組件的生命週期方法的回呼 (ex. componentWillUpdate()、componentDidUpdate() ..)
+			
+		範例
+			function User(props) {
+				if (!props.isLoggedIn) {
+					return null;
+				}
+				return (
+					<div>{props.name}</div>
+				);
+			}
+	
+	
+八. 列表 & Keys
+
+	用途 : React底層在增加或刪除元素時, 比對演算法需要key屬性來識別元素
+
+	語法
+		列表 (使用map())
+			function ..(props) {
+		
+				let list = props.list.map((value, index) => {
+					return (
+						//React元素
+					);
+				});
+				
+				return (
+					...{list}...
+				);
+			}
+			
+			或 (直接寫在return裡, 需用大括號包含)
+			function ..(props) {
+				
+				return (
+					...
+					{props.list.map((value, index) => {
+						return (
+						//React元素
+						);
+					}}
+					...
+				);
+			}
+	
+		Keys
+			<標籤 key="值">
+
+	注意	
+		無key時 : 列表中若未加key屬性, 則會看到以下警告訊息
+			Warning: Each child in an array or iterator should have a unique "key" prop.
+			See https://fb.me/react-warning-keys for more information.
+				
+		唯一性 : key在兄弟節點間必須是唯一 (不需全局唯一), 否則會看到以下警告訊息
+			Warning: Encountered two children with the same key, `重複的值`.
+			Keys should be unique so that components maintain their identity across updates.
+			Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+				
+			*註 : 若順序可能改變時, 建議不要用index當key, 否則可能導致渲染變很慢 	
+				
+		何處指定key : 因為keys只在兄弟節點間有意義, 所以應該在"兄弟標籤"上指定key屬性, ex..
+		
+				//錯誤的位置								//正確的位置
+				<TodoList>									<TodoList>
+					<Item>										<Item key="0">		<--
+						<li key="0">xxx</li>	<--					<li>xxx</li>
+					</Item>										</Item>
+					<Item>										<Item key="1">
+						<li key="1">xxx</li>						<li>xxx</li>
+					</Item>										</Item>
+					<Item>										<Item key="2">
+						<li key="2">xxx</li>						<li>xxx</li>
+					</Item>										</Item>
+				</TodoList>									</TodoList>
+		
+		
+		不可讀取 : key是給底層用的, 並不會真的傳給組件, 在組件內使用 props.value 會看到以下警告訊息
+			Warning: Item: `key` is not a prop. Trying to access it will result in `undefined` being returned.
+			If you need to access the same value within the child component, you should pass it as a different prop. (https://fb.me/react-special-props)
+			
+			
+	範例
+		function Item(props) {
+			return (
+				<li>{props.value}</li>
+			);
+		}
+
+		function TodoList(props) {
+			let list = props.list.map((value, index) => {
+				return <Item key={index} value={value} />
+			});
+			return (
+				<ul>{list}</ul>
+			);
+		}
+
+		const array = ["JavaScript", "jQuery", "Node.js", "AngularJS", "React.js", "Vue.js"];
+
+		ReactDOM.render(
+			<TodoList list={array} />,
+			document.getElementById("root")
+		);
+	
+	
+九. 表單 (checkbox補!!!!!!!!!!!!!!) 
+
+	受控組件(Controlled Component)
+		簡述 : 值由React控制的輸入表單組件
+
+		特徵
+			1. 值 : 用屬性value控制
+			2. 更新值 : 用onChage屬性控制 (通常指向組件class內另handleXyz方法)
+			*註 : 以上兩點在組件class內, 都是props底下的特性
+			
+		範例
+			class NameForm extends React.Component {
+				constructor(props) {
+					super(props);
+					this.state = {name : undefined};	//此初始值會被<input>所使用, 設成null會有警告訊息, 設成undefined則不會
+					this.handleChange = this.handleChange.bind(this);
+					this.handleSubmit = this.handleSubmit.bind(this);
+				}
+				
+				handleChange(event) {
+					this.setState({name : event.target.value});
+				}
+				
+				handleSubmit(event) {
+					// 提交
+					event.preventDefault();
+				}
+				
+				render() {
+					return (
+						<form onSumit={this.handleSubmit}>
+							<label>
+								id :&nbsp;
+								<input type="text" value={this.state.name} onChange={this.handleChange} />
+							</label>
+							<input type="submit" />
+						</form>
+					);
+				}
+			}
+
+	React的<textarea>
+		注意
+			文字內容 : React的<textarea>透過屬性value設定 (原生HTML必需寫成 <textarea>xxx</textarea>)
+			撰寫方式 : 單標籤
+			
+		語法
+			<textarea value={值} />
+
+		範例
+			class TextAreaForm extends React.Component {
+				constructor(props) {
+				   super(props);
+				   this.state = {
+					   isFirst : true,
+					   text : "list your skills of Java Framework"
+				   };
+					this.handleClick = this.handleClick.bind(this);
+					this.handleChange = this.handleChange.bind(this);
+				}
+
+				handleClick(event) {
+					if (this.state.isFirst) {
+						event.target.value = "";
+						this.setState({isFirst : false, text : ""});
+					}
+				}
+
+				handleChange(event) {
+					this.setState({text : event.target.value});
+				}
+
+				render() {
+					return (
+						<div>
+							<textarea
+								value={this.state.text}
+								onClick={this.handleClick}
+								onChange={this.handleChange} />
+						</div>
+					);
+				}
+			}
+
+	React的<select> - <option>
+		注意
+			預選 : 使用value屬性, 而不使用原生HTML的selected屬性
+			
+		語法
+			<select value={選取選項}>
+				<option value="值1">選項1</option>
+				<option value="值2">選項2</option>
+				...
+				<option value="值N">選項N</option>
+			</select>
+
+		範例
+			class CityForm extends React.Component {
+				constructor(props) {
+					super(props);
+					this.state = {city : "TPC"};	// 設定預選
+					this.handleSubmit = this.handleSubmit.bind(this);
+					this.handleChange = this.handleChange.bind(this);
+				}
+
+				handleSubmit(event) {
+					let xhr = new XMLHttpRequest();
+					const url = "http://localhost:8080/SpringHibernateLog4jDemo/memberRest/sendCity";
+					xhr.open("POST", url, true);
+					xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+					xhr.send(JSON.stringify({city : this.state.city}));
+					event.preventDefault();
+				}
+
+				handleChange(event) {
+					this.setState({city : event.target.value});	// 不加此行不能改變選項
+				}
+
+				render() {
+					return (
+						<form onSubmit={this.handleSubmit}>
+							<label>
+								choose city
+								<br />
+								<select value={this.state.city} onChange={this.handleChange}>
+									<option value="KLC">基隆市</option>
+									<option value="TPC">台北市</option>
+									<option value="NTPC">新北市</option>
+									<option value="TYH">桃園市</option>
+									<option value="HCT">新竹市</option>
+									<option value="HCH">新竹縣</option>
+								</select>
+							</label>
+							<br />
+							<input type="submit" value="Submit" />
+						</form>
+					);
+				}
+			}
+
+	React的<input type="file" />
+		注意
+			唯讀性 : 由於value屬性是唯讀的, 所以在React中屬於非受控組件. (待續..)
+	
+	多輸入處理
+		注意
+			設定name屬性, 使用event.target.name來識別
+			
+		範例 *註 : 此段程式有警告訊息(讓受控組件變成非受控組件), 未解(??)
+			class MultiInputsForm extends React.Component {
+				constructor(props) {
+					super(props);
+					this.state = {
+						skills : {java : true, javascript : false},
+						age : 30
+					};
+					this.handleInputChange = this.handleInputChange.bind(this);
+				}
+
+				handleInputChange(event) {
+					let target = event.target;
+					if (target.name === "skills") {
+						this.setState({skills : {[target.value] : target.checked}});
+					} else {
+						this.setState({[target.name] : target.value});
+					}
+				}
+
+				render() {
+					return (
+						<form>
+							<label>
+								choose skills
+								<br />
+								<input type="checkbox"
+									   name="skills"
+									   value="java"
+									   checked={this.state.skills.java}
+									   onChange={this.handleInputChange} />
+								Java
+								&nbsp;
+								<input type="checkbox"
+									   name="skills"
+									   value="javascript"
+									   checked={this.state.skills.javascript}
+									   onChange={this.handleInputChange} />
+								JavaScript
+							</label>
+							<br />
+							<label>
+								age
+								<input type="number" value={this.state.age} name="age" onChange={this.handleInputChange} />
+							</label>
+							<br />
+							<input type="submit" value="Submit" />
+						</form>
+					);
+				}
+			}
+
+	替代方法 : 非受控組件
+
+
+十. 狀態提升
+	簡述 : 將狀態提升至最小的共同父組件內, 以達到兄弟組件間共享狀態
+	
+	作法 : 將子組件的state轉存至父組件state, 子組件不使用state而使用props
+
+	範例 - 公斤<->磅 計算器 (改其中一單位之值, 另單位之值也會跟著改變)
+		
+		//子組件 - 輸入框
+		class InputForm extends React.Component {
+			constructor(props) {
+				super(props);
+				this.handleChange = this.handleChange.bind(this);
+			}
+
+			handleChange(e) {
+				this.props.handleChange(e.target);
+			}
+
+			render() {
+				return (
+					<fieldset>
+						<legend>{this.props.scale}</legend>		//<--使用props
+						<input
+							type="number"
+							value={this.props.value}
+							onChange={this.handleChange}		//<--使用props
+							data-scale={this.props.scale} />	//<--使用props
+					</fieldset>
+				);
+			}
+		}
+
+		// 父組件 - 計算器(含有兩個子組件)
+		class Calculator extends React.Component {
+			static TO_LB = 2.20462262;
+			static TO_KG = 0.45359237;
+
+			constructor() {
+				super();
+				this.state = {currScale : undefined, value : 0};		//<--子組件要用之值, 儲存在父組件的state
+				this.handleChange = this.handleChange.bind(this);
+			}
+
+			handleChange(target) {
+				this.setState({currScale : target.dataset.scale, value : target.value});
+			}
+
+			render() {
+				const currScale = this.state.currScale;
+				const value = this.state.value;
+
+				let valueOfKg = currScale === "lb" ? Calculator.TO_KG * value : value;
+				let valueOfLb = currScale === "kg" ? Calculator.TO_LB * value : value;
+
+				return (
+					<div>
+						<InputForm scale="kg" value={valueOfKg} handleChange={this.handleChange} />
+						<InputForm scale="lb" value={valueOfLb} handleChange={this.handleChange} />
+					</div>
+				);
+			}
+		}
+		
+	
+十一. 組合 vs 繼承
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Arrow Function(箭頭函數)
+	注意
+		1. 沒有this、arguments、super、new.target
+		2. 適用於匿名時
+		3. 不能用在建構子
+		4. 
+		
+	語法
+		(參數1, 參數2, ..., 參數N) => {...}
+		
+		//本體只有一行時, 可省略{}, 那一行也自動會加上return
+		(參數1, 參數2, ..., 參數N) => ...
+		
+		//只有一個參數時, 可省略()
+		參數1 => {...}
+		
+		//但沒有參數時, 不可省略()
+		() => {...}
+
+
 雜
 	1. ES6(arrow function、class、let、const)
 	2. React元素就是一個js物件
@@ -13,6 +941,9 @@
 		6.3 key是React當中使用的一種特殊的屬性（除此之外還有ref屬性），React會將元素的key值和對應元素綁定存儲起來。無法通過this.props.key獲取到key的值
 		6.4 假如你不提供任何key值，React會提示警告，並且默認使用數組的索引作為默認的key 
 		6.5 只需要在當前的節點裡保證唯一即可
+	
+	7. Property initializer syntax
+	8. Computed property names (可計算屬性名)
 	
 class
 	*註
@@ -57,7 +988,8 @@ class
 		*註 : this.props需換成props
 
 
-
+Chrome React Tool
+	https://reactjs.org/react-devtools-state-ef94afc3447d75cdc245c77efb0d63be.gif
 
 
 
