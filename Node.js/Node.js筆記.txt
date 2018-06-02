@@ -1,4 +1,4 @@
-
+nvm
 
 
 
@@ -21,3 +21,9 @@ Node.js shell
 -----------------cmd-----------------
 執行.js
 	node 路徑+檔名
+	
+下載api
+	npm install api名稱
+
+	ex.
+		npm install mysql
