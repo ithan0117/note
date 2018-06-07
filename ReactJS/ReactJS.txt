@@ -11,8 +11,9 @@
 	注意事項 : 常用ES6(arrow function、class、let、const)
 	
 	名詞
-		組件 : 用函數式或類別式撰寫的一段React程式(碼)定義, 函數式需回傳React元素; 類別式需實作render()回傳React元素
-		React元素 : 透過JSX或React.createElement()產生的物件, 用來描述UI上的任何東西
+		React元素 : React中的最小單位, 程式面來看是普通物件
+		組件 : 由React元素組成, 程式面來看是純函數或類別
+		<HTML元素> --> <React元素> --> 組件
 
 		*註 : React元素為組件的回傳值
 		
@@ -874,6 +875,917 @@
 		
 	
 十一. 組合 vs 繼承
+	簡述 : 將組件模組化後, 利用"組合"的方式來重複利用組件
+	
+	注意
+		1. React中使用組合, 而不用繼承
+		2. 組建中可接受任何元素, 包括基本型態、函數、React元素
+		3. 跟UI無關的程式碼, 應寫在組件外
+		
+	容器組件 : 其內可用多個內組件
+	
+		範例1 - 一個內組件, 使用特殊的props.children
+			// 容器組件
+			function Border(props) {
+				return (
+					<div style={{border : "solid 1px " + props.color}}>
+						{props.children}			//<--因為有此行, 內組件才會被加進來
+					</div>
+				);
+			}
+			
+			// 使用容器組件的組件
+			function Dialog(props) {
+				return (
+					<Border color="blue">
+						<h1>Hi, {props.name}</h1>	//<--對應上{props.children}
+					</Border>
+				);
+			}
+			
+		範例2 - 多內組件, 自訂props.特性
+			// 容器組件
+			function Border(props) {
+				return (
+					<div style={{border : "solid 1px " + props.color}}>
+						{props.up}			//<--因為有此行, 內組件才會被加進來
+						<hr />
+						{props.bottom}		//<--因為有此行, 內組件才會被加進來
+					</div>
+				);
+			}
+			
+			// 使用容器組件的組件
+				*註 : 此處寫成<Border /> "單"標籤
+			
+			function Dialog(props) {
+				return (
+					<Border color="red" up={
+						<h1>Hi, {props.name}</h1>
+					} bottom={
+						<p>Welcome to React</p>
+					} />
+				);
+			}
+		
+	特殊實例(Special Cases) : 由已存在組件延伸出的新組件. 在React中一樣使用"組合"來實踐, 而非繼承
+		
+		範例 - 由Dialog延伸出的WelcomeDialog
+			// Dialog組件
+			function Dialog(props) {
+				return (
+					<Border color="red" up={
+						<h1>Hi, {props.name}</h1>
+					} bottom={
+						<p>{props.msg}</p>
+					} />
+				);
+			}
+			
+			// WelcomeDialog組件
+			function WelcomeDialog(props) {
+				return (
+					<Dialog name={props.name} msg="Welcome" />
+				);
+			}
+
+
+十二. React實作分析
+	步驟
+		1. UI分析 : 由視覺稿定義出組件的命名、層級架構
+		
+		2. UI實作(排版) : 實作一個靜態版本
+
+		3. 資料分析 : 分析出動態部分(state)
+			考慮3個問題 (符合其中一點就不是state)
+				3.1 由父組件傳來否(props)
+				3.2 隨時間變化否
+				3.3 可以靠其他state或props計算出否
+
+		4. state歸屬分析 : state存放至何組件, 步驟
+			4.1 確定需要此state的組件
+			4.2 若多個組件需要此state, 找出最小共同父組件
+			4.3 最小共同父組件擁有此state, 還是另外更高層組件應該擁有
+			4.4 若更高層組件應該擁有此state, 就建立一個組件, 僅用來存此state, 且放至比最小共同父組件更高的層級
+			
+		5. 資料流分析
+			5.1 事件觸發 : 由哪個子組件呼叫哪個父組件
+			5.2 更新狀態 : setState()
+
+	範例 - 列表 (含過濾功能)
+		需求
+			https://doc.react-china.org/static/thinking-in-react-components-eb8bda25806a89ebdc838813bdfa3601-82965.png
+
+		步驟1 - UI分析
+			FilterableProductTable (橙色)
+				SearchBar (藍色)
+				ProductTable (綠色)
+					ProductCategoryRow (藍綠色)
+					ProductRow (紅色)
+
+		步驟2 - UI實作
+			(略)
+		
+		步驟3 - 資料分析
+			state.filterText : 過濾的文字
+			state.isStockOnly : 只顯示有庫存否
+			
+		步驟4 - state歸屬分析
+			state存至FilterableProductTable (最外圍容器)
+			
+		步驟5 - 資料流分析
+			5.1 事件由子組件SearchBar觸發, 呼叫父組件FilterableProductTable的對應方法
+			5.2 在父組件FilterableProductTable呼叫setSate()分別更新filterText和isStockOnly
+
+		程式碼
+			
+			// 資料
+			const products = [
+				{category: "Sporting Goods", price: "$49.99", stocked: true, name: "Football"},
+				{category: "Sporting Goods", price: "$9.99", stocked: true, name: "Baseball"},
+				{category: "Sporting Goods", price: "$29.99", stocked: false, name: "Basketball"},
+				{category: "Electronics", price: "$99.99", stocked: true, name: "iPod Touch"},
+				{category: "Electronics", price: "$399.99", stocked: false, name: "iPhone 5"},
+				{category: "Electronics", price: "$199.99", stocked: true, name: "Nexus 7"}
+			];
+			
+			// 搜尋列組件
+			class SearchBar extends React.Component {
+				constructor(props) {
+					super(props);
+					this.handleFilter = this.handleFilter.bind(this);
+					this.handleChecked = this.handleChecked.bind(this);
+				}
+
+				handleFilter(e) {
+					this.props.handleFilter(e.target.value);
+				}
+
+				handleChecked(e) {
+					this.props.handleChecked(e.target.checked);
+				}
+
+				render() {
+					return (
+						<div>
+							<input type="text" placeholder="Search..." onChange={this.handleFilter}/>
+							<br/>
+							<input type="checkbox" onChange={this.handleChecked}/>
+							Only show products in stock
+						</div>
+					);
+				}
+			}
+			
+			// 產品分類列組件
+			function ProductCategoryRow(props) {
+				return (
+					<tr>
+						<th colSpan="2">{props.category}</th>
+					</tr>
+				);
+			}
+			
+			// 產品列組件
+			function ProductRow(props) {
+				let product = props.product;
+				let name = product.stocked ? product.name : <span style={{color: "red"}}>{product.name}</span>
+				return (
+					<tr>
+						<td>{name}</td>
+						<td>{product.price}</td>
+					</tr>
+				);
+			}
+			
+			// 產品列表組件
+			function ProductTable(props) {
+				let currCategory;
+				let rows = [];
+				products.forEach(product => {
+					if (product.name.indexOf(props.filterText) === -1
+						|| (props.isStockOnly && !product.stocked))
+						return;
+
+					let category = product["category"];
+					if (currCategory !== category) {
+						rows.push(<ProductCategoryRow category={product["category"]} key={product.category}/>);
+						currCategory = category;
+					}
+					rows.push(<ProductRow product={product} key={product.name}/>)
+				});
+				return (
+					<table>
+						<thead>
+						<tr>
+							<th>Name</th>
+							<th>Price</th>
+						</tr>
+						</thead>
+						<tbody>
+						{rows}
+						</tbody>
+					</table>
+				);
+			}
+			
+			// 整個組件
+			class FilterableProductTable extends React.Component {
+				constructor(props) {
+					super(props);
+					this.state = {filterText: "", isStockOnly: false};
+					this.handleFilter = this.handleFilter.bind(this);
+					this.handleChecked = this.handleChecked.bind(this);
+				}
+
+				handleFilter(value) {
+					this.setState({filterText: value})
+				}
+
+				handleChecked(checked) {
+					this.setState({isStockOnly: checked})
+				}
+
+				render() {
+					return (
+						<div>
+							<SearchBar handleFilter={this.handleFilter} handleChecked={this.handleChecked}/>
+							<ProductTable filterText={this.state.filterText} isStockOnly={this.state.isStockOnly}/>
+						</div>
+					);
+				}
+			}
+
+
+===========================================================================================================================
+進階
+
+深入JSX
+	React元素的型態
+		必需引入
+			1. 只是React.createElement()語法糖
+			
+			2. <Xyz>會被編譯成同名的變數並被使用, 所以使用前必需先聲明. ex..
+				SearchBar.js
+					class SearchBar extends React.Component {
+						...
+					}
+					
+					export default SearchBar;				<--匯出
+					
+				Main.js
+					import SearchBar from "./SearchBar";	<--引入
+				
+					ReactDOM.render(
+						<SearchBar />,
+						document,getElementById("root")
+					);
+
+				*註 : 如果使用<script>載入, 作用範圍是全局
+
+		點表示法
+			1. 定義時, React組件也可以巢狀包含, 形成內部React組件, ex..
+				const MyComponents = {
+					DatePicker: function DatePicker(props) {							<--定義內部組件
+						return <div>Imagine a {props.color} datepicker here.</div>;
+					}
+				}
+			2. 使用時, 使用點表示法, ex..
+				function BlueDatePicker() {
+					return <MyComponents.DatePicker color="blue" />;					<--使用點表示法
+				}
+			
+		大寫開頭
+			1. 小寫開頭為HTML原生標籤, ex. div、span
+			2. 大小開頭為React組件, <Foo />會編譯為React.createElement(Foo)
+			
+		執行時期選擇React組件
+			JSX角括弧中不能使用js的表達式(expression), 若要在執行時期動態選擇React元素, 需先指定給一大寫開頭的變數ex..
+				function User1() {
+					...
+				}
+				
+				function User2() {
+					...
+				}
+				
+				const users = [User1, User2];
+				let input = prompt();
+				const User = users[input % 2];	<--一定要用大寫開頭的變數名
+				
+				ReactDOM.render(
+					<User />,
+					root
+				);
+			
+	屬性指定方式
+		方式1 - JavaScript表達式
+			語法
+				<元素 屬性={expression} />
+				
+			範例
+				<Component name={1 + 2 + 3} />
+		
+		方式2 - 字串字面常數
+			語法
+				<元素 屬性="字串字面常數" />
+			
+			範例
+				<Component name="william" />
+				
+			*註 : 會直接用HTML方式解析, ex..
+				<Component name="&lt;3" />
+				等同
+				<Component name={"<3"} />
+				
+		方式3 - 不指定值
+			說明 : 因預設值為true, 所以不只值的狀況下等同指定為true
+		
+			語法
+				<元素 屬性 />
+				
+			範例
+				<Component name />
+				等同
+				<Component name={true} />
+				
+		方式4 - 擴展	
+			說明 : 傳遞屬性物件. 會自動用 屬性物件特性名 映射 屬性名
+			
+			語法
+				<元素 {...屬性物件名}
+		
+			範例
+				function User(props) {
+					return (
+						<div>name : {props.name}, age : {props.age}, birthday : {props.birthday}</div>
+					);
+				}
+			
+				const p1 = {name : "william", age : 30, birthday : new Date(1988, 0, 17).toDateString()};
+		
+				<User {...p1} />
+		
+	子元素指定方式 (props.children)
+		方式1 - 字串字面常數
+			語法
+				<父元素>字串字面常數</父元素>
+				
+			*註 : JSX會"自動"去除頭尾的空白、Tab、換行; 字串字面常數中含有的換行則會被轉成一個空白
+		
+			範例 (以下四種寫法都是一樣的結果)
+				<Welcome>Welcome to React</Welcome>
+				
+				// 去除頭尾的空白
+				<Welcome>   Welcome to React   </Welcome>
+				
+				// 去除頭尾換行和Tab
+				<Welcome>
+					Welcome to React
+				</Welcome>
+				
+				// 字串字面常數中的換行被轉成空白
+				<Welcome>Welcome
+				to
+				React</Welcome>
+				
+		方式2 - JSX
+			語法
+				<父元素>
+					<子元素1>
+					<子元素2>
+				</父元素>
+				
+			方式2.1 - 元素陣列
+				語法
+					[
+						<元素1 />,
+						<元素2 />,
+						...,
+						<元素N />
+					];
+					
+				範例
+					return [
+						<li key="a">One</li>,
+						<li key="b">Two</li>,
+						<li key="c">Three</li>
+					];
+				
+				
+		方式3 - JavaScript表達式		
+			語法
+				<父元素>{expression}</父元素>
+				
+			範例
+				<ul>
+					{skillArr.map(v => {	//skillArr為一字串陣列
+						<Item name={v} />
+					})}
+				</ul>
+				
+		方式4 - 函數
+			說明 : 透過props.children傳遞function型態之參數
+			
+			語法
+				<父元素>{函數名}</父元素>
+				
+			範例
+				function UserList() {
+					return (
+						<User>
+							{() => {
+								return {name : "William", age : 30};	<--傳給子元素的
+							}}
+						</User>
+					);
+				}
+				
+				function User(props) {
+					let o = props.children();	<--從父元素接收的function, 馬上呼叫拿到物件
+					return (
+						<li>name : {o.name}, age : {o.age}</li>
+					);
+				}
+				
+		方式5 - boolean、null、undefined
+			說明 : boolean(false、true)、null和undefined不會被React渲染, 若要被渲染需用String()包含
+				
+			語法
+				<父元素>{String(值)}</父元素>
+				
+			應用 - 當作判斷條件
+				*註 : falsy家族的數字0可當作判斷條件, 但"會"被渲染, 加上Boolean()可避免
+			
+				範例
+					// 假設showHeader是決定<Header>顯示否的變數
+					<div>
+						{Boolean(showHeader) && <Header />}
+					</div>
+					
+				
+使用prop-types進行型態檢查
+	*註 : React v15.5前使用的是React.PropTypes. 因為重點用於開發階段, 所以v15.5後獨立另一套件
+	
+	簡述 : npm上的套件, 用以在執行時期檢查props, 但僅用console.warn()發出警告
+		
+	安裝
+		npm install --save prop-types
+	
+	引入
+		import PropTypes from 'prop-types'; // ES6
+		var PropTypes = require('prop-types'); // ES5 with npm
+		
+	cdn (可自行修改版本)
+		unpkg
+			<!-- development version -->
+			<script src="https://unpkg.com/prop-types@15.6/prop-types.js"></script>
+			 
+			<!-- production version -->
+			<script src="https://unpkg.com/prop-types@15.6/prop-types.min.js"></script>
+		cdnjs
+			<!-- development version -->
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.6.0/prop-types.js"></script>
+			 
+			<!-- production version -->
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.6.0/prop-types.min.js"></script>
+		
+	語法
+		組件名.propTypes = {
+			特性名1 : PropTypes.檢查項目,
+			特性名2 : PropTypes.檢查項目,
+			...
+			特性名N : PropTypes.檢查項目
+		}
+
+	檢查種類
+		1. props的型態
+		2. props的值
+		3. props必需否
+		
+	檢查型態 (PropTypes.)
+		JavaScript型態
+			PropTypes.bool
+			PropTypes.number
+			PropTypes.string
+			PropTypes.symbol
+			PropTypes.array
+			PropTypes.func
+			PropTypes.object
+
+		複合型態
+			任何可被渲染的型態 (number、string、element、array、fragment)
+				PropTypes.node
+
+		React型態
+			React element
+				PropTypes.element
+
+		自訂型態
+			PropTypes.instanceOf(型態)
+
+		子型態
+			陣列元素型態 (含有一個以上)
+				PropTypes.arrayOf(PropTypes.型態)
+
+			物件特性型態 (含有一個以上)
+				PropTypes.objectOf(PropTypes.型態)
+
+			物件特性型態 (列舉)
+				PropTypes.shape({
+					特性1 : PropTypes.型態, 
+					特性2 : PropTypes.型態, 
+					...
+					特性N : PropTypes.型態 
+				})
+
+		進階
+			任何
+				PropTypes.any
+
+			列舉單選
+				PropTypes.oneOf([型態1, 型態2, ..., 型態N])
+				*註 : 參數可以是上述任何一個
+
+				範例
+					PropTypes.oneOfType([PropTypes.bool, PropTypes.instanceOf(Person)])
+
+	檢查值
+		PropTypes.oneOf([值1, 值2, ..., 值N])
+
+	必需否
+		PropTypes.型態.isRequired
+			
+	自訂驗證器
+		注意
+			1. 不符合時需return Error物件
+			2. 不可用console.warn()和throw
+			3. 不可用在PropTypes.oneOfType()
+
+		一般驗證器
+
+				function(props, propName, componentName) {
+					if (!/matchme/.test(props[propName])) {
+						return new Error('Invalid prop `' + propName + '` supplied to' + 
+							' `' + componentName + '`. Validation failed.');
+		    		}
+				}
+		
+		arrayOf()用的驗證器
+
+			function(propValue, key, componentName, location, propFullName) {
+				if (!/matchme/.test(props[propName])) {
+						return new Error('Invalid prop `' + propName + '` supplied to' + 
+							' `' + componentName + '`. Validation failed.');
+		    		}
+			}
+
+	單獨使用驗證(非用在React)
+		語法
+			PropTypes.checkPropTypes(檢查項目物件, 被檢查物件, "被檢查物件名", "組件名")
+			*註 : "被檢查物件名" 跟 "組件名" 僅用在警告訊息顯示
+
+		範例
+			const myPropTypes = {
+				name: PropTypes.string,
+				age: PropTypes.number,
+				// ...
+			};
+
+			const props = {
+				name: 'hello', // is valid
+  				age: 'world', // not valid
+			};
+		
+			PropTypes.checkPropTypes(myPropTypes, props, 'props', 'Component1');
+		
+		
+靜態型別檢查
+	簡述 : 在編譯時期檢查型態. 許多此類框架都有自動完成功能, 所以很多人用來取代PropTypes		
+		
+	Flow
+		說明 : JavaScript型態檢查器, 使用@Annotation, 經常跟React一起用
+		*註 : Flow 本身就理解 JSX
+
+		步驟
+			1. 安裝
+				Yarn
+					yarn add --dev flow-bin
+
+				npm
+					npm install --save-dev flow-bin
+		
+			2. 將Flow加入專案 : 修改package.json
+				{
+					// ...
+					"scripts": {
+						"flow": "flow",
+							// ...
+					},
+					// ...
+				}
+
+			3. 初始化(第一次)
+				Yarn
+					yarn run flow init
+
+				npm
+					npm run flow init
+
+			4. 剝離Flow語法
+				*註 : create-react-app : 預設已剝離
+
+				npm install --save-dev babel-preset-flow
+				npm install --global flow-remove-types
+				npm install flow-remove-types
+
+			5. 指定檢查檔案 : 在欲檢查程式檔頂部加上
+				// @flow
+		
+			6. 執行
+				Yarn
+					yarn flow
+
+				npm
+					npm run flow
+					*檢查全部檔案加上 --all
+
+			7. 看訊息
+			
+	TypeScript
+		說明 : JavaScript的延伸語言, 有自己的編譯器, 可在編譯時期發現錯誤
+
+		步驟
+			1. 安裝
+				Yarn
+					yarn add -dev typescript
+
+				npm
+					npm install --save-dev typescript
+		
+			2. 將Flow加入專案 : 修改package.json
+				{
+  					// ...
+					"scripts": {
+						"build": "tsc",
+						// ...
+					},
+  					// ...
+				}
+
+				*註
+					1. ref : https://github.com/Microsoft/TypeScript-React-Starter/blob/master/tsconfig.json
+					2. 通常會把此檔案加至.gitignore
+		
+			3. 生成TypeScript組態檔 : tsconfig.json
+				tsc --init
+		
+			4. 設定程式碼來源和目標 : 修改tsconfig.json
+				{
+					"compilerOptions": {
+						// ...
+						"rootDir": "src",
+						"outDir": "build"
+    					// ...
+  					},
+				}
+		
+			5. 執行
+				Yarn
+					yarn build
+
+				npm
+					npm run build
+
+			6. 看訊息
+				若沒訊息代表成功
+		
+		進階
+			同時顯示來自其他框架的錯誤
+				取得聲明文件
+					Yarn
+						yarn add --dev @types/react
+			
+					npm
+						npm i --save-dev @types/react
+		
+				局部聲明
+					1. 在src下建立declarations.d.ts
+					2. 撰寫declarations.d.ts, ex..
+
+						declare module 'querystring' {
+							export function stringify(val: object): string
+							export function parse(val: string): object
+						}
+
+			和 Create React App 一起使用 TypeScript
+				create-react-app my-app --scripts-version=react-scripts-ts
+
+	Others
+		Reason
+
+		Kotlin : React bindings、Create React Kotlin App
+
+		F#/Fable : elmish-react
+
+
+Refs & DOM
+	簡述 : ref用以儲存在render()中建立的某個節點(HTML節點或React元素)
+
+	*註 : 盡量避免使用ref 
+
+	使用時機
+		組件想操作自己包含的其中一個節點
+
+	應用
+		1. 處理焦點、選擇文字和媒體控制
+		2. 觸發強制動畫
+		3. 整合其他框架
+
+	方式
+		1. 一般式
+		2. 函數式 (callback)
+
+	一般式
+		語法
+			建立ref (在建構子裡)
+				this.特性名 = React.createRef()
+
+			指定節點
+				<元素名 ref={this.特性名} />		// 特性名是 建立ref步驟 所指定
+
+			取得節點
+				this.特性名.current
+
+			*註 : 組件用函數寫法不可用一般式
+
+		底層動作
+			在組件掛載(componentDidMount())時將結點傳入this.特性名.current, 卸載(componentDidUpdate())時再將此特性改為null
+
+		範例一 - (操作自己的節點) click按鈕, 文字輸入框獲得焦點
+
+			class InputForm extends React.Component {
+			    constructor() {
+			        super();
+			        this.ref = React.createRef();	// 建立ref
+			        this.handleClick = this.handleClick.bind(this);
+			    }
+
+			    handleClick() {
+			        this.ref.current.focus();	// 取得節點, 並呼叫focus()
+			    }
+
+			    render() {
+			        return (
+			            <div>
+			                <input type="text" ref={this.ref} />	// 指定節點
+			                <input type="button" value="submit" onClick={this.handleClick} />
+			            </div>
+			        );
+			    }
+			}
+
+		範例二 - (透過ref操作子節點) 父組件含有三個子組件, 掛載時自動讓第一個子組件獲得焦點
+
+			// Child組件同範例一的InputForm組件
+			class Child extends React.Component {
+			    constructor() {
+			        super();
+			        this.ref = React.createRef();	// 建立子組件ref
+			        this.handleClick = this.handleClick.bind(this);
+			    }
+
+			    handleClick() {
+			        this.ref.current.focus();	// 取得節點, 並呼叫focus()
+			    }
+
+			    render() {
+			        return (
+			            <div>
+			                <input type="text" ref={this.ref} />	// 指定節點
+			                <input type="button" value="submit" onClick={this.handleClick} />
+			            </div>
+			        );
+			    }
+			}
+
+			class FocusInputForm extends React.Component {
+			    constructor(props) {
+			        super(props);
+			        this.ref = React.createRef();	// 建立父組件ref
+			    }
+
+			    componentDidMount() {
+			        this.ref.current.handleClick();		// this.ref.current會取得第一個<Child>, 呼叫它的handleClick()
+			    }
+
+			    render() {
+			        return (
+			            <div>
+			                <Child ref={this.ref} />	// 指定節點 (第一個子組件)
+			                <Child />
+			                <Child />
+			            </div>
+			        );
+			    }
+			}
+
+	函數式 (callback)
+		語法
+			建立ref
+				constructor() {
+					super();
+
+					this.變數名 = null; 		// 宣告一變數, 用以儲存ref之值
+					this.特性名 = 方法名;		// 指定callback方法
+					this.方法名 = this.方法名.bind(this);	
+				}
+
+				方法名(element) {			// 定義callback方法
+					this.變數名 = element;	// 將節點儲存起來
+				}
+
+			指定節點
+				<元素名 ref={this.特性名} />		// 特性名是 建立ref步驟 所指定
+
+			取得節點
+				this.變數名
+
+		底層動作
+			在組件掛載(componentDidMount())時將結點傳入callback函數, 卸載(componentDidUpdate())時會再將null傳入callback函數
+
+			*註
+				問題 : 在更新期間callback函數會被呼叫"兩次", 第一次會傳入null. 第二是才是節點
+				解法 : 將callback函數定義在類別裡, 且用bind()綁定
+
+		範例
+			class InputForm extends React.Component {
+			    constructor() {
+			        super();
+			        this.ref = null;				// 宣告一變數, 用以儲存ref之值
+			        this.setRef = this.setRef;		// 指定callback方法
+			        this.setRef = this.setRef.bind(this);
+			        this.handleClick = this.handleClick.bind(this);
+			    }
+
+			    setRef(element) {					// 定義callback方法
+			        this.ref = element;				// 將節點儲存起來
+			    }
+
+			    handleClick() {
+			        this.ref.focus();				// 取得節點, 並呼叫focus() 
+			    }
+
+			    render() {
+			        return (
+			            <div>
+			                <input type="text" ref={this.setRef} />		// 指定節點
+			                <input type="button" value="submit" onClick={this.handleClick} />
+			            </div>
+			        );
+			    }
+			}
+
+	函數組件使用ref
+		說明 : 函數組件因為沒有ref的實例, 所以不能用一般式, 但可用函數式(callback)
+
+		語法
+			function 組件名(props) {
+
+				let ref;	// 宣告一變數, 用以儲存ref之值
+
+				return (
+					...
+					<元素 ref={element => {		// 使用函數式(callback)
+						ref = element;			// 將節點儲存起來
+						...
+					}} />
+					...
+				);
+			}
+
+		範例
+			function CustomTextInput(props) {
+			    let ref;	// 宣告一變數, 用以儲存ref之值
+
+			    function handleClick() {
+			        ref.focus();		// 呼叫節點的focus()
+			    }
+
+			    return (
+			        <div>
+			            <input type="text" ref={(input) => {	// 使用函數式(callback)
+			                ref = input;						// 將節點儲存起來
+			            }} />
+
+			            <input type="button" value="GetFocus" onClick={handleClick} />
+			        </div>
+			    );
+			}
+
+
+非受控組件
+	
 
 
 
@@ -881,31 +1793,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+===========================================================================================================================
 Arrow Function(箭頭函數)
 	注意
 		1. 沒有this、arguments、super、new.target
@@ -944,7 +1832,16 @@ Arrow Function(箭頭函數)
 	
 	7. Property initializer syntax
 	8. Computed property names (可計算屬性名)
-	
+	9. Shorthand初始化
+		https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#New_notations_in_ECMAScript_2015
+	10. function* () {yield}
+	11. import React, {Component} from "react";
+	12
+		npx create-react-app 專案名
+		cd 專案名
+		npm start
+
+
 class
 	*註
 		1. 此類別為React組件類別
