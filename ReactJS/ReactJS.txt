@@ -5,8 +5,12 @@
 		3. local
 		
 	cdn
-		https://reactjs.org/docs/cdn-links.html有說明
-		*註 : 開發版才有完整的錯誤訊息
+		React
+			https://reactjs.org/docs/cdn-links.html有說明
+			*註 : 開發版才有完整的錯誤訊息
+
+		Babel(JSX編譯器)
+			<script src="https://unpkg.com/@babel/standalone/babel.js"></script>
 		
 	注意事項 : 常用ES6(arrow function、class、let、const)
 	
@@ -47,6 +51,7 @@
 				Welcome({name : "william"}),
 				document.getElementById("root")
 			);
+
 
 二. JSX
 	簡述 : JavaScript 的語法擴展, 用來聲明React當中的元素. 在編譯之後呢, JSX 其實會被轉化為普通的JavaScript表達式
@@ -90,6 +95,7 @@
 							children : "hi"
 						}
 					}
+
 
 三. 元素渲染
 	簡述 : React元素是構成React應用的最小單位, 即描述你在屏幕上看到的內容.
@@ -189,6 +195,18 @@
 						)
 					}
 				}
+
+	Props初始值
+		語法
+			*註 : 函數式與類別式相同
+
+			組件名.defaultProps = {
+				特性名1 : 特性值1,
+				特性名2 : 特性值2,
+				...,
+				特性名N : 特性值N
+			};
+
 
 	組合組件
 		簡述 : 組件可巢狀包含, 形成新的組件
@@ -317,11 +335,14 @@
 				}
 			
 			方式2 - 使用 屬性初始化器(Property initializer)
-				*註 : 此語法還屬於實驗性(??). 若使用create-react-app會自動開啟此語法支援
+				*註 : 
+					1. 其實就是方法的定義使用箭頭函數
+					2. 此語法還屬於實驗階段
+					3. 若使用create-react-app會自動開啟此語法支援
 				
 				class 類別名 extends React.Component {
 			
-					處理器名 = () => {		// <--
+					處理器名 = () => {
 						...
 					}
 					
@@ -607,7 +628,7 @@
 		);
 	
 	
-九. 表單 (checkbox補!!!!!!!!!!!!!!) 
+九. 表單
 
 	受控組件(Controlled Component)
 		簡述 : 值由React控制的輸入表單組件
@@ -646,6 +667,42 @@
 						</form>
 					);
 				}
+			}
+
+	React的<input type="checkbox" />
+		語法
+			<input type="checkbox" checked={值} />
+
+		範例
+			class CheckboxForm extends React.Component {
+			    constructor(props) {
+			        super(props);
+			        this.state = {agreed : false};
+			        this.handleChange = this.handleChange.bind(this);
+			        this.handleSubmit = this.handleSubmit.bind(this);
+			    }
+
+			    handleChange(e) {
+			        this.setState({agreed : e.target.checked});
+			    }
+
+			    handleSubmit(e) {
+			        alert(`agreed : ${this.state.agreed}`);
+			        e.preventDefault();
+			    }
+
+			    render() {
+			        return (
+			            <form onSubmit={this.handleSubmit}>
+			                <input type="checkbox"
+			                    checked={this.state.agreed}
+			                    onChange={this.handleChange}/>
+			                I agree
+			                <br />
+			                <input type="submit" value="Submit" />
+			            </form>
+			        );
+			    }
 			}
 
 	React的<textarea>
@@ -1069,7 +1126,7 @@
 
 					let category = product["category"];
 					if (currCategory !== category) {
-						rows.push(<ProductCategoryRow category={product["category"]} key={product.category}/>);
+						rows.push(<ProductCategoryRow category={product["category"]} key={product.category} />);
 						currCategory = category;
 					}
 					rows.push(<ProductRow product={product} key={product.name}/>)
@@ -1697,7 +1754,6 @@ Refs & DOM
 					super();
 
 					this.變數名 = null; 		// 宣告一變數, 用以儲存ref之值
-					this.特性名 = 方法名;		// 指定callback方法
 					this.方法名 = this.方法名.bind(this);	
 				}
 
@@ -1723,7 +1779,6 @@ Refs & DOM
 			    constructor() {
 			        super();
 			        this.ref = null;				// 宣告一變數, 用以儲存ref之值
-			        this.setRef = this.setRef;		// 指定callback方法
 			        this.setRef = this.setRef.bind(this);
 			        this.handleClick = this.handleClick.bind(this);
 			    }
@@ -1785,11 +1840,1037 @@ Refs & DOM
 
 
 非受控組件
-	
+	簡述 : 使用ref取得相關的節點, 再將節點用原生DOM方式處理
+		*註 : 應盡量使用受控組件, 受控組件方式是將相關節點的資料存在this.state裡
+
+	使用非受控組件的原因
+		1. 簡短程式碼
+		2. 已有大量JavaScript程式, 為了方便整合
+		3. 需求非常簡單
+
+	範例
+		class InputForm extends React.Component {
+		    constructor() {
+		        super();
+		        this.ref = React.createRef();		// 建立ref
+		        this.handleSubmit = this.handleSubmit.bind(this);
+		    }
+
+		    handleSubmit(e) {
+		        alert(`value : ${this.ref.current.value}`);		// 取得value
+		        e.preventDefault();
+		    }
+
+		    render() {
+		        return (
+		            <form onSubmit={this.handleSubmit}>
+		                <label>
+		                    name
+		                    <input type="text" ref={this.ref} />	// 指定節點
+		                </label>
+		                <input type="submit" value="Submit" />
+		            </form>
+		        );
+		    }
+		}
+
+	初始值
+		簡述 : 設定表單元素的初始值, 但又不監控值, 應使用defaultValue屬性
+
+		對象
+			<input />	*註 : 除了<input type="file" />
+			<select>
+			<textarea>
+
+		語法
+			<Xxx defaultValue="值">
+			或
+			<Xxx defaultValue={值}>
+
+	特殊元素 - <input type="file" />
+		特點
+			1. 永遠是非受控組件
+			2. 不能指定defaultValue屬性
+			3. 只能取得File相關資訊和使用File API處理
+
+		範例
+			class InputForm extends React.Component {
+			    constructor() {
+			        super();
+			        this.ref = React.createRef();		// 建立ref
+			        this.handleSubmit = this.handleSubmit.bind(this);
+			    }
+
+			    handleSubmit(e) {
+			        alert(`fileName : ${this.ref.current.files[1].name}`);	// 只能取得File相關資訊
+			        e.preventDefault();
+			    }
+
+			    render() {
+			        return (
+			            <form onSubmit={this.handleSubmit}>
+			                <label>
+			                    file
+			                    <input type="file" ref={this.ref} />	// 指定節點
+			                </label>
+			                <input type="submit" value="Submit" />
+			            </form>
+			        );
+			    }
+			}
+
+
+性能優化
+	使用prod版
+		說明
+			dev版含有很多開發過程中需要的警告訊息, 正式環境應使用壓縮過的prod版
+			使用prod版在React Developer Tools會看到 "This page is using the production build of React." 的訊息 
+
+			*註 : 在開發環境不要使用prod版
+
+		無工具下使用
+			直接加入..
+				<script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+				<script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+
+			*註 : 以.min.js結尾的才是prod版
+
+		在Create React App裡使用
+			npm run build
+
+			*註 : 專案在build資料夾裡
+
+		在Brunch裡使用
+			步驟1. 安裝uglify-js-brunch插件
+				Yarn
+					yarn add --dev uglify-js-brunch
+				npm
+					npm install --save-dev uglify-js-brunch
+
+			步驟2. 產生prod版
+				brunch build -p
+
+				*註 : -p即為prod版的意思
+
+		在Browserify裡使用
+			步驟1. 安裝所需插件
+				Yarn
+					yarn add --dev bundle-collapser envify uglify-js uglifyify
+				npm
+					npm install --save-dev bundle-collapser envify uglify-js uglifyify
+
+				註 : 各插件說明
+					envify : 用來確保正確的編譯環境
+					uglifyify : 用來移除dev版引入
+					bundle-collapser : 將module ID換成簡單的數字
+					uglify-js : 整合以上3項插件, 並壓縮產生最終版
+						*註 : 插件名uglify-js, 文件名則是uglifyjs
+
+			步驟2. 產生prod版, ex..
+				browserify ./index.js \
+				-g [ envify --NODE_ENV production ] \
+				-g uglifyify \
+				| uglifyjs --compress --mangle > ./bundle.js
+
+		在Rollup裡使用
+			步驟1. 安裝所需插件
+				Yarn
+					yarn add --dev rollup-plugin-commonjs rollup-plugin-replace rollup-plugin-uglify
+				npm
+					npm install --save-dev rollup-plugin-commonjs rollup-plugin-replace rollup-plugin-uglify
+
+				註 : 各插件說明
+					replace : 用來確保正確的編譯環境
+					commonjs : 提供commonjs支援
+					uglify-js : 整合以上2項插件, 並壓縮產生最終版
+
+
+			步驟2. pluging config
+				plugins: [
+					// ...
+					require('rollup-plugin-replace')({
+						'process.env.NODE_ENV': JSON.stringify('production')
+					}),
+					require('rollup-plugin-commonjs')(),
+  					require('rollup-plugin-uglify')(),
+  					// ...
+				]
+
+		在Webpack裡使用
+			步驟1. 配置所需插件
+				new webpack.DefinePlugin({
+					'process.env': {
+						NODE_ENV: JSON.stringify('production')
+					}
+				}),
+				new webpack.optimize.UglifyJsPlugin()
+
+	Chrome 開發者工具
+		*註 : Edge、IE亦支援
+
+		用途
+			1. 組件掛載、卸載狀況
+			2. 組件有無錯誤更新
+			3. 組件更新的深度和頻率
+
+		使用步驟
+			1. 暫時關閉擴充工具, 尤其React DevTools
+				*註 : 擴充工具會影響跑出來的結果
+
+			2. 用開發模式啟動React app
+
+			3. 開啟 Chrome開發者工具 -> Performance分頁 -> 按Record按鈕(實心圓形) -> 錄製行為
+				*註 : 超過20秒可能會有問題
+
+			4. 停止錄製 : 按Stop按鈕
+
+			5. 查看React events結果 : (在中間區塊) 展開"User Timing"
+				*註 : 用Webstorm會在"Main"底下
+
+	大列表虛擬化
+		問題 : 渲染一個很大的列表, 導致滾動、點擊等操作反應變很差
+
+		解法 : 只渲染可見部分
+
+		實作 : React Virtualized
+			https://bvaughn.github.io/react-virtualized/#/components/List
+
+			安裝
+				npm install react-virtualized --save
+
+	避免重複渲染
+		觀察渲染狀況
+			1. 開啟渲染提示 : Chrome開發者工具 -> React -> (checkbox) Highlight Updates 打勾
+			2. 操作, 渲染時border顏色會改變
+
+		手動控制渲染
+			說明 : 當組件的props或state改變時, React會自動比較新舊元素來決定需要更新否, 但某些狀況下希望能自己控制, 以提升速度
+
+			語法 (在React.Component子類別內, override..)
+
+				shouldComponentUpdate(nextProps, nextState) {
+					...
+					// 要更新 : return true
+					// 不更新 : return false
+				}
+
+				*註 : return false就會阻止render()被呼叫
+
+			shouldComponentUpdate()說明
+				1. 為生命週期函數
+				2. props或state被更新 -> shouldComponentUpdate() return true ? -> render()
+				3. 樹狀結構裡, 若父節點的shouldComponentUpdate()回傳false, 子節點的shouldComponentUpdate()就"不會"被呼叫
+			
+			範例 : props.color或state.count改變時才重新渲染
+				class CounterButton extends React.Component {
+				    constructor(props) {
+				        super(props);
+				        this.state = {count: 1};
+				    }
+
+				    shouldComponentUpdate(nextProps, nextState) {		// <--
+				        if (this.props.color !== nextProps.color) {
+				            return true;
+				        }
+				        if (this.state.count !== nextState.count) {
+				            return true;
+				        }
+				        return false;
+				    }
+
+				    render() {
+				        return (
+				            <button
+				                color={this.props.color}
+				                onClick={() => this.setState(state => ({count: state.count + 1}))}>
+				                Count: {this.state.count}
+				            </button>
+				        );
+				    }
+				}
+
+			使用React.PureComponent
+				特點
+					1. 比對方式 : 用"淺比對"來實作shouldComponentUpdate(), 不比對props和state的"值"
+					2. 忽略 : 會忽略所有子節點的更新
+					3. 使用時機 : 若需求為 相同的props值和state值 會渲染相同的結果時, 可用React.PureComponent來提升效能
+					4. 複寫 : 理論上不可override shouldComponentUpdate(), 但若是複寫會出現只會出現警告訊息, 不影響功能
+
+				範例 - "錯誤"的使用
+					*註 : 因為this.state.dateTime是一個"物件", 淺比對只比對物件的"參考", 不比對其物件的內容, 所以不會重新渲染
+
+					class MyComponent extends React.PureComponent {
+					    constructor() {
+					        super();
+					        const date = new Date();
+					        this.state = {dateTime : {date : date.toDateString(), time : date.toTimeString()}};
+					    }
+
+					    componentDidMount() {
+					        setInterval(() => {
+					            let dateTime = this.state.dateTime;
+					            const date = new Date();
+					            dateTime.date = date.toDateString();
+					            dateTime.time = date.toTimeString();
+					            this.setState({dateTime : dateTime});
+
+					            // 改成以下三行就可解決問題
+					            // const date = new Date();
+					            // let dateTime = {date : date.toDateString(), time : date.toTimeString()};
+					            // this.setState({dateTime : dateTime});
+					        }, 1000);
+					    }
+
+					    render() {
+					        return (
+					            <div>
+					                <h4>{this.state.dateTime.date}</h4>
+					                <h4>{this.state.dateTime.time}</h4>
+					            </div>
+					        );
+					    }
+					}
+
+			不突變資料(Not Mutating Data)
+				簡述 : 一種做法, 指不改變原來的物件
+
+				實作方式
+					1. 使用Object.assign()
+					2. 使用ES6展開運算子(spread operator)
+					3. 使用Immutable.js
+					4. seamless-immutable
+					5. immutability-helper
+
+				使用Object.assign()
+					*註 : Object.assign(target, ...sources)會回傳一個新的物件
+
+					範例 - 解決上例 - "錯誤"的使用, React.PureComponent不會更新的問題
+
+					    componentDidMount() {
+					        setInterval(() => {
+					        	// dateTime是一個全新的物件
+					            let dateTime = Object.assign({}, this.state.dateTime, {time : new Date().toTimeString()});
+					            this.setState({dateTime : dateTime});
+					        }, 1000);
+					    }
+
+				使用ES6展開運算子(spread operator)
+					範例 - 解決上例 - "錯誤"的使用, React.PureComponent不會更新的問題
+
+						componentDidMount() {
+					        setInterval(() => {
+					            this.setState({dateTime : {...this.state.dateTime, time : new Date().toTimeString()}});
+					        }, 1000);
+					    }
+
+				使用Immutable.js
+					Immutable.js的不可突變實作
+						1. 物件一旦建立, 其內容就不能改變
+						2. 想要做到改變內容, 就只能建立新物件
+
+					安裝
+						npm install immutable
+
+					引入
+						import ImmuTable from "immutable";
+
+					範例 - 解決上例 - "錯誤"的使用, React.PureComponent不會更新的問題
+						constructor() {
+					        ...
+					        // 用ImmuTable.Record()就好像建立一個DateTimeRecord類別
+					        this.DateTimeRecord = ImmuTable.Record(this.state.dateTime);
+					    }
+
+					    componentDidMount() {
+					        setInterval(() => {
+					        	// 建立一個新的DateTimeRecord物件
+					            let dateTime = new this.DateTimeRecord({time : new Date().toTimeString()});
+					            this.setState({dateTime :dateTime});
+					        }, 1000);
+					    }
+
+
+不使用ES6
+	安裝
+		npm install create-react-class
+
+	引入
+		var createReactClass = require("create-react-class");
+
+	特點
+		1. Props初始值 : 需寫成一函數getDefaultProps(), 並回傳物件
+		2. State初始值 : 需寫成一函數getInitialState(), 並回傳物件
+		3. 綁定 : 會自動綁定, 不需像類別式用bind()綁定
+
+	語法
+		var 組件名 = createReactClass({
+
+			// Props初始值
+			getDefaultProps : function() {
+				return {
+					特性名1 : 特性值1,
+					特性名2 : 特性值2,
+					...,
+					特性名N : 特性值N
+				};
+			},
+
+			// State初始值
+			getInitialState : function() {
+				return {
+					特性名1 : 特性值1,
+					特性名2 : 特性值2,
+					...,
+					特性名N : 特性值N
+				};
+			},
+
+			// 生命週期方法
+			生命週期方法名 : function() {
+				...
+			},
+
+			...
+
+			render : function() {
+				...
+				return (
+					..JSX
+				);
+			}
+		});
+
+	混入(Mixin)
+		說明 : mixins為React組件的特性, 為了橫切關注點所訂的特性. 橫切關注點 : 各組件間的相似功能
+
+		特點
+			1. 支援 : ES6本身沒有支援混入, 所以使用類別式就不能使用混入
+			2. 多重混入 : 若一組件中加入多個混入物件, 可以使用的相同生命週期方法
+			3. 執行順序 : 依定義時的順序
+
+		語法
+			定義混入物件
+				var 混入物件名 = {
+					函數/週期方法名1 : function(){},
+					函數/週期方法名2 : function(){},
+					...,
+					函數/週期方法名N : function(){}
+				};
+
+			定義含有混入的組件
+				var 組件名 = createReactClass({
+					// 加入混入
+					mixins : [混入物件名1, 混入物件名2, ..., 混入物件名N],
+
+					某方法 : function() {
+						this.函數/週期方法名();	// <-- 呼叫混入物件內的函數或週期方法
+					},
+					...
+				});
+
+		範例	 - Timer
+			// 定義混入物件
+			var mixins = {
+				// 普通函數, 更新現在時間
+			    updateTime : function() {
+			        this.setState({time : new Date().toTimeString()});
+			    },
+			    // 生命週期方法, 註冊Timer
+			    componentDidMount : function() {
+			        let timerId = setInterval(this.updateTime, 1000);
+			        this.setState({timerId : timerId});
+			    },
+			    // 生命週期方法, 註銷Timer
+			    componentWillUnmount : function() {
+			        clearInterval(this.state.timerId);
+			    }
+			};
+
+			// 定義含有混入的組件
+			var Timer = createReactClass({
+			    mixins : [mixins],		//<-- 加入混入
+			    getInitialState : function() {
+			        return {time : new Date().toTimeString(), timeId : undefined};
+			    },
+			    render : function() {
+			        return (
+			            <h3>{this.state.time}</h3>
+			        );
+			    }
+			});
+
+
+不使用JSX
+	簡述 : JSX是非必需的, 若不想安裝相關編譯器的話就用JavaScript寫法
+		*註 : JSX只是React.createElement()的語法糖, 是靠Babel編譯器編譯成JavaScript
+
+	語法
+		render() {
+			return React.createElement(type, [props], [...children]);
+		}
+		*註
+			type : DOM元素/組件
+			props : 傳給此DOM元素/組件的參數
+			children : 子節點
+
+	範例
+		function User() {
+			// JSX的 return (<div>{this.props.name}</div>); 等同以下..
+			return React.createElement(
+				"div",
+				null,
+				this.props.name
+			);
+		}
+
+	簡短寫法插件
+		1. react-hyperscript
+		2. hyperscript-helpers
+
+
+協調(Reconciliation)
+	簡介 : React通過自有的對比演算法(Diffing Algorithm)來計算出是否需更新
+
+	特點
+		1. Optimal : 目前為止的最佳的演算法需要時間複雜度為O(n^3)
+		2. React的簡算法 : React基於兩點假設, 開發出時間複雜度為O(n)的演算法
+			2.1 不同類型就會產生不同的樹
+			2.2 通過key屬性識別出哪些可能是穩定的元素
+
+			*註 : 大部分的狀況下, 確實有用到以上兩點假設
+
+	對比演算法 (比對兩顆樹, 分別代表舊組件跟新組件)
+		根節點 => type相同 ? N => 更新樹
+						   	Y => attribute相同 ?	 N => 更新attribute
+											     Y => 子節點	<╝
+											     	  ^	╚> 有無key attribute ? 	N => 依序比較 (效能差)
+											     	  ∥				 ^		   	Y => 新有舊無 此key => 新增此節點
+											     	  ∥				 ∥		   		 舊有新無 此key => 移除此節點
+											     	  ∥				 ∥		   		 都有 => 有子節點 ? N => attribute相同 ? 	N ===============> 更新attribute
+											     	  ╚==============∥================================ Y						Y => 	有下一個兄弟節點 ?	<╝
+																	 ∥														 			╚> 	N => 結束
+																	 ╚==========================================================兄弟節點 <=	Y
+
+
+		其他細節
+			1. 舊樹 : 會被卸載, 其舊節點會被銷毀 (componentWillUnmount()), 狀態亦被丟棄
+			2. 新樹 : 會被加入至DOM, 依序呼叫componentWillMount()、componentDidMount()
+			3. 更新組件流程
+				3.1 保有原來的實例以保留state
+				3.2 給新的props產生新元素
+				3.3 呼叫componentReceiveProps()、componentWillUpdate()
+				3.4 呼叫render()
+
+	Keys
+		問題 : 若是在列表的"開頭"插入一個新節點, 對比演算法會認為整個列表都變了, 更新整個列表, 以致效能變差
+
+			// 舊樹
+			<ul>
+				<li>1</li>
+				<li>2</li>
+			</ul>
+
+			// 新樹
+			<ul>
+				<li>0</li>	<-- 其實只多了此節點
+				<li>1</li>
+				<li>2</li>
+			</ul>
+
+		解法 : 加入key屬性, 對比演算法會用此屬性來做比對的依據, 以大幅提升效能
+
+		注意
+			1. 唯一性 : key在兄弟節點間必需唯一, 但不需全局唯一
+			2. 用index : 若用陣列的索引當屬性key之值, 在列表重新排序時效能會變很差, 且可能導致錯誤
+			3. 穩定、可預設的 : key屬性之值應該是穩定、可預設的, 若用Math.random()產生key屬性之值, 會導致進行不必要的重建及遺失state
+
+
+Context
+	簡述 : 跨組件層間共享資料的方式
+		
+	使用時機
+		對組件樹來說的全局資料, ex. 當前登入使用者資料、Theme、預設語言
+
+		*註 : 如果資料只是要在一兩層間共享, 其實不需要用到context
+
+	語法
+		建立
+			const 上下文名 = React.createContext(Any defaultValue);
+
+			說明
+				回傳一個React.Context物件, 其中又包含Provider和Consumer兩物件
+
+			範例
+				const ThemeContext = React.createContext({color : "#222222"});
+
+		使用
+			提供端 (廣播)
+				<上下文名.Provider value={共享值}>
+					...	// 在這建立一些元素
+				</上下文名.Provider>
+
+				*註 : 在<上下文名.Provider>標籤之間的元素會收到共享值
+
+
+			消費端 (訂閱)
+				<上下文名.Consumer>
+					{ (共享值) => {
+							(...)	// 在這建立一些元素
+						}
+					}
+				</上下文名.Consumer>
+
+				*註
+					1. Consumer從組件樹中最接近且匹配的上層Provider取得Context
+					2. 若無符合則使用defaultValue
+					3. 在<上下文名.Consumer>標籤之間用函數方式產生元素, 函數格式為
+						function(Any sharedData){
+							...
+							return 元素;
+						}
+
+	注意事項
+		1. Provider的value改變時, 所有的Consumers都會被重新渲染, 並使用Object.is(value1, value2)作為改變否的判斷依據
+			*註 : 會有一些問題, 參考下面 多餘的渲染
+		2. 一個Provider可連繫多個Consumers
+		3. Provider可被嵌套, 以覆蓋組件樹更深層的值
+		4. 組件樹中任一層之組件皆可透過函數更新Context
+		5. 可一次用多個Context, 寫成嵌套
+		6. 如果一個Context被很多組件消費, 可能需要寫很多code, 可用"高階組件"方式解決
+			*註
+				高階組件 : https://doc.react-china.org/docs/higher-order-components.html
+
+	多餘的渲染
+		問題 : Provider的value改變時, 所有的Consumers都會被重新渲染, 但因為Context使用"參考識別(reference identity)",
+			   即就算不同的物件擁有同樣的值, 也會識別成不同, 導致多餘的渲染
+
+		解法 : 將Provider的value提升到state裡
+
+		範例
+			class App extends React.Component {
+				render() {
+					return (
+						<XxxContext.Provider value={{aaa : bbb}}>	<--每次都建立新的物件
+							...
+						</XxxContext.Provider>
+					);
+				}
+			}
+
+			改成
+
+			class App extends React.Component {
+				constructor() {
+					super();
+					this.state = {value : {aaa : bbb}};				<--將此值提升至state裡
+				}
+
+				render() {
+					return (
+						<XxxContext.Provider value={this.state.value}>	<--指向state
+							...
+						</XxxContext.Provider>
+					);
+				}
+			}
+
+	範例一 - 最外層組件分享Theme給最內層組件
+
+		// 先定好的兩個Theme
+		const themes = {
+		    light: {
+		        foreground: '#ffffff',
+		        background: '#222222',
+		    },
+		    dark: {
+		        foreground: '#000000',
+		        background: '#eeeeee',
+		    }
+		};
+
+		// 建立一個Context, 預設為先定好的themes.dark
+		const ThemeContext = React.createContext(themes.dark);
+
+		// (最內層組件) 定義一個組件, 為ThemeContext的消費端
+		class ThemeButton extends React.Component {
+		    render() {
+		        return (
+		            <ThemeContext.Consumer>		// <-- 訂閱ThemeContext
+		                {theme => (				// <-- 用函數產生組件元素
+		                    <button
+		                        {...this.props}
+		                        style={{color : theme.foreground, backgroundColor : theme.background}} />)
+		                }
+		            </ThemeContext.Consumer>
+		        );
+		    }
+		}
+
+		// (中層組件) 定義一個組件, 僅為了示範跨層共享資料, 無其他意義
+		class ToolBar extends React.Component {
+		    render() {
+		        return (
+		            <ThemeButton>Change Theme</ThemeButton>
+		        );
+		    }
+		}
+
+		// (最外層組件) 定義一個組件, 為ThemeContext的提供端
+		class App extends React.Component {
+		    constructor(props) {
+		        super(props);
+		        this.state = {theme : themes.light};
+		    }
+
+		    render() {
+		        return (
+		            <section>
+		                <ThemeContext.Provider value={this.state.theme}>	<-- 廣播ThemeContext
+		                    <ToolBar />
+		                </ThemeContext.Provider>
+		            </section>
+		        );
+		    }
+		}
+
+	範例二 - 內層組件更新Context (透過函數)
+
+		const themes = {
+		    light: {
+		        foreground: '#ffffff',
+		        background: '#222222',
+		    },
+		    dark: {
+		        foreground: '#000000',
+		        background: '#eeeeee',
+		    }
+		};
+
+		// 建立一個Context, 預設為一個物件
+		const ThemeContext = React.createContext({
+			theme : themes.dark,	// 預設Theme
+			toggleTheme : () => {}	// <button>的事件處理函數, 預設為空
+		});
+
+		// (最內層組件) 定義一個組件, 為ThemeContext的消費端
+		class ThemeButton extends React.Component {
+		    render() {
+		        return (
+		            <ThemeContext.Consumer>
+		                {({theme, toggleTheme}) => (
+		                    <button
+		                        {...this.props}
+		                        onClick={toggleTheme}	<-- 在內層用外層組件共享的函數當作事件處理器
+		                        style={{color: theme.foreground, backgroundColor: theme.background}}/>)
+		                }
+		            </ThemeContext.Consumer>
+		        );
+		    }
+		}
+
+		// (中層組件) 定義一個組件, 僅為了示範跨層共享資料, 無其他意義
+		class ToolBar extends React.Component {
+		    render() {
+		        return (
+		            <ThemeButton>Change Theme</ThemeButton>
+		        );
+		    }
+		}
+
+		// (最外層組件) 定義一個組件, 為ThemeContext的提供端
+		class App extends React.Component {
+		    constructor(props) {
+		        super(props);
+		        this.toggleTheme = this.toggleTheme.bind(this);		// 綁定要放在設定state初始值之前
+		        this.state = {theme: themes.light, toggleTheme : this.toggleTheme};		// state內含一函數
+		    }
+
+		    // click事件處理函數
+		    toggleTheme() {
+		        this.setState({theme : this.state.theme === themes.light ? themes.dark : themes.light});
+		    }
+
+		    render() {
+		        return (
+		            <section>
+		                <ThemeContext.Provider value={this.state}>	<-- 廣播ThemeContext (直接共享state)
+		                    <ToolBar/>
+		                </ThemeContext.Provider>
+		            </section>
+		        );
+		    }
+		}
+
+	範例三 - 多個Context
+
+		// 建立兩個Context
+		const ThemeContext = React.createContext(themes.dark);
+		const UserContext = React.createContext({name : "guest", age : -1});
+
+		// (內層組件) 定義一個組件, 為兩Context的消費端
+		class ToolBar extends React.Component {
+		    render() {
+		        return (
+		            <ThemeContext.Consumer>			<-- 訂閱ThemeContext
+		                {theme => (
+		                    <UserContext.Consumer>	<-- 訂閱UserContext. 兩Context成嵌套
+		                        {user => (
+		                            <div style={{color : theme.foreground, backgroundColor : theme.background}}>
+		                                <span>{user.name}</span>
+		                                &nbsp;
+		                                <span>{user.age}</span>
+		                            </div>
+		                        )}
+		                    </UserContext.Consumer>
+		                )}
+		            </ThemeContext.Consumer>
+		        );
+		    }
+		}
+
+		// (外層組件) 定義一個組件, 為兩Context的提供端
+		class App extends React.Component {
+		    constructor(props) {
+		        super(props);
+		        this.state = {
+		            theme: themes.light,
+		            user : {name : "william", age : 30}};
+		    }
+
+		    render() {
+		        return (
+		            <section>
+		                <ThemeContext.Provider value={this.state.theme}>	<-- 廣播ThemeContext
+		                    <UserContext.Provider value={this.state.user}>	<-- 廣播UserContext. 兩Context成嵌套
+		                        <ToolBar />
+		                    </UserContext.Provider>
+		                </ThemeContext.Provider>
+		            </section>
+		        );
+		    }
+		}
+
+	範例四 - 在生命週期方法中使用Context
+		// 無直接的方式. 技巧為多加一中層組件, 這層組件改用參數方式往下傳遞, 各層說明如下..
+		// 最內層組件 : 要在生命週期方法中使用Context的組件
+		// 中層組件 : Context的消費端, 並以"參數"方式傳給最內層組件. 僅為了此技巧所加
+		// 最外層組件 : Context的提供端
+
+		// 建立一個Context, 預設為一個物件
+		const ThemeContext = React.createContext({
+		    theme: themes.dark,
+		    toggleTheme: () => {}
+		});
+
+		// (最內層組件) 定義一個組件, 因為父組件(中層組件)用參數方式將ThemeContext傳給此組件, 所以此組件中皆可用this.props取得ThemeContext
+		class ThemeButton extends React.Component {
+		    componentWillMount() {
+		        console.log(this.props);	// <--
+		    }
+
+		    componentDidMount() {
+		        console.log(this.props);	// <--
+		    }
+
+		    componentWillUpdate(prevProps, prevState) {
+		        console.log(this.props);	// <--
+		        return true;
+		    }
+
+		    componentWillUnmount() {
+		        console.log(this.props);	// <--
+		    }
+
+		    render() {
+		        return (
+		            <button
+		                onClick={this.props.toggleTheme}
+		                style={{color: this.props.theme.foreground, backgroundColor: this.props.theme.background}}>
+		                {this.props.children}
+		            </button>
+		        );
+		    }
+		}
+
+		// (中層組件) 定義一個組件, 為ThemeContext的消費端, 並且以"參數"方式傳給子組件
+		class ToolBar extends React.Component {
+		    render() {
+		        return (
+		            <ThemeContext.Consumer>				<--訂閱ThemeContext
+		                {(context) => (
+		                    <ThemeButton {...context}>	<--以參數方式傳給子組件
+		                    	Change Theme
+		                    </ThemeButton>
+		                )}
+		            </ThemeContext.Consumer>
+		        );
+		    }
+		}
+
+		// (最外層組件) 定義一個組件, 為ThemeContext的提供端
+		class App extends React.Component {
+		    constructor(props) {
+		        super(props);
+		        this.toggleTheme = this.toggleTheme.bind(this);
+		        this.state = {theme: themes.light, toggleTheme: this.toggleTheme};
+		    }
+
+		    toggleTheme() {
+		        this.setState({theme: this.state.theme === themes.light ? themes.dark : themes.light});
+		    }
+
+		    render() {
+		        return (
+		            <section>
+		                <ThemeContext.Provider value={this.state}>		<-- 廣播ThemeContext
+		                    <ToolBar />
+		                </ThemeContext.Provider>
+		            </section>
+		        );
+		    }
+		}
+
+	範例五 - 高階組件中的Context (獨立一個Context消費函數) 未完全看懂!!!!!!!!!!!!!!!!!!!!!!
+
+		// 將消費ThemeContext獨立成一個"消費函數"
+		function withTheme(Component) {
+		    return function ThemedComponent(props) {	<--此props接不到值, 待確認?????
+		        return (
+		            <ThemeContext.Consumer>				<-- 訂閱ThemeContext
+		                {theme =>
+		                    (<Component theme={theme} />)
+		                }
+		            </ThemeContext.Consumer>
+		        );
+		    };
+		}
+
+		// 定義一個組件
+		function Button(props) {
+		    const theme = props.theme;
+		    return <button style={{color : theme.foreground, backgroundColor : theme.background}} />;
+		}
+
+		// 組件Button會經由消費函數使用ThemeContext, 得到組件ThemeButton
+		const ThemedButton = withTheme(Button);
+
+		function App() {
+		    return (
+		        <ThemeContext.Provider value={themes.light}>	<-- 廣播ThemeContext 
+		            <ThemedButton />
+		        </ThemeContext.Provider>
+		    );
+		}
+
+	範例六 - ??????
+
+
+Fragments
+	簡述 : 一個隱形的標籤, 可將"多個節點"聚成"一個元素", 然後用在列表中
+
+	特點
+		1. 隱形 : 網頁上不會看到<React.Fragment>
+		2. key屬性 : <React.Fragment>只能有key屬性, 若無指定, 會看到警告訊息
+		3. 簡易寫法 : <>為<React.Fragment>的語法糖, 但不能使用任何屬性
+			*註 : 2018/06/14測試不能用!!
+
+	語法
+		標準寫法
+
+			<React.Fragment key={鍵值}>
+				元素1
+				元素2
+				...
+				元素N
+			</React.Fragment>
+
+			ex.
+				<React.Fragment>
+					<dt>MyBatis</dt>
+					<dd>Java ORM Framework</dd>
+				</React.Fragment>
+
+		簡易寫法
+
+			<>
+				元素1
+				元素2
+				...
+				元素N
+			</>
+
+			ex.
+				<>
+					<dt>MyBatis</dt>
+					<dd>Java ORM Framework</dd>
+				</>
+
+	範例
+		class FrameworkList extends React.Component {
+		    render() {
+		        return (
+		            <dl>
+		                {this.props.items.map(item => (
+		                    <React.Fragment key={item.id}>
+		                        <dt>{item.text}</dt>
+		                        <dd>{item.desc}</dd>
+		                    </React.Fragment>
+		                ))}
+		            </dl>
+		        );
+		    }
+		}
+
+
+Portals
+	簡述 : 將子節點(children)渲染到父組件以外某處的方式
+
+	特點
+		1. 可渲染至DOM中任何一處
+		2. 行為 : 除第1點外, 其他行為與React子節點相同, React子節點能用的功能, Portal都能用
+		3. 事件冒泡 : 是依組件樹層級, 非DOM樹
+
+	應用
+		1. 當父組件有style="overflow: hidden 或 z-index"時, 子組件跳出對話框、hovercards
+
+	語法
+		ReactDOM.createPortal(元素 child, 元素 container)
 
 
 
+	範例一
+		index.html
+			<div id="root"></div>
+			<div id="other" style="border: solid 3px red"></div>		<--網頁裡另一個容器
 
+		index.js
+			class Button extends React.Component {
+				render() {
+					return (
+						<div>
+							<button />
+							{ReactDOM.createPortal(					<--渲染<Button>的
+								this.props.children,				<--子元素
+								document.getElementById("other"))}	<--到網頁裡另一個容器
+						</div>
+					);
+				}
+			}
+
+			class App extends React.Component {
+				render() {
+					return (
+						<Button>	
+							Submit			<--指定<Button>的子元素
+						</Button>
+					);
+				}
+			}
+
+			ReactDOM.render(
+				<App />,
+				document.getElementById("root")
+			);
 
 
 
@@ -1831,16 +2912,96 @@ Arrow Function(箭頭函數)
 		6.5 只需要在當前的節點裡保證唯一即可
 	
 	7. Property initializer syntax
+		https://babeljs.io/docs/plugins/transform-class-properties/
+
+		npm install --save-dev babel-plugin-transform-class-properties
+
+		class 類別名 {
+			特性名 = 值;
+			方法名 = () => {
+				...
+			};
+
+			static 靜態特性名 = 值;
+			static 靜態方法名 = () => {
+				...
+			};
+
+			// 方法也可以用箭頭函數 方法名 = () => {}
+		}
+
 	8. Computed property names (可計算屬性名)
 	9. Shorthand初始化
 		https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#New_notations_in_ECMAScript_2015
 	10. function* () {yield}
 	11. import React, {Component} from "react";
-	12
+	12. ES6 ...運算子 : 有兩種運算子, 都是寫成點點點
+		1. 其餘運算子(rest operator) : 用在函數定義
+			功能 : 多個變數/常數 => 陣列
+
+			範例
+				function avg(...arr) {
+				    let sum = 0;
+				    arr.forEach(value => sum += value);
+				    console.log(`avg : ${sum / arr.length}`);
+				}
+
+				avg(1, 2, 3, 4);		// avg : 2.5
+
+		2. 展開運算子(spread operator) : 用在呼叫函數/分配給另一陣列
+			功能 : 陣列 => 多個變數/常數
+
+			範例1
+				var arr1 = [1, 2, 3, 4];
+				console.log(arr1);		// [ 1, 2, 3, 4 ]
+				console.log(...arr1);	// 1 2 3 4
+
+			範例2
+				var arr1 = [1, 2, 3, 4];
+				var arr2 = [...arr1, 5];	// [1, 2, 3, 4, 5]
+
+	13. export : 匯出函數、物件、原生型態之值至外部檔案, 外部檔案裡可用import引入來使用
+
+		export default : 引入端可自訂名稱
+			*註
+				1. 一個js檔只能有一個
+				2. 沒加default時, 引入端強制使用原來的名稱
+
+			匯出端
+				let name;
+				export default name = "william";
+
+			引入端
+				import myName from "路徑加檔名";
+				console.log(myName);	// "william"
+
+		語法
+			已先宣告
+				export {名稱1, 名稱2, ..., 名稱N};
+				export let 名稱1, 名稱2, ..., 名稱N;	// 亦可用var、const
+					
+
+			匯出同時宣告及指定值
+				export {值1 as 名稱1, 值2 as 名稱2, ..., 值N as 名稱N};
+				export let 名稱1 = 值1, 名稱2 = 值2, ..., 名稱N = 值N;	// 亦可用var、const
+				export function 函數名(){...}
+				export class 類別名 {...}
+
+				未完!!!!!!!!!!!!!!!!!!!!
+
+npm
+	1. 全局安裝 -g
+	2.
 		npx create-react-app 專案名
 		cd 專案名
 		npm start
-
+	3. 部屬上static server
+			npm install -g serve
+			serve -s build
+	4. npm install xxx --save-dev
+		安裝一個module時, 正常需要手動加至package.json, --save-dev即"自動"加至package.json,
+		--save-dev : 自動加至devdependencies (開發環境)
+		--save : 自動加至dependencies (正式環境)
 
 class
 	*註
@@ -1871,19 +3032,6 @@ class
 			render() {
 				//HTML語法
 			}
-
-函數定義組件(functional components)
-	說明 : 若React組件類別內只有render(), 就可以使用較簡潔的函數定義組件寫法
-	
-	語法
-		function 組件名(props) {
-			return (
-				//JSX
-			);
-		}
-		
-		*註 : this.props需換成props
-
 
 Chrome React Tool
 	https://reactjs.org/react-devtools-state-ef94afc3447d75cdc245c77efb0d63be.gif
