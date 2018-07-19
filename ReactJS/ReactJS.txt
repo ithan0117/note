@@ -6,8 +6,17 @@
 		
 	cdn
 		React
-			https://reactjs.org/docs/cdn-links.html有說明
-			*註 : 開發版才有完整的錯誤訊息
+			DEV版
+				<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+				<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+
+			PROD版
+				<script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+				<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+
+			*註
+				1. 開發版才有完整的錯誤訊息
+				2. https://reactjs.org/docs/cdn-links.html
 
 		Babel(JSX編譯器)
 			<script src="https://unpkg.com/@babel/standalone/babel.js"></script>
@@ -95,6 +104,23 @@
 							children : "hi"
 						}
 					}
+
+	直接使用 (無npm)
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+		    <meta charset="UTF-8">
+		    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+			<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+			<script src="https://unpkg.com/@babel/standalone/babel.js"></script>	<-- 引入babel編譯器
+			<script type="text/babel">	<--需指定type為"text/babel"或"text/jsx"
+				...
+			</script>
+		</head>
+		<body>
+		    <div id="root"></div>
+		</body>
+		</html>
 
 
 三. 元素渲染
@@ -2241,7 +2267,7 @@ Refs & DOM
 		});
 
 	混入(Mixin)
-		說明 : mixins為React組件的特性, 為了橫切關注點所訂的特性. 橫切關注點 : 各組件間的相似功能
+		說明 : mixins為React組件的特性, 為了橫切關注點所定的特性. 橫切關注點 : 各組件間的相似功能
 
 		特點
 			1. 支援 : ES6本身沒有支援混入, 所以使用類別式就不能使用混入
@@ -2823,22 +2849,20 @@ Fragments
 
 
 Portals
-	簡述 : 將子節點(children)渲染到父組件以外某處的方式
+	簡述 : 將子節點(children)渲染到當前組件樹以外某處的方式
 
 	特點
-		1. 可渲染至DOM中任何一處
+		1. 功能 : 可渲染至DOM中任何一處
 		2. 行為 : 除第1點外, 其他行為與React子節點相同, React子節點能用的功能, Portal都能用
-		3. 事件冒泡 : 是依組件樹層級, 非DOM樹
+		3. 事件冒泡 : 在原來的樹, 並非透過ReactDOM.createPortal()而渲染至的DOM樹
 
 	應用
-		1. 當父組件有style="overflow: hidden 或 z-index"時, 子組件跳出對話框、hovercards
+		當父組件有style="overflow: hidden 或 z-index"時, 子組件跳出對話框、hovercards
 
 	語法
 		ReactDOM.createPortal(元素 child, 元素 container)
 
-
-
-	範例一
+	範例
 		index.html
 			<div id="root"></div>
 			<div id="other" style="border: solid 3px red"></div>		<--網頁裡另一個容器
@@ -2873,6 +2897,611 @@ Portals
 			);
 
 
+Error Boundaries(錯誤邊界)
+	問題情境 : 常常因為一個JavaScript錯誤, 導致整個應用無法渲染
+
+	特點
+		版本 : React 16
+		限制 : 僅能用在類別式寫法
+		功能 : 捕獲子組件樹的JavaScript錯誤, 然後在render()裡控制. 通常會紀錄錯誤(log)並顯示特定訊息
+		對象 : 子組件的 constructor()、生命週期方法()、render()
+		冒泡 : 錯誤邊界無法捕獲"自身"的錯誤, 若自身發生錯誤則會使用向上冒泡機制
+		不能使用的對象
+			1. 事件處理器
+				*註 : 使用一般try-catch即可
+			2. 非同步程式碼, ex. setTimeout()、requestAnimationFrame()..等callback
+			3. Server端渲染
+			4. 錯誤邊界又再拋出的error
+		與try-catch的差別 : try-catch不能用在JSX指令, 用錯誤邊界才能捕獲JSX等聲明式指令的錯誤
+		注意 : 若有未被錯誤邊界捕獲的錯誤發生, 整個組件樹將被卸載(unmount)
+
+	語法
+		componentDidCatch(error, info) {
+			...
+		}
+
+		參數
+			error : 錯誤物件
+			info : 錯誤訊息物件, 只有一componentStack特性
+
+	info的componentStack特性
+		說明 : 為字串型態, 記錄了錯誤期間的stack, 會印在console以便追蹤
+
+		使用方式
+			*註 : 只能在DEV環境使用
+
+			create react app專案 : 預設開啟
+			其他專案 : 使用babel插件
+				https://www.npmjs.com/package/babel-plugin-transform-react-jsx-source	
+
+	範例
+		*註 : 透過Webstorm執行會導向Webstorm的錯誤畫面, 看不到結果. 需用codepen或其他非Webstorm方式執行, 才看的到結果
+
+		// 定義錯誤邊界組件. 無其他功能, 僅用來做捕獲錯誤
+		class ErrorBoundary extends React.Component {
+		    constructor(props) {
+		        super(props);
+		        this.state = {error : undefined, errorInfo : undefined};	// 錯誤相關物件存至state裡
+		    }
+
+		    componentDidCatch(error, info) {		// 子組件發生錯誤時會進入此方法
+		        this.setState({error : error, errorInfo : info});			// 發生錯誤時, 更新state
+		    }
+
+		    render() {
+		        if (this.state.error) {				// 發生錯誤時, 渲染錯誤相關訊息
+		            return (
+		                <details>
+		                    {this.state.error && this.state.error.toString()}
+		                    <br />
+		                    {this.state.errorInfo.componentStack}
+		                </details>
+		            );
+		        }
+		        return this.props.children;			// 沒發生錯誤時, 渲染子組件
+		    }
+		}
+
+		// 定義一組件, 被點擊5次會拋出錯誤
+		class Counter extends React.Component {
+		    constructor() {
+		        super();
+		        this.state = {num : 0};
+		        this.handleClick = this.handleClick.bind(this);
+		    }
+
+		    handleClick() {
+		        this.setState(({num}) => {
+		            return {num : ++num};
+		        });
+		    }
+
+		    render() {
+		        const num = this.state.num;
+		        if (num === 5) {
+		            throw new Error("Error");	// 拋出錯誤
+		        }
+		        return (
+		            <h1 onClick={this.handleClick}>{num}</h1>
+		        );
+		    }
+		}
+
+		// 定義一父組件, 使用 錯誤邊界組件 來包含 其他組件
+		class App extends React.Component {
+		    render() {
+		        return (
+		            <div>
+		                React
+		                <ErrorBoundary>
+		                    <Counter />
+		                </ErrorBoundary>
+		            </div>
+		        );
+		    }
+		}
+
+	舊版
+		說明 : React 15的錯誤邊界捕獲方法為unstable_handleError(), React 16已廢除
+
+		遷移工具 : https://github.com/reactjs/react-codemod#error-boundaries
+
+
+Web Components
+	說明
+		簡述 : Web Components是原生的API, 可自定義標籤
+
+		官方文件 : https://developer.mozilla.org/zh-CN/docs/Web/Web_Components
+
+		比較
+			React Components : 資料同步
+			Web Component : 封裝、重用
+
+	注意事項
+		1. Web組件的事件無法透過React正確冒泡
+			*註 : 需手動捕獲事件處理器
+		2. Web組件使用屬性"class"而非"className"
+		3. React組件和Web組件整合 : 用React組件包含Web組件
+		
+	範例 - Web組件
+
+		// 定義一個Web組件
+		class PersonDetail extends HTMLElement {
+			constructor() {
+				super();
+				let template = document.getElementById('person-template');
+				let templateContent = template.content;
+
+				let shadowRoot = this.attachShadow({mode: 'open'});
+
+				let style = document.createElement('style');
+				style.textContent = 'div { padding: 10px; border: 1px solid gray; width: 200px; margin: 10px; }' +
+										'h2 { margin: 0 0 10px; }' +
+										'ul { margin: 0; }' +
+										'p { margin: 10px 0; }';
+
+				shadowRoot.appendChild(style);
+				shadowRoot.appendChild(templateContent.cloneNode(true));
+			}
+		}
+
+		// 註冊一個Web組件
+		customElements.define('person-details', PersonDetails);
+
+	範例 - React組件中加入Web組件
+		class Foo extends React.Component {
+			render() {
+				return (
+					<div>
+						<person-details></person-details>	<-- <person-details>是已先定義好的Web組件
+					</div>
+				);
+			}
+		}
+
+	範例 - Web組件中加入React組件
+
+		// 定義Web組件
+		function getWebComponent() {
+		    const mountPoint = document.createElement('span');
+		    this.createShadowRoot().appendChild(mountPoint);
+
+		    const name = this.getAttribute('name');
+		    const url = 'https://www.google.com/search?q=' + encodeURIComponent(name);
+		    ReactDOM.render( <a href = {url} > {name} </a>, mountPoint);	// React組件
+		}
+
+		// 建立Web組件
+		const proto = Object.create(
+		    HTMLElement.prototype,
+		    {attachedCallback: {value: getWebComponent}}
+		);
+
+		// 註冊一個Web組件
+		document.registerElement('x-search', {prototype: proto});
+
+
+高階組件(HOC : Higher-Order-Component)
+	說明
+		簡述 : 一種延伸的設計模式, 非React提供的API, 將一個組件轉換成另一個新組件
+		用途 : 程式模組化, 以達到程式碼縮短、重複使用
+		程式面 : 一個函數, 且接受一個包裝組件(型態為組件的普通組件)的參數, 並返回一新的組件(高階組件)
+
+	語法
+		定義
+			function 高階組件函數名(WrappedComponent[, others]) {
+				...
+				return class extends React.Component {
+					...
+
+					render() {
+						return (
+							...
+							<WrappedComponent {...this.props} />
+							...
+						);
+					}
+				}
+			}
+
+		使用
+			const 高階組件名 = 高階組件函數名(組件);
+
+	注意事項
+		1. 使用組合 : 高階組件函數內應定義一個新類別, 然後在其內"組合"原組件, 且不改變/增加原組件的prototype來得到一個新組件
+		2. 傳遞其他props : 高階組件函數內應傳遞其他props, ex. <WrappedComponent {...this.props} />
+		3. 常一起用的第三方API : Redux、Relay、lodash、Ramda
+		4. 標示高階組件 : 由於高階組件跟普通組件在developer tools看起來是一樣的, 為了方便除錯, 應另定義一方法來回傳特定名稱, ex..
+			function withSubscription(WrappedComponent) {
+				class WithSubscription extends React.Component {...}	// 類別名稱大寫"W"開頭
+
+				// 習慣名稱 : WithSubscription(包裝組件名)
+				WithSubscription.displayName = `WithSubscription(${getDisplayName(WrappedComponent)})`;
+				return withSubscription;
+			}
+
+			function getDisplayName(WrappedComponent) {
+				return WrappedComponent.displayName || WrappedComponent.name || 'Component';
+			}
+		5. 不能在render()中呼叫高階組件函數 : 會影響React底層的協調(Reconciliation)和導致state、子組件遺失.
+											若要動態產生高階組件, 應該在constructor()或生命週期函數裡呼叫高階組件函數
+		6. 複製靜態方法 : 因為JavaScript的語法, 經高階組件函數得到的高階組件不會有包裝組件(原組件)的靜態方法, 需要另外處你
+			方式一 - 手動複製 (需先知道靜態方法名)
+				function withSubscription(WrappedComponent) {
+					class WithSubscription extends React.Component {...}
+
+					WithSubscription.靜態方法名 = WrappedComponent.靜態方法名;
+				}
+
+			方式二 - 透過hoist-non-react-statics 自動複製
+				*註 : 它會自動複製所有非React的靜態方法
+
+			方式三 - 使用export匯出
+				組件名.靜態方法名 = function(){...};
+
+				// 除了匯出組件外, 另外也匯出靜態方法
+				export default 組件名;
+				export {靜態方法名};
+		7. 傳遞ref屬性 : 因ref屬性是一個由React控制的特殊屬性, 若在高階組件函數中使用, 傳過去的是高階組件, 並不是原來的包裝組件.
+						需使用React.forwardRef()才能正確傳遞
+
+	範例
+		// 兩個組件CommentList、BlogPost, 擁有相似的功能
+		// 使用高階組件的方式, 將相似的部分獨立至一高階組件函數
+		// 然後再經由此函數產生我們要的組件
+
+		// 定義CommentList組件
+		class CommentList extends React.Component {
+		    constructor() {
+		        super();
+		        this.state = {comments : DataSource.getComments()};
+		        this.handleChange = this.handleChange.bind(this);
+		    }
+
+		    componentDidMount() {
+		        DataSource.addChangeListener(this.handleChange);
+		    }
+
+		    componentWillUnmount() {
+		        DataSource.removeChangeListener(this.handleChange);
+		    }
+
+		    handleChange() {
+		        this.setState({comments : DataSource.getComments()});
+		    }
+
+		    render() {
+		        return (
+		            <div>
+		                {this.state.comments.map(comment => (
+		                    <li key={comment.id}>{comment}</li>
+		                ))}
+		            </div>
+		        );
+		    }
+		}
+
+		// 定義BlogPost組件
+		class BlogPost extends React.Component {
+		    constructor(props) {
+		        super(props);
+		        this.state = {blogPost : DataSource.getBlobPost(props.id)};
+		    }
+
+		    componentDidMount() {
+		        DataSource.addChangeListener(this.handleChange);
+		    }
+
+		    componentWillUnmount() {
+		        DataSource.removeChangeListener(this.handleChange);
+		    }
+
+		    handleChange() {
+		        this.setState({blogPost : DataSource.getBlobPost(this.props.id)});
+		    }
+
+		    render() {
+		        return (
+		            <textarea>{this.state.blogPost}</textarea>
+		        );
+		    }
+		}
+
+		// 定義高階組件函數
+		function withSubscription(WrappedComponent, selectData) {
+			class WithSubscription extends React.Component {		// <--定義高階組件
+		        constructor(props) {
+		            super(props);
+		            this.handleChange = this.handleChange.bind(this);
+		            this.state = {
+		                data: selectData(DataSource, props)
+		            };
+		        }
+
+		        componentDidMount() {
+		            DataSource.addChangeListener(this.handleChange);
+		        }
+
+		        componentWillUnmount() {
+		            DataSource.removeChangeListener(this.handleChange);
+		        }
+
+		        handleChange() {
+		            this.setState({
+		                data: selectData(DataSource, this.props)
+		            });
+		        }
+
+		        render() {
+		            return <WrappedComponent data={this.state.data} {...this.props} />;	// 渲染參數包裝組件, 並將所有props傳過去
+		        }
+		    }
+
+		    // 定義displayName特性, 僅便於除錯
+		    WithSubscription.displayName = `WithSubscription(${getDisplayName(WrappedComponent)})`;
+
+		    return WithSubscription;	// <-- 回傳高階組件
+		}
+
+		function getDisplayName(WrappedComponent) {
+			return WrappedComponent.displayName || WrappedComponent.name || 'Component';
+		}
+
+		// 從高階組件函數取得高階組件CommentListWithSubscription
+		const CommentListWithSubscription = withSubscription(
+		    CommentList,
+		    (DataSource) => DataSource.getComments()
+		);
+
+		// // 從高階組件函數取得高階組件BlogPostWithSubscription
+		const BlogPostWithSubscription = withSubscription(
+		    BlogPost,
+		    (DataSource, props) => DataSource.getBlogPost(props.id)
+		);
+
+
+Forwarding Refs
+	簡述 : 在高階組件裡, 傳遞ref屬性給子組件的方式
+
+	說明 : 因ref屬性是一個由React控制的特殊屬性, 若在高階組件函數中使用, 傳過去的是高階組件, 並不是原來的包裝組件
+
+	語法
+		function 高階組件函數名(WrappedComponent[, others]) {
+			...
+			class 高階組件名 extends React.Component {
+				...
+				render() {
+					return (
+						...
+						<WrappedComponent {...this.props} ref={this.props.forwardedRef} />
+						...
+					);
+				}
+			}
+
+			return React.forwardRef((props, ref) => {
+				return <高階組件名 {...props} forwardedRef={ref} />;
+			});
+		}
+
+	範例
+		// 定義普通組件
+		class FancyButton extends React.Component {
+		    render() {
+		        return (
+		            <button onClick={this.props.handleClick}>
+		            	{this.props.children}
+		            </button>
+		        );
+		    }
+		}
+
+		// 定義高階組件
+		function logForwardedRef(Component) {
+		    class LogForwardedRef extends React.Component {
+		        constructor() {
+		            super();
+		            this.state = {ref : undefined};
+		            this.handleClick = this.handleClick.bind(this);
+		        }
+
+		        handleClick() {
+		            alert(`currentOfRef : ${this.state.ref.current}`);		// <-- 此範例將印出ref
+		        }
+
+		        componentDidMount() {
+		            this.setState({ref : this.props.forwardedRef});
+		        }
+
+		        render() {
+		            return (
+			            <Component handleClick={this.handleClick}
+			            			{...this.props}
+			            			ref={this.props.forwardedRef}>		<-- 將ref傳給普通組件
+			            	ClickMe
+			            </Component>
+		           );
+		        }
+		    }
+
+		    return React.forwardRef((props, ref) => (				// 用React.forwardRef()回傳
+		        <LogForwardedRef {...props} forwardedRef={ref} />	<-- 傳給高階組件
+		    ));
+		}
+
+		// 宣告一個高階組件
+		const ref = React.createRef();
+		// 新建一個空的ref
+		const App = logForwardedRef(FancyButton);
+
+		ReactDOM.render(
+		    <App ref={ref} />,		<-- 將空的ref傳給高階組件函數
+		    document.getElementById("root")
+		);
+
+	在Chrome React Tool顯示名稱
+		說明 : 為了在Chrome React Tool方便辨識, 標示出不同的名稱
+
+		預設名稱 : 用匿名函數(箭頭函數)時, 只會顯示預設名稱 "ForwardRef"
+
+		自訂名稱(ForwardRef(函數名))
+			方式一 - 使用函數名, ex..
+				React.forwardRef(
+					function 函數名(props, ref) {		// Chrome React Tool會顯示 ForwardRef(函數名)
+						...
+					}
+				);
+
+			方式二 - 使用displayName特性, ex..
+				function 函數名(props, ref) {...}
+				函數名.displayName = "名稱";				// Chrome React Tool會顯示 ForwardRef(名稱)
+
+				React.forwardRef(函數名);
+
+
+Render Props
+	簡述 : 組件間共享程式碼的一種方式, 程式面即值為function的組件屬性, 設計模式上則是為了模組化/重用 組件的行為
+
+	有使用render props的API :  React Router、Downshift
+
+	語法
+		定義 (傳送端)
+			<組件名 屬性名={..函數定義} /> 
+
+		使用 (接收端)
+			this.props.屬性名(參數)
+
+		範例
+			// 定義
+			<Foo render={color => (
+				<Child style={{color: color}} />
+			)} />
+
+			// 使用
+			<div>
+				{this.props.render(this.state.color)}
+			<div>
+
+	範例
+		// Cat組件會隨Mouse組件紀錄的滑鼠位置而移動, 此兩組件是完成分離的兩個組件
+		// MouseTracker組件透過Render Props方式, 讓兩組件在分離的前提下, 組合兩組件
+
+		// 定義Cat組件
+		class Cat extends React.Component {
+		    render() {
+		        const mouse = this.props.mouse;
+		        return (
+		            <img src="../images/foot.gif"
+		                 style={{position : "absolute", left : mouse.x, top : mouse.y}} />
+		        );
+		    }
+		}
+
+		// 定義Mouse組件, 為Render Props的接收端(使用)
+		class Mouse extends React.Component {
+		    constructor(props) {
+		        super(props);
+		        this.state = {x : 0, y : 0};
+		        this.handleMouseMove = this.handleMouseMove.bind(this);
+		    }
+
+		    handleMouseMove(e) {
+		        this.setState({
+		            x : e.clientX,
+		            y : e.clientY
+		        });
+		    }
+
+		    render() {
+		        return (
+		            <div style={{height : "300px", border : "solid 3px blue"}} onMouseMove={this.handleMouseMove}>
+		                {this.props.render(this.state)}		<-- 使用Render Props
+		            </div>
+		        );
+		    }
+		}
+
+		// 定義MouseTracker組件, 為Render Props的傳送端(定義)
+		class MouseTracker extends React.Component {
+		    render() {
+		        return (
+		            <div>
+		                <h1>Move the mouse around</h1>
+		                <Mouse render={mouse => (			<-- 定義Render Props
+		                    <Cat mouse={mouse} />
+		                )} />
+		            </div>
+		        );
+		    }
+		}
+
+		ReactDOM.render(
+		    <MouseTracker />,
+		    document.getElementById("root")
+		);
+
+	直接用children屬性
+		*註
+			1. 可用propType限制children為function型態, ex..
+				組件名.propTypes = {children : PropTypes.func.isRequired};
+			2. react-motion有用到此方式
+
+		ex..
+			定義
+				<Mouse children={mouse => (
+					<p>The mouse position is {mouse.x}, {mouse.y}</p>
+				)} />
+				或
+				<Mouse>
+					{mouse => (
+						<p>The mouse positio is {mouse.x}, {mouse.y}</p>
+					)}
+				</Mouse>
+
+			使用 : 把children當作函數來呼叫
+				<div>
+					{this.props.children(this.state)}
+				</div>
+
+	用在高階組件
+		ex..
+			function withMouse(Component) {
+				return class extends React.Componet {
+					return (
+						<Mouse render={mouse => (
+							<Component {...this.props} mouse={mouse} />
+						)} />
+					);
+				}
+			}
+
+	接收端使用PureComponent
+		說明 : 直接使用Render Props(在render()裡定義函數)會抵消PureComponent的特點,
+			   需在"傳送端"組件內另定義一組件繞過此問題, ex.. (同上範例, 只列出需修改部分)
+
+		注意 : 若"傳送端"另定義的方法跟類別實例有關時(用到props或state), "接收端"就不可使用PureComponent
+
+		class MouseTracker extends React.Component {
+
+			renderCat(mouse) {				// 另定義的方法
+				return <Cat mouse={mouse} />;
+			}
+
+			render() {
+				return (
+					<div>
+						<h1>Move the mouse around</h1>
+						<Mouse render={this.renderCat} />	<-- 將另定義的方法傳遞過去
+					</div>
+				);
+			}
+		}
+
+		
+與其他API整合
+	
+
+
 
 ===========================================================================================================================
 Arrow Function(箭頭函數)
@@ -2893,7 +3522,6 @@ Arrow Function(箭頭函數)
 		
 		//但沒有參數時, 不可省略()
 		() => {...}
-
 
 雜
 	1. ES6(arrow function、class、let、const)
@@ -3035,12 +3663,6 @@ class
 
 Chrome React Tool
 	https://reactjs.org/react-devtools-state-ef94afc3447d75cdc245c77efb0d63be.gif
+		
 
-
-
-
-
-
-
-
-			
+Redux
