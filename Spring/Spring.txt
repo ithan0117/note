@@ -8,6 +8,7 @@
 		2.3 依web環境根目錄載入ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(sc);
 			*註 : sc為ServletContext, 在Servlet用getServletContext()取得
 		2.4 關閉 : ((ConfigurableApplicationContext) context).close();
+
 組態檔 - 在XML裡組態設定
 	1. 基本架構 :
 		<?xml version="1.0" encoding="UTF-8"?>
@@ -407,7 +408,7 @@ JDBC Supported
 				</bean>
 	
 			3. 定義映射器類別
-				*註 : 若是DB典型式命名映射Java駝峰式命名可直接使用BeanPropertyRowMapper
+				*註 : 若是DB典型式命名映射Java駝峰式命名可直接使用 new BeanPropertyRowMapper<XxxBean>(XxxBean.class)
 			
 				3.1 實作RowMapper<XxxBean>
 				3.2 實作mapRow()方法, 用JDBC方式指定ResultSet的第幾欄放入POJO的哪一個性質
@@ -874,10 +875,10 @@ MVC
 		說明 : 用http的請求方法操作資料
 			action	http Request Method		DB DML Operation
 			------------------------------------------------
-			取得	GET						SELECT
-			新增	POST					INSERT
-			更新	PUT						UPDATE
-			刪除	DELETE					DELETE
+			取得		GET						SELECT
+			新增		POST					INSERT
+			更新		PUT						UPDATE
+			刪除		DELETE					DELETE
 				
 		HiddenHttpMethodFilter
 			用途 : 因為<form>只支援GET和POST方法, 使用此過濾器能"模擬"出PUT和DELETE的請求, 來達到RESUTful
